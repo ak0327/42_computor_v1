@@ -5,8 +5,8 @@
 #include <map>
 
 struct s_term {
-    char    variable;
     int     coefficient;
+    char    variable;
     int     degree;
 };
 
@@ -32,7 +32,8 @@ class Parser {
     static int stoi(
             const std::string &str,
             std::size_t start_pos,
-            std::size_t *end_pos) noexcept(true);
+            std::size_t *end_pos,
+            std::size_t *num_len = nullptr) noexcept(true);
     static void skip_sp(
             const std::string &str,
             std::size_t start_pos,

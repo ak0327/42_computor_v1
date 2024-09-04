@@ -1,4 +1,5 @@
 #include "Parser.hpp"
+#include <iostream>
 
 namespace {
 
@@ -37,7 +38,11 @@ int to_digit(char c) {
 }  // namespace
 
 
-Parser::Parser() : polynomial_(), variable_() {}
+Parser::Parser() : polynomial_(), variable_() {
+    for (int i = 0; i <= this->max_degree_; ++i) {
+        this->polynomial_[i] = 0;
+    }
+}
 
 Parser::~Parser() {}
 
@@ -89,22 +94,56 @@ Status Parser::set_variable(char var, int degree) {
     return Status::FAILURE;
 }
 
+//  lhs                              rhs
+//  vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv   v
 //  A0 * X^0 + A1 * X^1 + A2 * X^2 = 0
-// ^ 先頭は符号なくてもOK
+//           ^先頭以外の項は、parse前に符号評価
 Status Parser::parse_expression(const std::string &expression, bool is_lhs) noexcept(true) {
-    (void)expression;
-    (void)is_lhs;
+    if (expression.empty()) {
+        return Status::FAILURE;
+    }
 
-    // 先頭に符号をつける？
+    std::size_t pos, end;
+    pos = 0;
+    while (expression[pos]) {
+        s_term term = Parser::parse_term(expression, pos, &end);
+        if (pos == end) {
+            break;
+        }
 
-    // variable格納
+        int degree = term.degree;
+        char var = term.variable;
+        int coef = term.coefficient;
 
-    // 係数を格納(is_lhsの場合は+, !is_lhsの場合は-で加算)
+        if (!Parser::is_valid_degree(degree)) {
+            return Status::FAILURE;
+        }
+        if (Parser::set_variable(var, degree) == Status::FAILURE) {
+            return Status::FAILURE;
+        }
+        if (!Parser::is_valid_variable(var, degree)) {
+            return Status::FAILURE;
+        }
+        this->polynomial_[degree] += (is_lhs ? 1 : -1) * coef;
+        if (!Parser::is_valid_coef(degree)) {
+            return Status::FAILURE;
+        }
+        if (!(expression[end] == '+' || expression[end] == '-' || !expression[end])) {
+            // next term invalid
+            break;
+        }
+        pos = end;
+    }
 
+    if (pos < expression.length()) {
+        return Status::FAILURE;
+    }
     return Status::SUCCESS;
 }
 
 // term = ( sign ) ( coefficient "*" ) ALPHA "^" 1*( DIGIT )
+// ok +X -X
+// ng 1X *X
 s_term Parser::parse_term(const std::string &expr,
                           std::size_t start_pos,
                           std::size_t *end_pos) noexcept(true) {
@@ -112,18 +151,18 @@ s_term Parser::parse_term(const std::string &expr,
     char variable;
     int coefficient, degree;
 
-    std::size_t pos, end;
+    std::size_t pos, end, num_len;
 
     *end_pos = start_pos;
     pos = start_pos;
-    coefficient = Parser::stoi(expr, pos, &end);
+    coefficient = Parser::stoi(expr, pos, &end, &num_len);
     if (pos == end) {
         coefficient = 1;
     } else {
         pos = end;
         Parser::skip_sp(expr, pos, &pos);
-        if (expr[pos] != '*') { return term; }
-        ++pos;
+        if (0 < num_len && expr[pos] != '*') { return term; }
+        if (0 < num_len && expr[pos] == '*') { ++pos; }
     }
     Parser::skip_sp(expr, pos, &pos);
 
@@ -147,13 +186,7 @@ s_term Parser::parse_term(const std::string &expr,
     return term;
 }
 
-Status Parser::validate_polynomial(int degree) const noexcept(true) {
-    (void)degree;
-
-    return Status::SUCCESS;
-}
-
-std::map<int, int> Parser::get_polynomial() const noexcept(true) {
+std::map<int, long> Parser::get_polynomial() const noexcept(true) {
     return this->polynomial_;
 }
 
@@ -172,10 +205,12 @@ std::map<int, int> Parser::get_polynomial() const noexcept(true) {
 //         ^^^^^^^^^^^^^^^^^^^^^^ stoi
 int Parser::stoi(const std::string &str,
                  std::size_t start_pos,
-                 std::size_t *end_pos) noexcept(true) {
+                 std::size_t *end_pos,
+                 std::size_t *num_len) noexcept(true) {
     int num = 0;
 
     if (end_pos) { *end_pos = start_pos; }
+    if (num_len) { *num_len = 0; }
     if (str.length() <= start_pos) { return num; }
 
     std::size_t pos, i;
@@ -198,7 +233,12 @@ int Parser::stoi(const std::string &str,
         num = num * 10 + sign * digit;
         ++i;
     }
-    if (end_pos && i != 0) { *end_pos = pos + i; }
+    if (end_pos) { *end_pos = pos + i; }
+    if (num_len) { *num_len = i; }
+    if (i == 0) {
+        // '+X'-> +1, '-X' -> -1
+        num = sign;
+    }
     return num;
 }
 

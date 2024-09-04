@@ -191,6 +191,28 @@ TEST(TestParser, TestStoiOK) {
     actual_num = Parser::stoi(str, start, &actual_end);
     EXPECT_EQ(expected_num, actual_num);
     EXPECT_EQ(expected_end, actual_end);
+
+
+    expected_num = 1;
+    str = "++";
+    //     01234567890123456789012345
+    //      ^end
+    expected_end = 1;
+    start = 0;
+    actual_num = Parser::stoi(str, start, &actual_end);
+    EXPECT_EQ(expected_num, actual_num);
+    EXPECT_EQ(expected_end, actual_end);
+
+
+    expected_num = -1;
+    str = "-X";
+    //     01234567890123456789012345
+    //      ^end
+    expected_end = 1;
+    start = 0;
+    actual_num = Parser::stoi(str, start, &actual_end);
+    EXPECT_EQ(expected_num, actual_num);
+    EXPECT_EQ(expected_end, actual_end);
 }
 
 
@@ -199,15 +221,6 @@ TEST(TestParser, TestStoiNG) {
     std::size_t start, actual_end, expected_end;
 
     str = "abc";
-    //     01234
-    //     ^end
-    start = 0;
-    expected_end = start;
-    Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    str = " + +1";
     //     01234
     //     ^end
     start = 0;
@@ -317,6 +330,50 @@ TEST(TestParser, TestParseTermOK) {
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
+    expected_term.coefficient = 1;
+    expected_term.variable = 'X';
+    expected_term.degree = 1;
+    expr = "+1 * X^1";
+    //      012345678
+    //    st^   ^end
+    start = 0;
+    expected_end = 8;
+    actual_term = Parser::parse_term(expr, start, &actual_end);
+    EXPECT_EQ(expected_end, actual_end);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.degree, actual_term.degree);
+
+
+    expected_term.coefficient = 1;
+    expected_term.variable = 'X';
+    expected_term.degree = 1;
+    expr = "+X^1";
+    //      01234
+    //    st^   ^end
+    start = 0;
+    expected_end = 4;
+    actual_term = Parser::parse_term(expr, start, &actual_end);
+    EXPECT_EQ(expected_end, actual_end);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.degree, actual_term.degree);
+
+
+    expected_term.coefficient = -1;
+    expected_term.variable = 'X';
+    expected_term.degree = 1;
+    expr = "-X^1";
+    //      01234
+    //    st^   ^end
+    start = 0;
+    expected_end = 4;
+    actual_term = Parser::parse_term(expr, start, &actual_end);
+    EXPECT_EQ(expected_end, actual_end);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.degree, actual_term.degree);
+
 
     expected_term.coefficient = 2;
     expected_term.variable = 'X';
@@ -373,6 +430,36 @@ TEST(TestParser, TestParseTermNG) {
     expected_term.variable = '\0';
     expected_term.degree = 0;
     expr = "XY^1";
+    //      01234567890
+    //    st^end
+    start = 0;
+    expected_end = start;
+    actual_term = Parser::parse_term(expr, start, &actual_end);
+    EXPECT_EQ(expected_end, actual_end);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.degree, actual_term.degree);
+
+
+    expected_term.coefficient = 0;
+    expected_term.variable = '\0';
+    expected_term.degree = 0;
+    expr = " +*Y^1";
+    //      01234567890
+    //    st^end
+    start = 0;
+    expected_end = start;
+    actual_term = Parser::parse_term(expr, start, &actual_end);
+    EXPECT_EQ(expected_end, actual_end);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.degree, actual_term.degree);
+
+
+    expected_term.coefficient = 0;
+    expected_term.variable = '\0';
+    expected_term.degree = 0;
+    expr = " +1Y^1";
     //      01234567890
     //    st^end
     start = 0;
@@ -549,6 +636,78 @@ TEST(TestParser, TestParseTermNG) {
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
+}
+
+
+TEST(TestParser, TestParseExpr) {
+    Parser *parser;
+
+    std::string expr;
+    bool is_lhs = true;
+    std::map<int, long> actual_poly, expected_poly;
+    Status actual_status, expected_status;
+    expected_status = Status::SUCCESS;
+
+
+    expr = "X^0";
+    actual_poly = {{0, 1}, {1, 0}, {2, 0}};
+    parser = new Parser();
+    actual_status = parser->parse_expression(expr, is_lhs);
+    expected_poly = parser->get_polynomial();
+    EXPECT_EQ(expected_status, actual_status);
+    EXPECT_EQ(expected_poly, actual_poly);
+    delete parser;
+
+
+    expr = "- X^0";
+    actual_poly = {{0, -1}, {1, 0}, {2, 0}};
+    parser = new Parser();
+    actual_status = parser->parse_expression(expr, is_lhs);
+    expected_poly = parser->get_polynomial();
+    EXPECT_EQ(expected_status, actual_status);
+    EXPECT_EQ(expected_poly, actual_poly);
+    delete parser;
+
+
+    expr = "2147483647 * X^0";
+    actual_poly = {{0, 2147483647}, {1, 0}, {2, 0}};
+    parser = new Parser();
+    actual_status = parser->parse_expression(expr, is_lhs);
+    expected_poly = parser->get_polynomial();
+    EXPECT_EQ(expected_status, actual_status);
+    EXPECT_EQ(expected_poly, actual_poly);
+    delete parser;
+
+
+    expr = "2147483647 * X^0 - 2147483648 * X^0";
+    actual_poly = {{0, -1}, {1, 0}, {2, 0}};
+    parser = new Parser();
+    actual_status = parser->parse_expression(expr, is_lhs);
+    expected_poly = parser->get_polynomial();
+    EXPECT_EQ(expected_status, actual_status);
+    EXPECT_EQ(expected_poly, actual_poly);
+    delete parser;
+
+
+    expr = "0 * X^0 + 1 * X^1 + 2 * X^2";
+    actual_poly = {{0, 0}, {1, 1}, {2, 2}};
+    parser = new Parser();
+    actual_status = parser->parse_expression(expr, is_lhs);
+    expected_poly = parser->get_polynomial();
+    EXPECT_EQ(expected_status, actual_status);
+    EXPECT_EQ(expected_poly, actual_poly);
+    delete parser;
+
+
+    expr = "1 * X^1 - 10 * X^1 - X^2";
+    actual_poly = {{0, 0}, {1, -9}, {2, -1}};
+    parser = new Parser();
+    actual_status = parser->parse_expression(expr, is_lhs);
+    expected_poly = parser->get_polynomial();
+    EXPECT_EQ(expected_status, actual_status);
+    EXPECT_EQ(expected_poly, actual_poly);
+    delete parser;
+
 }
 
 // TEST(TestParser, ParseOK) {
