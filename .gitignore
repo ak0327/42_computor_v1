@@ -5,6 +5,7 @@
 !CPPLINT.cfg
 
 !Makefile
+!CMakeLists.txt
 
 # srcs
 !srcs
@@ -12,5 +13,6 @@
 
 # tests
 !tests
+!tests/**
 
 .idea

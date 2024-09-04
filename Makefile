@@ -35,5 +35,10 @@ lint	:
 	&& echo "\033[0;32mCPPLINT DONE\033[0m" \
 	|| echo "\033[0;31mCPPLINT ERROR\033[0m"
 
+.PHONY	: utest
+utest	:
+	cmake -S . -B build
+	cmake --build build
+	./build/utest
 
 -include $(DEPS)
