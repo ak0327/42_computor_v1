@@ -1,8 +1,15 @@
 **
 
 !.gitignore
+!.gitkeep
 
 !Makefile
-!main.cpp
+
+# srcs
+!srcs
+!srcs/main.cpp
+
+# tests
+!tests
 
 .idea
