@@ -15,4 +15,9 @@
 !tests
 !tests/**
 
+# github workflows
+!.github
+!.github/workflows
+!.github/workflows/*.yml
+
 .idea
