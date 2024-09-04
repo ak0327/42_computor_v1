@@ -11,14 +11,15 @@ OBJS_DIR	= objs
 OBJS		= $(SRCS:%.cpp=$(OBJS_DIR)/%.o)
 DEPS		= $(OBJS:%.o=%.d)
 
-INCLUDES_DIR = srcs/Parser
-INCLUDES	 =	$(addprefix -I, $(INCLUDES_DIR))
+INCL_DIR 	= srcs \
+			  srcs/Parser
+INCLUDES	= $(addprefix -I, $(INCL_DIR))
 
 .PHONY	: all
 all		: $(NAME)
 
 $(NAME)	: $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $^
 
 $(OBJS_DIR)/%.o	: $(SRCS_DIR)/%.cpp
 	@mkdir -p $(OBJS_DIR)

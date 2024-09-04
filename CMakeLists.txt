@@ -31,7 +31,6 @@ include_directories(
 ## srcs ------------------------------------------------------------------------
 # test code
 set (computor_srcs
-        srcs/main.cpp
         srcs/Parser/Parser.cpp
 )
 
@@ -44,11 +43,13 @@ set (utest_srcs
 
 
 add_executable(computor
+        srcs/main.cpp
         ${computor_srcs}
 )
 
 
 add_executable(utest
+        ${computor_srcs}
         ${utest_srcs}
 )
 
