@@ -37,7 +37,7 @@ int to_digit(char c) {
 }  // namespace
 
 
-Parser::Parser() {}
+Parser::Parser() : polynomial_(), variable_() {}
 
 Parser::~Parser() {}
 
@@ -59,6 +59,36 @@ Status Parser::parse_equation(const std::string &equation) noexcept(true) {
     return Status::SUCCESS;
 }
 
+bool Parser::is_valid_degree(int degree) const noexcept(true) {
+    return (0 <= degree && degree <= this->max_degree_);
+}
+
+bool Parser::is_valid_coef(int degree) const noexcept(true) {
+    try {
+        int coef = this->polynomial_.at(degree);
+        return (INT_MIN <= coef && coef <= INT_MAX);
+    } catch (const std::out_of_range &e) {}
+    return false;
+}
+
+bool Parser::is_valid_variable(char var, int degree) const noexcept(true) {
+    if (degree == 0) {
+        return true;
+    }
+    return this->variable_ == var;
+}
+
+Status Parser::set_variable(char var, int degree) {
+    if (degree == 0 || this->variable_ != '\0') {
+        return Status::SUCCESS;
+    }
+    if (var != 0) {
+        this->variable_ = var;
+        return Status::SUCCESS;
+    }
+    return Status::FAILURE;
+}
+
 //  A0 * X^0 + A1 * X^1 + A2 * X^2 = 0
 // ^ 先頭は符号なくてもOK
 Status Parser::parse_expression(const std::string &expression, bool is_lhs) noexcept(true) {
@@ -74,14 +104,46 @@ Status Parser::parse_expression(const std::string &expression, bool is_lhs) noex
     return Status::SUCCESS;
 }
 
+// term = ( sign ) ( coefficient "*" ) ALPHA "^" 1*( DIGIT )
 s_term Parser::parse_term(const std::string &expr,
                           std::size_t start_pos,
                           std::size_t *end_pos) noexcept(true) {
-    s_term term;
-    (void)expr;
-    (void)start_pos;
-    (void)end_pos;
+    s_term term = {};
+    char variable;
+    int coefficient, degree;
 
+    std::size_t pos, end;
+
+    *end_pos = start_pos;
+    pos = start_pos;
+    coefficient = Parser::stoi(expr, pos, &end);
+    if (pos == end) {
+        coefficient = 1;
+    } else {
+        pos = end;
+        Parser::skip_sp(expr, pos, &pos);
+        if (expr[pos] != '*') { return term; }
+        ++pos;
+    }
+    Parser::skip_sp(expr, pos, &pos);
+
+    if (!std::isalpha(expr[pos])) { return term; }
+    variable = expr[pos];
+    ++pos;
+
+    if (expr[pos] != '^') { return term; }
+    ++pos;
+
+    if (!std::isdigit(expr[pos])) { return term; }
+    degree = Parser::stoi(expr, pos, &end);
+    pos = end;
+
+    Parser::skip_sp(expr, pos, &end);
+    *end_pos = end;
+
+    term.coefficient = coefficient;
+    term.variable = variable;
+    term.degree = degree;
     return term;
 }
 
