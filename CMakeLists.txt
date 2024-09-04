@@ -7,7 +7,7 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -pedantic")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fsanitize=address,undefined -fno-omit-frame-pointer")
 
 
-# google test ------------------------------------------------------------------
+## google test -----------------------------------------------------------------
 include(FetchContent)
 include(GoogleTest)
 
@@ -21,15 +21,27 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 
-# includes ---------------------------------------------------------------------
+## includes --------------------------------------------------------------------
 include_directories(
         srcs
         tests
 )
 
+## srcs ------------------------------------------------------------------------
+# test code
+set (computor_srcs
+        srcs/main.cpp
+)
+
+
 # test code
 set (utest_srcs
         tests/utest/TestTmp.cpp
+)
+
+
+add_executable(computor
+        ${computor_srcs}
 )
 
 
@@ -38,7 +50,7 @@ add_executable(utest
 )
 
 
-# test -------------------------------------------------------------------------
+## test ------------------------------------------------------------------------
 target_link_libraries(
         utest
         GTest::gtest_main

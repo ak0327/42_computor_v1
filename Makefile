@@ -3,10 +3,11 @@ NAME		= computor
 CXX			= c++
 CXXFLAGS	= -std=c++20 -Wall -Wextra -Werror -MMD -MP -pedantic
 
+SRCS_DIR	= srcs
 SRCS		= main.cpp
 
-OBJ_DIR		= objs
-OBJS		= $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
+OBJS_DIR	= objs
+OBJS		= $(SRCS:%.cpp=$(OBJS_DIR)/%.o)
 DEPS		= $(OBJS:%.o=%.d)
 
 INCLUDES	= -I.
@@ -17,13 +18,13 @@ all		: $(NAME)
 $(NAME)	: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-$(OBJ_DIR)/%.o	: %.cpp
-	@mkdir -p $(OBJ_DIR)
+$(OBJS_DIR)/%.o	: $(SRCS_DIR)/%.cpp
+	@mkdir -p $(OBJS_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 .PHONY	: clean
 clean	:
-	rm -rf $(OBJ_DIR)
+	rm -rf $(OBJS_DIR)
 
 .PHONY	: fclean
 fclean	: clean
