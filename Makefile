@@ -11,7 +11,8 @@ DEPS		= $(OBJS:%.o=%.d)
 
 INCLUDES	= -I.
 
-all	: $(NAME)
+.PHONY	: all
+all		: $(NAME)
 
 $(NAME)	: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
@@ -20,14 +21,16 @@ $(OBJ_DIR)/%.o	: %.cpp
 	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-fclean	:
+.PHONY	: clean
+clean	:
 	rm -rf $(OBJ_DIR)
+
+.PHONY	: fclean
+fclean	: clean
 	rm -f $(NAME)
 
+.PHONY	: re
 re		: fclean all
-
-run		: re
-	./$(NAME)
 
 .PHONY	: lint
 lint	:
