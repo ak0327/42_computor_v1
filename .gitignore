@@ -9,7 +9,10 @@
 
 # srcs
 !srcs
-!srcs/main.cpp
+!srcs/Parser
+
+!srcs/**/*.cpp
+!srcs/**/*.hpp
 
 # tests
 !tests

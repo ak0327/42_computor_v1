@@ -24,6 +24,7 @@ enable_testing()
 ## includes --------------------------------------------------------------------
 include_directories(
         srcs
+        srcs/Parser
         tests
 )
 
@@ -31,6 +32,7 @@ include_directories(
 # test code
 set (computor_srcs
         srcs/main.cpp
+        srcs/Parser/Parser.cpp
 )
 
 
