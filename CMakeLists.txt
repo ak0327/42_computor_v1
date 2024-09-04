@@ -39,6 +39,7 @@ set (computor_srcs
 # test code
 set (utest_srcs
         tests/utest/TestTmp.cpp
+        tests/utest/TestParser.cpp
 )
 
 

@@ -14,7 +14,7 @@ Status Parser::parse_equation(const std::string &equation) noexcept(true) {
     return Status::SUCCESS;
 }
 
-Status Parser::validate_equation(int degree) const noexcept(true) {
+Status Parser::validate_polynomial(int degree) const noexcept(true) {
     (void)degree;
 
     return Status::SUCCESS;

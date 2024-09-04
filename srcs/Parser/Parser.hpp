@@ -10,7 +10,7 @@ class Parser {
     ~Parser();
 
     Status parse_equation(const std::string &equation) noexcept(true);
-    Status validate_equation(int degree = 3) const noexcept(true);
+    Status validate_polynomial(int degree = 3) const noexcept(true);
 
     std::map<int, int> get_polynomial() const noexcept(true);
 
