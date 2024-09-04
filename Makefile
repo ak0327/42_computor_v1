@@ -29,6 +29,11 @@ re		: fclean all
 run		: re
 	./$(NAME)
 
+.PHONY	: lint
+lint	:
+	@python3 -m cpplint --recursive srcs \
+	&& echo "\033[0;32mCPPLINT DONE\033[0m" \
+	|| echo "\033[0;31mCPPLINT ERROR\033[0m"
 
 
 -include $(DEPS)
