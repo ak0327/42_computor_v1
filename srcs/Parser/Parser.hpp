@@ -44,5 +44,9 @@ class Parser {
     std::map<int, long> polynomial_;
     char variable_;
 
+    // copy invalid
+    Parser &operator=(const Parser &rhs);
+    explicit Parser(const Parser &other);
+
     Status set_variable(char var, int degree);
 };
