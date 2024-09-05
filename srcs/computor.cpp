@@ -21,7 +21,7 @@ int Computor::calc_equation(const std::string &equation) noexcept(true) {
     if (parser.parse_equation(tokens) == Status::FAILURE) {
         return EXIT_FAILURE;
     }
-    std::map<int, double> polynomial = parser.get_polynomial();
+    std::map<int, double> polynomial = parser.polynomial();
 
     // display calc info
 

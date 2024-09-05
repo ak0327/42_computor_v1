@@ -210,7 +210,7 @@ s_term Parser::parse_term(
     return term;
 }
 
-std::map<int, double> Parser::get_polynomial() const noexcept(true) {
+std::map<int, double> Parser::polynomial() const noexcept(true) {
     return this->polynomial_;
 }
 
