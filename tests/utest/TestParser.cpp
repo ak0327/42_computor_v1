@@ -52,6 +52,23 @@ TEST(TestParser, TestSkipSP) {
     expected_end = start;
     Parser::skip_sp(str, start, &actual_end);
     EXPECT_EQ(expected_end, actual_end);
+
+    str = " abc    ";
+    //     01234
+    //   st^^end
+    start = 0;
+    expected_end = 1;
+    Parser::skip_sp(str, start, &actual_end);
+    EXPECT_EQ(expected_end, actual_end);
+
+
+    str = " abc    ";
+    //     01234
+    //    st^end
+    start = 1;
+    expected_end = start;
+    Parser::skip_sp(str, start, &actual_end);
+    EXPECT_EQ(expected_end, actual_end);
 }
 
 
