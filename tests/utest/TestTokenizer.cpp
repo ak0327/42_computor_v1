@@ -355,6 +355,7 @@ TEST(TestParser, Tagging) {
 
 
     equation = "  1.50X^0 -2.3456X^1 +X^2.0    = 0.0   ";
+    //               ^
     expected_tokens = {
             {.word="1.50", .kind=TermCoef},
             {.word="X", .kind=TermBase},

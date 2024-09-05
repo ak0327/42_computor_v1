@@ -48,3 +48,5 @@ class Parser {
 
     Status set_variable(char var, int degree);
 };
+
+std::ostream &operator<<(std::ostream &out, const s_term &term);

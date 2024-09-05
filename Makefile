@@ -50,6 +50,6 @@ utest	:
 	cmake -S . -B build
 	cmake --build build
 	./build/utest
-#	./build/utest --gtest_filter=TestParser.TestParseEquationNG
+	#./build/utest --gtest_filter=TestParser.TestParseEquation*
 
 -include $(DEPS)

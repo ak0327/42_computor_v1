@@ -322,7 +322,7 @@ TEST(TestParser, TestParseTermNG) {
 }
 
 
-TEST(TestParser, TestParseEquationNG) {
+TEST(TestParser, TestParseEquationByTokenNG) {
     Parser parser;
     std::deque<s_token> tokens;
     Status expected_status, actual_status;
@@ -430,169 +430,210 @@ TEST(TestParser, TestParseEquationNG) {
 
 }
 
-TEST(TestParser, TestParseExpr) {
-    // Parser *parser;
-    //
-    // std::string expr;
-    // bool is_lhs = true;
-    // std::map<int, long> actual_poly, expected_poly;
-    // Status actual_status, expected_status;
-    // expected_status = Status::SUCCESS;
-    //
-    //
-    // expr = "X^0";
-    // actual_poly = {{0, 1}, {1, 0}, {2, 0}};
-    // parser = new Parser();
-    // actual_status = parser->parse_expression(expr, is_lhs);
-    // expected_poly = parser->get_polynomial();
-    // EXPECT_EQ(expected_status, actual_status);
-    // EXPECT_EQ(expected_poly, actual_poly);
-    // delete parser;
-    //
-    //
-    // expr = "- X^0";
-    // actual_poly = {{0, -1}, {1, 0}, {2, 0}};
-    // parser = new Parser();
-    // actual_status = parser->parse_expression(expr, is_lhs);
-    // expected_poly = parser->get_polynomial();
-    // EXPECT_EQ(expected_status, actual_status);
-    // EXPECT_EQ(expected_poly, actual_poly);
-    // delete parser;
-    //
-    //
-    // expr = "2147483647 * X^0";
-    // actual_poly = {{0, 2147483647}, {1, 0}, {2, 0}};
-    // parser = new Parser();
-    // actual_status = parser->parse_expression(expr, is_lhs);
-    // expected_poly = parser->get_polynomial();
-    // EXPECT_EQ(expected_status, actual_status);
-    // EXPECT_EQ(expected_poly, actual_poly);
-    // delete parser;
-    //
-    //
-    // expr = "2147483647 * X^0 - 2147483648 * X^0";
-    // actual_poly = {{0, -1}, {1, 0}, {2, 0}};
-    // parser = new Parser();
-    // actual_status = parser->parse_expression(expr, is_lhs);
-    // expected_poly = parser->get_polynomial();
-    // EXPECT_EQ(expected_status, actual_status);
-    // EXPECT_EQ(expected_poly, actual_poly);
-    // delete parser;
-    //
-    //
-    // expr = "0 * X^0 + 1 * X^1 + 2 * X^2";
-    // actual_poly = {{0, 0}, {1, 1}, {2, 2}};
-    // parser = new Parser();
-    // actual_status = parser->parse_expression(expr, is_lhs);
-    // expected_poly = parser->get_polynomial();
-    // EXPECT_EQ(expected_status, actual_status);
-    // EXPECT_EQ(expected_poly, actual_poly);
-    // delete parser;
-    //
-    //
-    // expr = "1 * X^1 - 10 * X^1 - X^2";
-    // actual_poly = {{0, 0}, {1, -9}, {2, -1}};
-    // parser = new Parser();
-    // actual_status = parser->parse_expression(expr, is_lhs);
-    // expected_poly = parser->get_polynomial();
-    // EXPECT_EQ(expected_status, actual_status);
-    // EXPECT_EQ(expected_poly, actual_poly);
-    // delete parser;
+TEST(TestParser, TestParseEquationByStringOK) {
+    Tokenizer t;
+    Parser *p;
+    std::string equation;
+    std::deque<s_token> tokens;
+    std::map<int, double> actual_poly, expected_poly;
+    Status tokenizer_res, parser_res;
 
+    // simple equation
+    equation = "X^0 + X^1 + X^2 = 0";
+    expected_poly = {
+            {0, 1},
+            {1, 1},
+            {2, 1},
+    };
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    actual_poly = p->polynomial();
+    delete p;
+    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(expected_poly, actual_poly);
+
+
+    equation = "  -X^0 + 2X^1 - 100X^2    = 100   ";
+    expected_poly = {
+            {0, -101},
+            {1, 2},
+            {2, -100},
+    };
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    actual_poly = p->polynomial();
+    delete p;
+    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(expected_poly, actual_poly);
+
+
+    equation = "A^0 + A^1 + A^2 = 0";
+    expected_poly = {
+            {0, 1},
+            {1, 1},
+            {2, 1},
+    };
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    actual_poly = p->polynomial();
+    delete p;
+    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(expected_poly, actual_poly);
+
+    equation = "0 = X^0 + X^1 + X^2";
+    expected_poly = {
+            {0, -1},
+            {1, -1},
+            {2, -1},
+    };
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    actual_poly = p->polynomial();
+    delete p;
+    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(expected_poly, actual_poly);
+
+    // subject
+    equation = "5 * X^0 + 4 * X^1 - 9.3 * X^2 = 1 * X^0";
+    expected_poly = {
+            {0, 4},
+            {1, 4},
+            {2, -9.3},
+    };
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    actual_poly = p->polynomial();
+    delete p;
+    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(expected_poly, actual_poly);
+
+    equation = "5 * X^0 + 4 * X^1 = 4 * X^0";
+    expected_poly = {
+            {0, 1},
+            {1, 4},
+            {2, 0},
+    };
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    actual_poly = p->polynomial();
+    delete p;
+    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(expected_poly, actual_poly);
 }
 
-// TEST(TestParser, ParseOK) {
-//     Parser parser;
-//     std::string equation;
-//     Status ret;
-//
-//     // simple equation
-//     equation = "X^0 + X^1 + X^2 = 0";
-//     ret = parser.parse_equation(equation);
-//     EXPECT_EQ(Status::SUCCESS, ret);
-//
-//     equation = "  X^0 + X^1 + X^2    = 0   ";
-//     ret = parser.parse_equation(equation);
-//     EXPECT_EQ(Status::SUCCESS, ret);
-//
-//     equation = "x^0 + x^1 + x^2 = 0";
-//     ret = parser.parse_equation(equation);
-//     EXPECT_EQ(Status::SUCCESS, ret);
-//
-//     equation = "A^0 + A^1 + A^2 = 0";
-//     ret = parser.parse_equation(equation);
-//     EXPECT_EQ(Status::SUCCESS, ret);
-//
-//     equation = "0 = X^0 + X^1 + X^2";
-//     ret = parser.parse_equation(equation);
-//     EXPECT_EQ(Status::SUCCESS, ret);
-//
-//     // subject
-//     equation = "5 * X^0 + 4 * X^1 - 9.3 * X^2 = 1 * X^0";
-//     ret = parser.parse_equation(equation);
-//     EXPECT_EQ(Status::SUCCESS, ret);
-//
-//     equation = "5 * X^0 + 4 * X^1 = 4 * X^0";
-//     ret = parser.parse_equation(equation);
-//     EXPECT_EQ(Status::SUCCESS, ret);
-//
-//     equation = "8 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 3 * X^0";
-//     ret = parser.parse_equation(equation);
-//     EXPECT_EQ(Status::SUCCESS, ret);
-// }
-//
-// TEST(TestParser, ParseNG) {
-//     Parser parser;
-//     std::string equation;
-//     Status ret;
-//
-//     equation = "X^0 = 0";
-//     ret = parser.parse_equation(equation);
-//     EXPECT_EQ(Status::FAILURE, ret);
-//
-//     equation = "X^0 == 0";
-//     ret = parser.parse_equation(equation);
-//     EXPECT_EQ(Status::FAILURE, ret);
-//
-//     equation = "X^0 = 0 = 0";
-//     ret = parser.parse_equation(equation);
-//     EXPECT_EQ(Status::FAILURE, ret);
-//
-//     equation = "= X^0";
-//     ret = parser.parse_equation(equation);
-//     EXPECT_EQ(Status::FAILURE, ret);
-//
-//     equation = "X^0 =";
-//     ret = parser.parse_equation(equation);
-//     EXPECT_EQ(Status::FAILURE, ret);
-//
-//     equation = "X^0 + Y^0";
-//     ret = parser.parse_equation(equation);
-//     EXPECT_EQ(Status::FAILURE, ret);
-// }
-//
-// TEST(TestParser, ValidateOK) {
-//     Parser parser;
-//     std::string equation;
-//     Status ret;
-//
-//     // simple equation
-//     equation = "X^2 = 0";
-//     parser.parse_equation(equation);
-//     ret = parser.validate_polynomial();
-//     EXPECT_EQ(Status::SUCCESS, ret);
-//
-//
-// }
-//
-// TEST(TestParser, ValidateNG) {
-//     Parser parser;
-//     std::string equation;
-//     Status ret;
-//
-//     // simple equation
-//     equation = "X^3 = 0";
-//     parser.parse_equation(equation);
-//     ret = parser.validate_polynomial();
-//     EXPECT_EQ(Status::FAILURE, ret);
-// }
+
+TEST(TestParser, TestParseEquationByStringNG) {
+    Tokenizer t;
+    Parser *p;
+    std::string equation;
+    std::deque<s_token> tokens;
+    Status tokenizer_res, parser_res;
+
+    // subject
+    // equation = "8 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 3 * X^0";
+    // tokenizer_res = t.tokenize(equation);
+    // tokens = t.tokens();
+    // p = new Parser();
+    // parser_res = p->parse_equation(tokens);
+    // delete p;
+    // EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    // EXPECT_EQ(Status::FAILURE, parser_res);
+    //
+    // // simple test
+    // equation = "X^3 = 0";
+    // tokenizer_res = t.tokenize(equation);
+    // tokens = t.tokens();
+    // p = new Parser();
+    // parser_res = p->parse_equation(tokens);
+    // delete p;
+    // EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    // EXPECT_EQ(Status::FAILURE, parser_res);
+    //
+    //
+    // equation = "X^0 == 0";
+    // tokenizer_res = t.tokenize(equation);
+    // tokens = t.tokens();
+    // p = new Parser();
+    // parser_res = p->parse_equation(tokens);
+    // delete p;
+    // EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    // EXPECT_EQ(Status::FAILURE, parser_res);
+    //
+    //
+    // equation = "X^0 = 0 = 0";
+    // tokenizer_res = t.tokenize(equation);
+    // tokens = t.tokens();
+    // p = new Parser();
+    // parser_res = p->parse_equation(tokens);
+    // delete p;
+    // EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    // EXPECT_EQ(Status::FAILURE, parser_res);
+
+
+    equation = "= X^0";
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    delete p;
+    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Status::FAILURE, parser_res);
+
+
+    equation = "^ X^0";
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    delete p;
+    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Status::FAILURE, parser_res);
+
+
+    equation = "X^0 =";
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    delete p;
+    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Status::FAILURE, parser_res);
+
+
+    // equation = "X^0 + Y^0";
+    // tokenizer_res = t.tokenize(equation);
+    // tokens = t.tokens();
+    // p = new Parser();
+    // parser_res = p->parse_equation(tokens);
+    // delete p;
+    // EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    // EXPECT_EQ(Status::FAILURE, parser_res);
+    //
+    //
+    // equation = "X^1 + Y^2 = 0";
+    // tokenizer_res = t.tokenize(equation);
+    // tokens = t.tokens();
+    // p = new Parser();
+    // parser_res = p->parse_equation(tokens);
+    // delete p;
+    // EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    // EXPECT_EQ(Status::FAILURE, parser_res);
+}

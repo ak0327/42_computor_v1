@@ -15,10 +15,10 @@ Status Parser::parse_equation(const std::deque<s_token> &tokens) noexcept(true) 
     if (tokens.empty()) {
         return Status::FAILURE;
     }
-
     auto itr = tokens.begin();
+    auto itr_copy = itr;
     parse_expression(tokens, &itr, true);
-    if (itr == tokens.end() || itr->kind != OperatorEqual) {
+    if (itr == tokens.end() || itr->kind != OperatorEqual || itr == itr_copy) {
         return Status::FAILURE;
     }
     ++itr;
@@ -27,8 +27,9 @@ Status Parser::parse_equation(const std::deque<s_token> &tokens) noexcept(true) 
     }
 
     // "=" ?
+    itr_copy = itr;
     parse_expression(tokens, &itr, false);
-    if (itr != tokens.end()) {
+    if (itr != tokens.end() || itr == itr_copy) {
         return Status::FAILURE;
     }
     return Status::SUCCESS;
@@ -68,7 +69,7 @@ Status Parser::set_variable(char var, int degree) {
 Status Parser::set_valid_term(const s_term &term, bool is_lhs) noexcept(true) {
     int degree = term.degree;
     char var = term.variable;
-    int coef = term.coefficient;
+    double coef = term.coefficient;
 
     if (!Parser::is_valid_degree(degree)) {
         return Status::FAILURE;
@@ -96,9 +97,13 @@ void Parser::parse_expression(
         std::deque<s_token>::const_iterator *itr,
         bool is_lhs) noexcept(true) {
 
+    if (*itr == tokens.end() || (*itr)->kind == OperatorEqual) {
+        return;
+    }
     while (*itr != tokens.end()) {
         // parse term
         s_term term = Parser::parse_term(tokens, itr);
+        // std::cout << term << std::endl;
 
         // validate term
         if (Parser::set_valid_term(term, is_lhs) == Status::FAILURE) {
@@ -106,15 +111,10 @@ void Parser::parse_expression(
             return;
         }
 
-        if (*itr == tokens.end()) {
-            break;
+        if (*itr != tokens.end() && ((*itr)->kind == OperatorPlus || (*itr)->kind == OperatorMinus)) {
+            continue;
         }
-        auto next = (*itr)++;
-        if (next == tokens.end() && (*itr)->kind != OperatorPlus && (*itr)->kind != OperatorMinus) {
-            ++(*itr);
-        } else {
-            break;
-        }
+        break;
     }
 }
 
@@ -150,13 +150,16 @@ s_term Parser::parse_term(
     // operator
     if ((*itr)->kind == OperatorPlus || (*itr)->kind == OperatorMinus) {
         (*itr)->kind == OperatorPlus ? sign = 1 : sign = -1;
+        // std::cout << "1 " << (*itr)->word << std::endl;
         ++(*itr);
     }
     // coef
     if (*itr != tokens.end() && (*itr)->kind == TermCoef) {
+        // std::cout << "2 " << (*itr)->word << std::endl;
         try {
             coefficient = std::stod((*itr)->word, &end);
             if (end < (*itr)->word.length()) {
+                // std::cout << "3" << std::endl;
                 return term;
             }
             ++(*itr);
@@ -165,42 +168,54 @@ s_term Parser::parse_term(
                 ++(*itr);
                 if ((*itr)->kind != TermBase) {
                     // todo: error
+                    // std::cout << "4" << std::endl;
                     return term;
                 }
+                // std::cout << "5" << std::endl;
             }
         } catch (const std::exception &e) {
+            // std::cout << "6" << std::endl;
             // out of range, invalid argument
             return term;
         }
     } else {
+        // std::cout << "7" << std::endl;
         coefficient = 1.0;
     }
 
     if (*itr != tokens.end() && (*itr)->kind == TermBase) {
         // var
+        // std::cout << "8 " << (*itr)->word << std::endl;
         variable = (*itr)->word[0];
         ++(*itr);
 
         // pow
         if (*itr != tokens.end() && (*itr)->kind == TermPowSymbol) {
+            // std::cout << "9 " << (*itr)->word << std::endl;
             ++(*itr);
 
             if (*itr != tokens.end() && (*itr)->kind == TermPower) {
                 degree = std::stoi((*itr)->word, &end);
+                // std::cout << "10 " << (*itr)->word << std::endl;
                 if (end < (*itr)->word.length()) {
                     return term;
                 }
                 ++(*itr);
             } else {
+                // std::cout << "11" << std::endl;
                 // todo: error
                 return term;
             }
+            // std::cout << "12" << std::endl;
         } else {
+            // std::cout << "13" << std::endl;
             degree = 1;
         }
     } else {
+        // std::cout << "14" << std::endl;
         degree = 0;
     }
+    // std::cout << "15" << std::endl;
 
     term = {
             .coefficient = coefficient * sign,
@@ -241,4 +256,9 @@ void Parser::skip_sp(const std::string &str,
         ++pos;
     }
     *end_pos = pos;
+}
+
+std::ostream &operator<<(std::ostream &out, const s_term &term) {
+    out << "term [ coef: " << term.coefficient << ", var: " << term.variable << ", degree: " << term.degree << " ]";
+    return out;
 }
