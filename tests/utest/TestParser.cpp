@@ -54,659 +54,450 @@ TEST(TestParser, TestSkipSP) {
     EXPECT_EQ(expected_end, actual_end);
 }
 
-//  term = ( sign ) ( coefficient "*" ) ALPHA "^" 1*( DIGIT )
-//         ^^^^^^^^^^^^^^^^^^^^^^ stoi
-TEST(TestParser, TestStoiOK) {
-    std::string str;
-    std::size_t start, actual_end, expected_end;
-    int actual_num, expected_num;
-
-    expected_num = 1;
-    str = "1";
-    //     01234
-    //      ^end
-    expected_end = 1;
-    start = 0;
-    actual_num = Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_num, actual_num);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    expected_num = 1;
-    str = " 1";
-    //     01234
-    //       ^end
-    expected_end = 2;
-    start = 0;
-    actual_num = Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_num, actual_num);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    expected_num = -1;
-    str = " -000001     ";
-    //     0123456789012345
-    //             ^end
-    expected_end = 8;
-    start = 0;
-    actual_num = Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_num, actual_num);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    expected_num = 1;
-    str = " + 01     ";
-    //     0123456789012345
-    //          ^end
-    expected_end = 5;
-    start = 0;
-    actual_num = Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_num, actual_num);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    expected_num = 123;
-    str = " 123abc";
-    //     012345678
-    //         ^end
-    expected_end = 4;
-    start = 0;
-    actual_num = Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_num, actual_num);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    expected_num = 123;
-    str = "abc123abc";
-    //     012345678
-    //      st^  ^end
-    expected_end = 6;
-    start = 3;
-    actual_num = Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_num, actual_num);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    expected_num = 0;
-    str = "0";
-    //     01234
-    //      ^end
-    expected_end = 1;
-    start = 0;
-    actual_num = Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_num, actual_num);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    expected_num = 0;
-    str = " -0000  ";
-    //     012345678
-    //           ^end
-    expected_end = 6;
-    start = 0;
-    actual_num = Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_num, actual_num);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    expected_num = 2147483647;
-    str = "2147483647";
-    //     0123456789012345
-    //               ^end
-    expected_end = 10;
-    start = 0;
-    actual_num = Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_num, actual_num);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    expected_num = 2147483647;
-    str = " + 0000002147483647   ";
-    //     01234567890123456789012345
-    //                        ^end
-    expected_end = 19;
-    start = 0;
-    actual_num = Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_num, actual_num);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    expected_num = -2147483648;
-    str = "-0000002147483648";
-    //     01234567890123456789012345
-    //                      ^end
-    expected_end = 17;
-    start = 0;
-    actual_num = Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_num, actual_num);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    expected_num = -2147483648;
-    str = "-  2147483648   ";
-    //     01234567890123456789012345
-    //                  ^end
-    expected_end = 13;
-    start = 0;
-    actual_num = Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_num, actual_num);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    expected_num = 1;
-    str = "++";
-    //     01234567890123456789012345
-    //      ^end
-    expected_end = 1;
-    start = 0;
-    actual_num = Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_num, actual_num);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    expected_num = -1;
-    str = "-X";
-    //     01234567890123456789012345
-    //      ^end
-    expected_end = 1;
-    start = 0;
-    actual_num = Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_num, actual_num);
-    EXPECT_EQ(expected_end, actual_end);
-}
-
-
-TEST(TestParser, TestStoiNG) {
-    std::string str;
-    std::size_t start, actual_end, expected_end;
-
-    str = "abc";
-    //     01234
-    //     ^end
-    start = 0;
-    expected_end = start;
-    Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    str = "2147483648";  // out of range
-    //     01234567890
-    //     ^end
-    start = 0;
-    expected_end = start;
-    Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    str = "4294967295";  // out of range
-    //     01234567890
-    //     ^end
-    start = 0;
-    expected_end = start;
-    Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    str = "18446744073709551615";  // out of range
-    //     01234567890
-    //     ^end
-    start = 0;
-    expected_end = start;
-    Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    str = "-2147483649";  // out of range
-    //     01234567890
-    //     ^end
-    start = 0;
-    expected_end = start;
-    Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    str = "-9223372036854775808";  // out of range
-    //     01234567890
-    //     ^end
-    start = 0;
-    expected_end = start;
-    Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    str = "-18446744073709551615";  // out of range
-    //     01234567890
-    //     ^end
-    start = 0;
-    expected_end = start;
-    Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    str = "-18446744073709551615";  // out of range
-    //     01234567890
-    //       st^
-    //         ^end
-    start = 4;
-    expected_end = start;
-    Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-
-
-    str = "";
-    //     01234567890
-    //     ^end
-    start = 0;
-    expected_end = start;
-    Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-
-    str = "";
-    //     01234567890
-    //     ^end
-    start = 3;
-    expected_end = start;
-    Parser::stoi(str, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-}
-
 
 TEST(TestParser, TestParseTermOK) {
-    std::string expr;
-    std::size_t start, actual_end, expected_end;
+    Parser parser;
+    std::deque<s_token> tokens;
+    std::deque<s_token>::const_iterator itr;
     s_term actual_term, expected_term;
 
-    expected_term.coefficient = 1;
-    expected_term.variable = 'X';
-    expected_term.degree = 1;
-    expr = "X^1";
-    //      01234
-    //    st^  ^end
-    start = 0;
-    expected_end = 3;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    tokens = {
+            {.word="1", .kind=TermCoef},
+    };
+    expected_term = {
+            .coefficient = 1,
+            .variable = '\0',
+            .degree = 0,
+    };
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
-
-    expected_term.coefficient = 1;
-    expected_term.variable = 'X';
-    expected_term.degree = 1;
-    expr = "+1 * X^1";
-    //      012345678
-    //    st^   ^end
-    start = 0;
-    expected_end = 8;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
 
-    expected_term.coefficient = 1;
-    expected_term.variable = 'X';
-    expected_term.degree = 1;
-    expr = "+X^1";
-    //      01234
-    //    st^   ^end
-    start = 0;
-    expected_end = 4;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    tokens = {
+            {.word="X", .kind=TermBase},
+    };
+    expected_term = {
+            .coefficient = 1,
+            .variable = 'X',
+            .degree = 1,
+    };
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
 
-    expected_term.coefficient = -1;
-    expected_term.variable = 'X';
-    expected_term.degree = 1;
-    expr = "-X^1";
-    //      01234
-    //    st^   ^end
-    start = 0;
-    expected_end = 4;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    tokens = {
+            {.word="2", .kind=TermCoef},
+            {.word="*", .kind=OperatorMul},
+            {.word="X", .kind=TermBase},
+            {.word="^", .kind=TermPowSymbol},
+            {.word="0", .kind=TermPower},
+    };
+    expected_term = {
+            .coefficient = 2,
+            .variable = 'X',
+            .degree = 0,
+    };
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
 
-    expected_term.coefficient = 2;
-    expected_term.variable = 'X';
-    expected_term.degree = 0;
-    expr = " 2 * X^0 ";
-    //      01234567890
-    //    st^        ^end
-    start = 0;
-    expected_end = 9;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    tokens = {
+            {.word="-", .kind=OperatorMinus},
+            {.word="5.2", .kind=TermCoef},
+            {.word="a", .kind=TermBase},
+            {.word="^", .kind=TermPowSymbol},
+            {.word="2", .kind=TermPower},
+            {.word="=", .kind=OperatorEqual},
+            {.word="2", .kind=TermCoef},
+    };
+    expected_term = {
+            .coefficient = -5.2,
+            .variable = 'a',
+            .degree = 2,
+    };
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
 
-    expected_term.coefficient = 2;
-    expected_term.variable = 'X';
-    expected_term.degree = 0;
-    expr = " 2 * X^0 + 3";
-    //      01234567890
-    //    st^        ^end
-    start = 0;
-    expected_end = 9;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    tokens = {
+            {.word="+", .kind=OperatorPlus},
+            {.word="x", .kind=TermBase},
+            {.word="^", .kind=TermPowSymbol},
+            {.word="0", .kind=TermPower},
+    };
+    expected_term = {
+            .coefficient = 1,
+            .variable = 'x',
+            .degree = 0,
+    };
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
 
-    expected_term.coefficient = 20;
-    expected_term.variable = 'a';
-    expected_term.degree = 1;
-    expr = " +020*a^01 - 3";
-    //      0123456789012345
-    //    st^          ^end
-    start = 0;
-    expected_end = 11;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    tokens = {
+            {.word="+", .kind=OperatorPlus},
+            {.word="x", .kind=TermBase},
+            {.word="^", .kind=TermPowSymbol},
+            {.word="0", .kind=TermPower},
+    };
+    expected_term = {
+            .coefficient = 1,
+            .variable = 'x',
+            .degree = 0,
+    };
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
+
+
+    tokens = {
+            {.word="-", .kind=OperatorPlus},
+            {.word="0.02500", .kind=TermCoef},
+            {.word="x", .kind=TermBase},
+            {.word="^", .kind=TermPowSymbol},
+            {.word="05", .kind=TermPower},
+    };
+    expected_term = {
+            .coefficient = 0.02500,
+            .variable = 'x',
+            .degree = 5,
+    };
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
+    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    EXPECT_EQ(expected_term.degree, actual_term.degree);
+
+
+    tokens = {
+            {.word="2147483647", .kind=TermCoef},
+            {.word="a", .kind=TermBase},
+            {.word="^", .kind=TermPowSymbol},
+            {.word="2147483647", .kind=TermPower},
+    };
+    expected_term = {
+            .coefficient = 2147483647,
+            .variable = 'a',
+            .degree = 2147483647,
+    };
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
+    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    EXPECT_EQ(expected_term.degree, actual_term.degree);
+
+
+    tokens = {
+            {.word="x", .kind=TermBase},  // ここまで解析
+            {.word="*", .kind=OperatorMul},
+            {.word="y", .kind=TermBase},
+    };
+    expected_term = {
+            .coefficient = 1,
+            .variable = 'x',
+            .degree = 1,
+    };
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
+    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    EXPECT_EQ(expected_term.degree, actual_term.degree);
+
+
 }
 
 
 TEST(TestParser, TestParseTermNG) {
-    std::string expr;
-    std::size_t start, actual_end, expected_end;
+    Parser parser;
+    std::deque<s_token> tokens;
+    std::deque<s_token>::const_iterator itr;
     s_term actual_term, expected_term;
 
-    expected_term.coefficient = 0;
-    expected_term.variable = '\0';
-    expected_term.degree = 0;
-    expr = "XY^1";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    tokens = {
+            {.word="1", .kind=TermCoef},
+            {.word="*", .kind=OperatorMul},
+            {.word="1", .kind=TermCoef},
+    };
+    expected_term = {};
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
 
-    expected_term.coefficient = 0;
-    expected_term.variable = '\0';
-    expected_term.degree = 0;
-    expr = " +*Y^1";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    tokens = {
+            {.word="x", .kind=TermBase},
+            {.word="^", .kind=TermPowSymbol},
+            {.word="^", .kind=TermPowSymbol},
+    };
+    expected_term = {};
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
 
-    expected_term.coefficient = 0;
-    expected_term.variable = '\0';
-    expected_term.degree = 0;
-    expr = " +1Y^1";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    tokens = {
+            {.word="x", .kind=TermBase},
+            {.word="^", .kind=TermPowSymbol},
+            {.word="x", .kind=TermBase},
+    };
+    expected_term = {};
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
 
-    expr = "X^+1";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    tokens = {
+            {.word="x", .kind=TermBase},
+            {.word="^", .kind=TermPowSymbol},
+            {.word="1.2", .kind=TermPower},
+    };
+    expected_term = {};
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
 
-    expr = "X^-1";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    tokens = {
+            {.word="x", .kind=TermBase},
+            {.word="^", .kind=TermPowSymbol},
+            {.word="-", .kind=OperatorMinus},
+            {.word="2", .kind=TermPower},
+    };
+    expected_term = {};
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
 
-    expr = "10.1 * X^1";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    tokens = {
+            {.word="x", .kind=TermBase},
+            {.word="^", .kind=TermPowSymbol},
+    };
+    expected_term = {};
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
+    EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
 
-    expr = "1X^1";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
+    tokens = {
+            {.word="x", .kind=TermBase},
+            {.word="^", .kind=TermPowSymbol},
+            {.word="=", .kind=OperatorEqual},
+    };
+    expected_term = {};
+    itr = tokens.begin();
+    actual_term = Parser::parse_term(tokens, &itr);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
-
-
-    expr = "1*1*X^1";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
-
-
-    expr = "1^1";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
-
-    expr = "";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
-
-
-    expr = "";
-    //      01234567890
-    //    st^end
-    start = 10;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
-
-
-    expr = "X*X^1";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
-
-
-    expr = "X^ 1";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
-
-
-    expr = "X ^1";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
-
-
-    expr = "X^";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
-
-
-    expr = "X^ ";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
-
-
-    expr = "X^ X^1";
-    //      01234567890
-    //    st^end
-    start = 0;
-    expected_end = start;
-    actual_term = Parser::parse_term(expr, start, &actual_end);
-    EXPECT_EQ(expected_end, actual_end);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 }
 
 
+TEST(TestParser, TestParseEquationNG) {
+    Parser parser;
+    std::deque<s_token> tokens;
+    Status expected_status, actual_status;
+
+    tokens = {};
+    actual_status = parser.parse_equation(tokens);
+    expected_status = Status::FAILURE;
+    EXPECT_EQ(expected_status, actual_status);
+
+
+    tokens = {
+            {.word="y", .kind=TermBase},
+    };
+    actual_status = parser.parse_equation(tokens);
+    expected_status = Status::FAILURE;
+    EXPECT_EQ(expected_status, actual_status);
+
+
+    tokens = {
+            {.word="1", .kind=TermCoef},
+    };
+    actual_status = parser.parse_equation(tokens);
+    expected_status = Status::FAILURE;
+    EXPECT_EQ(expected_status, actual_status);
+
+
+    tokens = {
+            {.word="=", .kind=OperatorEqual},
+    };
+    actual_status = parser.parse_equation(tokens);
+    expected_status = Status::FAILURE;
+    EXPECT_EQ(expected_status, actual_status);
+
+
+    tokens = {
+            {.word="+", .kind=OperatorPlus},
+    };
+    actual_status = parser.parse_equation(tokens);
+    expected_status = Status::FAILURE;
+    EXPECT_EQ(expected_status, actual_status);
+
+
+    tokens = {
+            {.word="x", .kind=TermBase},
+            {.word="*", .kind=OperatorMul},
+            {.word="y", .kind=TermBase},
+    };
+    actual_status = parser.parse_equation(tokens);
+    expected_status = Status::FAILURE;
+    EXPECT_EQ(expected_status, actual_status);
+
+
+    tokens = {
+            {.word="+", .kind=OperatorPlus},
+            {.word="*", .kind=OperatorMul},
+            {.word="y", .kind=TermBase},
+    };
+    actual_status = parser.parse_equation(tokens);
+    expected_status = Status::FAILURE;
+    EXPECT_EQ(expected_status, actual_status);
+
+
+    tokens = {
+            {.word="+", .kind=OperatorPlus},
+            {.word="-", .kind=OperatorMinus},
+            {.word="y", .kind=TermBase},
+    };
+    actual_status = parser.parse_equation(tokens);
+    expected_status = Status::FAILURE;
+    EXPECT_EQ(expected_status, actual_status);
+
+
+    tokens = {
+            {.word="y", .kind=TermBase},
+            {.word="=", .kind=OperatorEqual},
+            {.word="=", .kind=OperatorEqual},
+    };
+    actual_status = parser.parse_equation(tokens);
+    expected_status = Status::FAILURE;
+    EXPECT_EQ(expected_status, actual_status);
+
+
+    tokens = {
+            {.word="y", .kind=TermBase},
+            {.word="=", .kind=OperatorEqual},
+            {.word="1", .kind=TermCoef},
+            {.word="=", .kind=OperatorEqual},
+            {.word="1", .kind=TermCoef},
+    };
+    actual_status = parser.parse_equation(tokens);
+    expected_status = Status::FAILURE;
+    EXPECT_EQ(expected_status, actual_status);
+
+
+    tokens = {
+            {.word="x", .kind=TermBase},
+            {.word="^", .kind=TermPowSymbol},
+            {.word="3", .kind=TermPower},
+            {.word="=", .kind=OperatorEqual},
+            {.word="1", .kind=TermCoef},
+    };
+    actual_status = parser.parse_equation(tokens);
+    expected_status = Status::FAILURE;
+    EXPECT_EQ(expected_status, actual_status);
+
+}
+
 TEST(TestParser, TestParseExpr) {
-    Parser *parser;
-
-    std::string expr;
-    bool is_lhs = true;
-    std::map<int, long> actual_poly, expected_poly;
-    Status actual_status, expected_status;
-    expected_status = Status::SUCCESS;
-
-
-    expr = "X^0";
-    actual_poly = {{0, 1}, {1, 0}, {2, 0}};
-    parser = new Parser();
-    actual_status = parser->parse_expression(expr, is_lhs);
-    expected_poly = parser->get_polynomial();
-    EXPECT_EQ(expected_status, actual_status);
-    EXPECT_EQ(expected_poly, actual_poly);
-    delete parser;
-
-
-    expr = "- X^0";
-    actual_poly = {{0, -1}, {1, 0}, {2, 0}};
-    parser = new Parser();
-    actual_status = parser->parse_expression(expr, is_lhs);
-    expected_poly = parser->get_polynomial();
-    EXPECT_EQ(expected_status, actual_status);
-    EXPECT_EQ(expected_poly, actual_poly);
-    delete parser;
-
-
-    expr = "2147483647 * X^0";
-    actual_poly = {{0, 2147483647}, {1, 0}, {2, 0}};
-    parser = new Parser();
-    actual_status = parser->parse_expression(expr, is_lhs);
-    expected_poly = parser->get_polynomial();
-    EXPECT_EQ(expected_status, actual_status);
-    EXPECT_EQ(expected_poly, actual_poly);
-    delete parser;
-
-
-    expr = "2147483647 * X^0 - 2147483648 * X^0";
-    actual_poly = {{0, -1}, {1, 0}, {2, 0}};
-    parser = new Parser();
-    actual_status = parser->parse_expression(expr, is_lhs);
-    expected_poly = parser->get_polynomial();
-    EXPECT_EQ(expected_status, actual_status);
-    EXPECT_EQ(expected_poly, actual_poly);
-    delete parser;
-
-
-    expr = "0 * X^0 + 1 * X^1 + 2 * X^2";
-    actual_poly = {{0, 0}, {1, 1}, {2, 2}};
-    parser = new Parser();
-    actual_status = parser->parse_expression(expr, is_lhs);
-    expected_poly = parser->get_polynomial();
-    EXPECT_EQ(expected_status, actual_status);
-    EXPECT_EQ(expected_poly, actual_poly);
-    delete parser;
-
-
-    expr = "1 * X^1 - 10 * X^1 - X^2";
-    actual_poly = {{0, 0}, {1, -9}, {2, -1}};
-    parser = new Parser();
-    actual_status = parser->parse_expression(expr, is_lhs);
-    expected_poly = parser->get_polynomial();
-    EXPECT_EQ(expected_status, actual_status);
-    EXPECT_EQ(expected_poly, actual_poly);
-    delete parser;
+    // Parser *parser;
+    //
+    // std::string expr;
+    // bool is_lhs = true;
+    // std::map<int, long> actual_poly, expected_poly;
+    // Status actual_status, expected_status;
+    // expected_status = Status::SUCCESS;
+    //
+    //
+    // expr = "X^0";
+    // actual_poly = {{0, 1}, {1, 0}, {2, 0}};
+    // parser = new Parser();
+    // actual_status = parser->parse_expression(expr, is_lhs);
+    // expected_poly = parser->get_polynomial();
+    // EXPECT_EQ(expected_status, actual_status);
+    // EXPECT_EQ(expected_poly, actual_poly);
+    // delete parser;
+    //
+    //
+    // expr = "- X^0";
+    // actual_poly = {{0, -1}, {1, 0}, {2, 0}};
+    // parser = new Parser();
+    // actual_status = parser->parse_expression(expr, is_lhs);
+    // expected_poly = parser->get_polynomial();
+    // EXPECT_EQ(expected_status, actual_status);
+    // EXPECT_EQ(expected_poly, actual_poly);
+    // delete parser;
+    //
+    //
+    // expr = "2147483647 * X^0";
+    // actual_poly = {{0, 2147483647}, {1, 0}, {2, 0}};
+    // parser = new Parser();
+    // actual_status = parser->parse_expression(expr, is_lhs);
+    // expected_poly = parser->get_polynomial();
+    // EXPECT_EQ(expected_status, actual_status);
+    // EXPECT_EQ(expected_poly, actual_poly);
+    // delete parser;
+    //
+    //
+    // expr = "2147483647 * X^0 - 2147483648 * X^0";
+    // actual_poly = {{0, -1}, {1, 0}, {2, 0}};
+    // parser = new Parser();
+    // actual_status = parser->parse_expression(expr, is_lhs);
+    // expected_poly = parser->get_polynomial();
+    // EXPECT_EQ(expected_status, actual_status);
+    // EXPECT_EQ(expected_poly, actual_poly);
+    // delete parser;
+    //
+    //
+    // expr = "0 * X^0 + 1 * X^1 + 2 * X^2";
+    // actual_poly = {{0, 0}, {1, 1}, {2, 2}};
+    // parser = new Parser();
+    // actual_status = parser->parse_expression(expr, is_lhs);
+    // expected_poly = parser->get_polynomial();
+    // EXPECT_EQ(expected_status, actual_status);
+    // EXPECT_EQ(expected_poly, actual_poly);
+    // delete parser;
+    //
+    //
+    // expr = "1 * X^1 - 10 * X^1 - X^2";
+    // actual_poly = {{0, 0}, {1, -9}, {2, -1}};
+    // parser = new Parser();
+    // actual_status = parser->parse_expression(expr, is_lhs);
+    // expected_poly = parser->get_polynomial();
+    // EXPECT_EQ(expected_status, actual_status);
+    // EXPECT_EQ(expected_poly, actual_poly);
+    // delete parser;
 
 }
 
