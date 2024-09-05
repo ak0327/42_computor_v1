@@ -1,6 +1,21 @@
 #include "Tokenizer.hpp"
 #include "gtest/gtest.h"
 
+void expect_eq_tokens(
+        const std::vector<s_token> &expected,
+        const std::vector<s_token> &actual,
+        std::size_t line) {
+    EXPECT_EQ(expected.size(), actual.size());
+    if (expected.size() != actual.size()) {
+        FAIL();
+    }
+    for (std::size_t i = 0; i < expected.size(); ++i) {
+        EXPECT_EQ(expected[i].word, actual[i].word) << "  at L:" << line << std::endl;
+        EXPECT_EQ(expected[i].kind, actual[i].kind) << "  at L:" << line << std::endl;
+    }
+}
+
+
 TEST(TestParser, SplitByDelimiterString) {
     Tokenizer tokenizer;
     std::string equation;
@@ -133,6 +148,35 @@ TEST(TestParser, SplitEquation) {
     std::string equation;
     std::deque<std::string> actual_split, expected_split;
 
+    equation = "";
+    expected_split = {};
+    actual_split = tokenizer.split_equation(equation);
+    EXPECT_EQ(actual_split, expected_split);
+
+    equation = "     ";
+    expected_split = {};
+    actual_split = tokenizer.split_equation(equation);
+    EXPECT_EQ(actual_split, expected_split);
+
+
+    equation = "1";
+    expected_split = {"1"};
+    actual_split = tokenizer.split_equation(equation);
+    EXPECT_EQ(actual_split, expected_split);
+
+
+    equation = "+-=*^";
+    expected_split = {"+", "-", "=", "*", "^"};
+    actual_split = tokenizer.split_equation(equation);
+    EXPECT_EQ(actual_split, expected_split);
+
+
+    equation = " 1 + 2 = 3 ";
+    expected_split = {"1", "+", "2", "=", "3"};
+    actual_split = tokenizer.split_equation(equation);
+    EXPECT_EQ(actual_split, expected_split);
+
+
     equation = "  X^0 + X^1 +X^2    = 0   ";
     expected_split = {"X", "^", "0", "+", "X", "^", "1", "+", "X", "^", "2", "=",  "0"};
     actual_split = tokenizer.split_equation(equation);
@@ -143,5 +187,4 @@ TEST(TestParser, SplitEquation) {
     expected_split = { "X", "^", "0", "+", "X", "^", "1", "+", "X", "^", "+", "2", "=", "0", "=", "0", "=", "+", "+", "X", "^", "123" };
     actual_split = tokenizer.split_equation(equation);
     EXPECT_EQ(actual_split, expected_split);
-
 }
