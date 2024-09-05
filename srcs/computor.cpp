@@ -1,4 +1,6 @@
 #include "computor.hpp"
+#include <deque>
+#include <map>
 #include "Tokenizer.hpp"
 #include "Parser.hpp"
 

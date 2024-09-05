@@ -1,5 +1,5 @@
-#include "computor.hpp"
 #include <iostream>
+#include "computor.hpp"
 
 int main(int argc, char **argv) {
     if (argc != 2) {

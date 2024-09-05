@@ -41,7 +41,8 @@ Status Tokenizer::tagging(const std::deque<std::string> &split) noexcept(true) {
     return Status::SUCCESS;
 }
 
-void Tokenizer::init_tokens(const std::deque<std::string> &split) noexcept(true) {
+void Tokenizer::init_tokens(
+        const std::deque<std::string> &split) noexcept(true) {
     this->tokens_ = {};
 
     for (auto itr = split.cbegin(); itr != split.cend(); ++itr) {
@@ -72,28 +73,28 @@ void Tokenizer::tagging_operators() noexcept(true) {
 void Tokenizer::tagging_terms() noexcept(true) {
     // aX^b
     // ^^ ^ tagging
-    TokenKind prev_kind, next_kind;
-    prev_kind = None;
-    next_kind = None;
+    TokenKind prev, next;
+    prev = None;
+    next = None;
     for (auto itr = this->tokens_.begin(); itr != this->tokens_.end(); ++itr) {
         auto &token = *itr;
         auto next_it = std::next(itr);
         if (next_it != this->tokens_.end()) {
             auto &next_token = *next_it;
-            next_kind = next_token.kind;
+            next = next_token.kind;
         }
 
         if (token.kind == None) {
             if (Tokenizer::is_term_base(token.word)) {
                 token.kind = TermBase;
-            } else if (Tokenizer::is_term_coef(token.word, prev_kind, next_kind)) {
+            } else if (Tokenizer::is_term_coef(token.word, prev, next)) {
                 token.kind = TermCoef;
-            } else if (Tokenizer::is_term_pow(token.word, prev_kind, next_kind)) {
+            } else if (Tokenizer::is_term_pow(token.word, prev, next)) {
                 token.kind = TermPower;
             }
         }
-        prev_kind = token.kind;
-        next_kind = None;
+        prev = token.kind;
+        next = None;
     }
 }
 
@@ -101,7 +102,10 @@ bool Tokenizer::is_term_base(const std::string &str) noexcept(true) {
     return (str.length() == 1 && std::isalpha(str[0]));
 }
 
-bool Tokenizer::is_term_coef(const std::string &str, TokenKind prev_kind, TokenKind next_kind) noexcept(true) {
+bool Tokenizer::is_term_coef(
+        const std::string &str,
+        TokenKind prev_kind,
+        TokenKind next_kind) noexcept(true) {
     if (!Tokenizer::is_num(str)) {
         return false;
     }
@@ -114,7 +118,10 @@ bool Tokenizer::is_term_coef(const std::string &str, TokenKind prev_kind, TokenK
     return true;
 }
 
-bool Tokenizer::is_term_pow(const std::string &str, TokenKind prev_kind, TokenKind next_kind) noexcept(true) {
+bool Tokenizer::is_term_pow(
+        const std::string &str,
+        TokenKind prev_kind,
+        TokenKind next_kind) noexcept(true) {
     if (!Tokenizer::is_num(str)) {
         return false;
     }
@@ -165,7 +172,7 @@ bool Tokenizer::is_num(const std::string &str) noexcept(true) {
 Status Tokenizer::validate_tokens() const noexcept(true) {
     std::string prev_word;
 
-    for (auto &token: this->tokens_) {
+    for (auto &token : this->tokens_) {
         if (token.kind == None) {
             std::cerr << "[Error] unexpected token [" << token.word << "]";
             if (!prev_word.empty()) {
@@ -180,10 +187,11 @@ Status Tokenizer::validate_tokens() const noexcept(true) {
 }
 
 // kind none -> split [coef][base]
-std::deque<s_token> Tokenizer::split_term_coef_and_base(const std::deque<s_token> &tokens) noexcept(true) {
+std::deque<s_token> Tokenizer::split_term_coef_and_base(
+        const std::deque<s_token> &tokens) noexcept(true) {
     std::deque<s_token> split, new_tokens;
 
-    for (auto &token: tokens) {
+    for (auto &token : tokens) {
         new_tokens = {};
 
         std::string word;
@@ -212,7 +220,8 @@ std::deque<s_token> Tokenizer::split_term_coef_and_base(const std::deque<s_token
     return split;
 }
 
-std::deque<std::string> Tokenizer::split_equation(const std::string &equation) noexcept(true) {
+std::deque<std::string> Tokenizer::split_equation(
+        const std::string &equation) noexcept(true) {
     std::deque<std::string> split;
 
     // equation

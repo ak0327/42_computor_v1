@@ -1,8 +1,8 @@
 #pragma once
 
-#include "computor.hpp"
 #include <string>
 #include <deque>
+#include "computor.hpp"
 
 enum TokenKind {
     None = 0,
@@ -32,8 +32,10 @@ class Tokenizer {
     void tagging_operators() noexcept(true);
     void tagging_terms() noexcept(true);
     Status validate_tokens() const noexcept(true);
-    static std::deque<s_token> split_term_coef_and_base(const std::deque<s_token> &tokens) noexcept(true);
-    static std::deque<std::string> split_equation(const std::string &equation) noexcept(true);
+    static std::deque<s_token> split_term_coef_and_base(
+            const std::deque<s_token> &tokens) noexcept(true);
+    static std::deque<std::string> split_equation(
+            const std::string &equation) noexcept(true);
 
     static std::deque<std::string> split_by_delimiter(
             const std::string &src,
@@ -46,8 +48,14 @@ class Tokenizer {
             bool keep_delimiter = false) noexcept(true);
 
     static bool is_term_base(const std::string &str) noexcept(true);
-    static bool is_term_coef(const std::string &str, TokenKind prev_kind, TokenKind next_kind) noexcept(true);
-    static bool is_term_pow(const std::string &str, TokenKind prev_kind, TokenKind next_kind) noexcept(true);
+    static bool is_term_coef(
+            const std::string &str,
+            TokenKind prev_kind,
+            TokenKind next_kind) noexcept(true);
+    static bool is_term_pow(
+            const std::string &str,
+            TokenKind prev_kind,
+            TokenKind next_kind) noexcept(true);
 
     static bool is_num(const std::string &str) noexcept(true);
 
@@ -59,5 +67,4 @@ class Tokenizer {
     // copy invalid
     Tokenizer &operator=(const Tokenizer &rhs);
     explicit Tokenizer(const Tokenizer &other);
-
 };

@@ -1,5 +1,6 @@
 #include "Parser.hpp"
 #include <iostream>
+#include <deque>
 
 Parser::Parser() : polynomial_(), variable_() {
     for (int i = 0; i <= this->max_degree_; ++i) {
@@ -10,7 +11,8 @@ Parser::Parser() : polynomial_(), variable_() {
 Parser::~Parser() {}
 
 //  A0 * X^0 + A1 * X^1 + A2 * X^2 = 0
-Status Parser::parse_equation(const std::deque<s_token> &tokens) noexcept(true) {
+Status Parser::parse_equation(
+        const std::deque<s_token> &tokens) noexcept(true) {
     // token -> term
     if (tokens.empty()) {
         return Status::FAILURE;
@@ -96,7 +98,6 @@ void Parser::parse_expression(
         const std::deque<s_token> &tokens,
         std::deque<s_token>::const_iterator *itr,
         bool is_lhs) noexcept(true) {
-
     if (*itr == tokens.end() || (*itr)->kind == OperatorEqual) {
         return;
     }
@@ -111,7 +112,8 @@ void Parser::parse_expression(
             return;
         }
 
-        if (*itr != tokens.end() && ((*itr)->kind == OperatorPlus || (*itr)->kind == OperatorMinus)) {
+        if (*itr != tokens.end()
+        && ((*itr)->kind == OperatorPlus || (*itr)->kind == OperatorMinus)) {
             continue;
         }
         break;
@@ -259,6 +261,8 @@ void Parser::skip_sp(const std::string &str,
 }
 
 std::ostream &operator<<(std::ostream &out, const s_term &term) {
-    out << "term [ coef: " << term.coefficient << ", var: " << term.variable << ", degree: " << term.degree << " ]";
+    out << "term [ coef: " << term.coefficient
+    << ", var: " << term.variable
+    << ", degree: " << term.degree << " ]";
     return out;
 }
