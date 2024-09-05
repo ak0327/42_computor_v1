@@ -1,4 +1,5 @@
 #include "Tokenizer.hpp"
+#include <iostream>
 
 Tokenizer::Tokenizer() {}
 
@@ -149,8 +150,32 @@ bool Tokenizer::is_num(const std::string &str) noexcept(true) {
     }
 }
 
+/*
+ equation    = 1*expression "=" 1*expression
+ expression  = 1*[ *(SP) term *(SP) ]
+ term        = [ *(SP) operator *(SP) ] [ coefficient ( *(SP) "*" *(SP) ) ] ALPHA "^" 1*( DIGIT )
+ operator    = "+" / "-"
+ coefficient = integer / decimal
+ decimal     = 1*DIGIT "." 1*DIGIT
+ integer     = 1*DIGIT
+ ALPHA       = A-Z / a-z
+ DIGIT       = 0-9
+ SP          = " "
+ */
 Status Tokenizer::validate_tokens() const noexcept(true) {
-    // todo
+    std::string prev_word;
+
+    for (auto &token: this->tokens_) {
+        if (token.kind == None) {
+            std::cerr << "[Error] unexpected token [" << token.word << "]";
+            if (!prev_word.empty()) {
+                std::cerr << ", near " << prev_word;
+            }
+            std::cerr << std::endl;
+            return Status::FAILURE;
+        }
+        prev_word = token.word;
+    }
     return Status::SUCCESS;
 }
 
