@@ -25,13 +25,16 @@ enable_testing()
 include_directories(
         srcs
         srcs/Parser
+        srcs/Tokenizer
         tests
 )
 
 ## srcs ------------------------------------------------------------------------
 # test code
 set (computor_srcs
+        srcs/computor.cpp
         srcs/Parser/Parser.cpp
+        srcs/Tokenizer/Tokenizer.cpp
 )
 
 
@@ -39,6 +42,7 @@ set (computor_srcs
 set (utest_srcs
         tests/utest/TestTmp.cpp
         tests/utest/TestParser.cpp
+        tests/utest/TestTokenizer.cpp
 )
 
 

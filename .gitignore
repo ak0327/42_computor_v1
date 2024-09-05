@@ -10,6 +10,7 @@
 # srcs
 !srcs
 !srcs/Parser
+!srcs/Tokenizer
 
 !srcs/**/*.cpp
 !srcs/**/*.hpp

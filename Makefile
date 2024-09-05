@@ -5,14 +5,17 @@ CXXFLAGS	= -std=c++20 -Wall -Wextra -Werror -MMD -MP -pedantic
 
 SRCS_DIR	= srcs
 SRCS		= main.cpp \
-			  Parser/Parser.cpp
+			  computor.cpp \
+			  Parser/Parser.cpp \
+			  Tokenizer/Tokenizer.cpp
 
 OBJS_DIR	= objs
 OBJS		= $(SRCS:%.cpp=$(OBJS_DIR)/%.o)
 DEPS		= $(OBJS:%.o=%.d)
 
 INCL_DIR 	= srcs \
-			  srcs/Parser
+			  srcs/Parser \
+			  srcs/Tokenizer
 INCLUDES	= $(addprefix -I, $(INCL_DIR))
 
 .PHONY	: all
