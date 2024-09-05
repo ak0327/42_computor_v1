@@ -5,10 +5,15 @@
 #include <deque>
 
 enum TokenKind {
-    Coefficient,    // 係数
-    Term,           // x^n
-    Operator,       // + or -
-    Equal,          // =
+    None = 0,
+    TermCoef,       // aX^b a
+    TermBase,       // aX^b X
+    TermPowSymbol,  // aX^b ^
+    TermPower,      // aX^b b
+    OperatorPlus,   // +
+    OperatorMinus,  // -
+    OperatorMul,    // *
+    OperatorEqual,  // =
 };
 
 struct s_token {
@@ -23,8 +28,11 @@ class Tokenizer {
 
     Status tokenize(const std::string &equation) noexcept(true);
     Status tagging(const std::deque<std::string> &split) noexcept(true);
+    void init_tokens(const std::deque<std::string> &split) noexcept(true);
+    void tagging_operators() noexcept(true);
+    void tagging_terms() noexcept(true);
     Status validate_tokens() const noexcept(true);
-
+    static std::deque<s_token> split_term_coef_and_base(const std::deque<s_token> &tokens) noexcept(true);
     static std::deque<std::string> split_equation(const std::string &equation) noexcept(true);
 
     static std::deque<std::string> split_by_delimiter(
@@ -37,10 +45,16 @@ class Tokenizer {
             char delimiter,
             bool keep_delimiter = false) noexcept(true);
 
-    std::vector<s_token> tokens() noexcept(true);
+    static bool is_term_base(const std::string &str) noexcept(true);
+    static bool is_term_coef(const std::string &str, TokenKind prev_kind, TokenKind next_kind) noexcept(true);
+    static bool is_term_pow(const std::string &str, TokenKind prev_kind, TokenKind next_kind) noexcept(true);
+
+    static bool is_num(const std::string &str) noexcept(true);
+
+    std::deque<s_token> tokens() noexcept(true);
 
  private:
-    std::vector<s_token> tokens_;
+    std::deque<s_token> tokens_;
 
     // copy invalid
     Tokenizer &operator=(const Tokenizer &rhs);
