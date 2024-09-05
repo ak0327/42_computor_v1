@@ -9,7 +9,11 @@
 
 # srcs
 !srcs
-!srcs/main.cpp
+!srcs/Parser
+!srcs/Tokenizer
+
+!srcs/**/*.cpp
+!srcs/**/*.hpp
 
 # tests
 !tests

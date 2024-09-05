@@ -4,19 +4,25 @@ CXX			= c++
 CXXFLAGS	= -std=c++20 -Wall -Wextra -Werror -MMD -MP -pedantic
 
 SRCS_DIR	= srcs
-SRCS		= main.cpp
+SRCS		= main.cpp \
+			  computor.cpp \
+			  Parser/Parser.cpp \
+			  Tokenizer/Tokenizer.cpp
 
 OBJS_DIR	= objs
 OBJS		= $(SRCS:%.cpp=$(OBJS_DIR)/%.o)
 DEPS		= $(OBJS:%.o=%.d)
 
-INCLUDES	= -I.
+INCL_DIR 	= srcs \
+			  srcs/Parser \
+			  srcs/Tokenizer
+INCLUDES	= $(addprefix -I, $(INCL_DIR))
 
 .PHONY	: all
 all		: $(NAME)
 
 $(NAME)	: $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $^
 
 $(OBJS_DIR)/%.o	: $(SRCS_DIR)/%.cpp
 	@mkdir -p $(OBJS_DIR)
@@ -44,5 +50,6 @@ utest	:
 	cmake -S . -B build
 	cmake --build build
 	./build/utest
+	#./build/utest --gtest_filter=TestParser.TestParseEquation*
 
 -include $(DEPS)

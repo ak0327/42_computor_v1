@@ -1,4 +1,5 @@
 #include <iostream>
+#include "computor.hpp"
 
 int main(int argc, char **argv) {
     if (argc != 2) {
@@ -7,5 +8,6 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
     std::cout << "arg: [" << argv[1] << "]" << std::endl;
-    return EXIT_SUCCESS;
+    std::string equation = argv[1];
+    return Computor::calc_equation(equation);
 }
