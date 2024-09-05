@@ -13,3 +13,12 @@ extern const char OP_MINUS;
 extern const char OP_MUL;
 extern const char OP_EQUAL;
 extern const char OP_POW;
+
+
+namespace Computor {
+
+
+int calc_equation(const std::string &equation) noexcept(true);
+
+
+}  // namespace Computor
