@@ -203,8 +203,8 @@ std::deque<s_token> Tokenizer::split_term_coef_and_base(
             if (pos < token.word.length()) {
                 std::string coef = token.word.substr(0, pos);
                 std::string base = token.word.substr(pos);
-                s_token coef_token = {.word = coef};
-                s_token base_token = {.word = base};
+                s_token coef_token = {}; coef_token.word = coef;
+                s_token base_token = {}; base_token.word = base;
                 new_tokens.push_back(coef_token);
                 new_tokens.push_back(base_token);
             }
