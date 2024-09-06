@@ -9,6 +9,7 @@
 
 # srcs
 !srcs
+!srcs/Calculator
 !srcs/Parser
 !srcs/Tokenizer
 

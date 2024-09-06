@@ -6,6 +6,7 @@ CXXFLAGS	= -std=c++20 -Wall -Wextra -Werror -MMD -MP -pedantic
 SRCS_DIR	= srcs
 SRCS		= main.cpp \
 			  computor.cpp \
+			  Calculator/Calculator.cpp \
 			  Parser/Parser.cpp \
 			  Tokenizer/Tokenizer.cpp
 
@@ -14,6 +15,7 @@ OBJS		= $(SRCS:%.cpp=$(OBJS_DIR)/%.o)
 DEPS		= $(OBJS:%.o=%.d)
 
 INCL_DIR 	= srcs \
+			  srcs/Calculator \
 			  srcs/Parser \
 			  srcs/Tokenizer
 INCLUDES	= $(addprefix -I, $(INCL_DIR))
@@ -22,11 +24,11 @@ INCLUDES	= $(addprefix -I, $(INCL_DIR))
 all		: $(NAME)
 
 $(NAME)	: $(OBJS)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
 $(OBJS_DIR)/%.o	: $(SRCS_DIR)/%.cpp
-	@mkdir -p $(OBJS_DIR)
-	$(CXX) $(CXXFLAGS) -o $@ -c $<
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ -c $<
 
 .PHONY	: clean
 clean	:

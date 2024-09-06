@@ -1,6 +1,7 @@
 #include "computor.hpp"
 #include <deque>
 #include <map>
+#include "Calculator.hpp"
 #include "Tokenizer.hpp"
 #include "Parser.hpp"
 
@@ -25,9 +26,8 @@ int Computor::calc_equation(const std::string &equation) noexcept(true) {
     }
     std::map<int, double> polynomial = parser.polynomial();
 
-    // display calc info
-
-    // calc
+    Calculator calculator(polynomial);
+    calculator.solve_quadratic_equation();
 
     return EXIT_SUCCESS;
 }

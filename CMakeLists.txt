@@ -24,6 +24,7 @@ enable_testing()
 ## includes --------------------------------------------------------------------
 include_directories(
         srcs
+        srcs/Calculator
         srcs/Parser
         srcs/Tokenizer
         tests
@@ -33,6 +34,7 @@ include_directories(
 # test code
 set (computor_srcs
         srcs/computor.cpp
+        srcs/Calculator/Calculator.cpp
         srcs/Parser/Parser.cpp
         srcs/Tokenizer/Tokenizer.cpp
 )
