@@ -24,6 +24,7 @@ int Computor::calc_equation(const std::string &equation) noexcept(true) {
     if (parser.parse_equation(tokens) == Status::FAILURE) {
         return EXIT_FAILURE;
     }
+    parser.display_reduced_form();
     std::map<int, double> polynomial = parser.polynomial();
 
     Calculator calculator(polynomial);
