@@ -99,6 +99,8 @@ Status Parser::set_variable(char var, int degree) {
     return Status::FAILURE;
 }
 
+// todo degreeの判定はあとで
+// var
 Status Parser::set_valid_term(const s_term &term, bool is_lhs) noexcept(true) {
     int degree = term.degree;
     char var = term.variable;
@@ -259,28 +261,42 @@ s_term Parser::parse_term(
 }
 
 void Parser::display_reduced_form() const noexcept(true) {
+    std::cout << "Reduced form     : " << Parser::reduced_form() << std::endl;
+}
+
+
+std::string Parser::reduced_form() const noexcept(true) {
+    return Parser::reduced_form(this->polynomial_);
+}
+
+
+std::string Parser::reduced_form(const std::map<int, double> &polynomial) const noexcept(true) {
     std::ostringstream reduced_form;
     bool is_first_term = true;
 
-    for (auto itr = this->polynomial_.crbegin(); itr != this->polynomial_.crend(); ++itr) {
+    for (auto itr = polynomial.crbegin(); itr != polynomial.crend(); ++itr) {
         int pow = itr->first;
         double coef = itr->second;
         std::string sign = "";
 
-        if (coef == 0.0) { continue; }
+        if (coef == 0.0 && 0 < pow) { continue; }
         if (coef < 0) {
             sign = "- ";
             coef *= -1;
         } else if (0 < coef && !is_first_term) {
             sign = "+ ";
         }
-        reduced_form << sign << coef << " * " << this->variable_ << "^" << pow << " ";
+
+        reduced_form << sign << coef;
+        if (0 < pow) {
+            reduced_form << " * " << this->variable_ << "^" << pow;
+        }
+        reduced_form << " ";
 
         if (is_first_term) { is_first_term = false; }
     }
     reduced_form << "= 0";
-
-    std::cout << "Reduced form     : " << reduced_form.str() << std::endl;
+    return reduced_form.str();
 }
 
 void Parser::display_polynomial_degree() const noexcept(true) {
@@ -292,6 +308,14 @@ void Parser::display_polynomial_degree() const noexcept(true) {
     std::cout << "Polynomial degree: " << max_degree << std::endl;
 }
 
+void Parser::display_polynomial() const noexcept(true) {
+    for (auto itr = this->polynomial_.crbegin(); itr != this->polynomial_.crend(); ++itr) {
+        int pow = itr->first;
+        double coef = itr->second;
+
+        std::cout << "[" << pow << "]: " << coef << "" << std::endl;
+    }
+}
 
 std::map<int, double> Parser::polynomial() const noexcept(true) {
     return this->polynomial_;
