@@ -29,6 +29,5 @@ int Computor::calc_equation(const std::string &equation) noexcept(true) {
 
     Calculator calculator(polynomial);
     calculator.solve_quadratic_equation();
-
     return EXIT_SUCCESS;
 }
