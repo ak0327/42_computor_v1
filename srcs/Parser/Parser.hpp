@@ -23,6 +23,7 @@ class Parser {
             std::deque<s_token>::const_iterator *itr,
             bool is_lhs) noexcept(true);
     void display_reduced_form() const noexcept(true);
+    void display_polynomial_degree() const noexcept(true);
     std::map<int, double> polynomial() const noexcept(true);
 
     bool is_valid_degree(int degree) const noexcept(true);

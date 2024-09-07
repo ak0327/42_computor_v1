@@ -25,6 +25,7 @@ int Computor::calc_equation(const std::string &equation) noexcept(true) {
         return EXIT_FAILURE;
     }
     parser.display_reduced_form();
+    parser.display_polynomial_degree();
     std::map<int, double> polynomial = parser.polynomial();
 
     Calculator calculator(polynomial);

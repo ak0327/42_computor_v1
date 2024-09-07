@@ -254,6 +254,16 @@ void Parser::display_reduced_form() const noexcept(true) {
     std::cout << "Reduced form     : " << reduced_form.str() << std::endl;
 }
 
+void Parser::display_polynomial_degree() const noexcept(true) {
+    auto itr = this->polynomial_.crbegin();
+    if (itr == this->polynomial_.crend()) {
+        return;
+    }
+    int max_degree = itr->first;
+    std::cout << "Polynomial degree: " << max_degree << std::endl;
+}
+
+
 std::map<int, double> Parser::polynomial() const noexcept(true) {
     return this->polynomial_;
 }
