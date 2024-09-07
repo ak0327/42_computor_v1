@@ -5,9 +5,9 @@
 #include <deque>
 
 Parser::Parser() : polynomial_(), variable_() {
-    for (int i = 0; i <= this->max_degree_; ++i) {
-        this->polynomial_[i] = 0;
-    }
+    // for (int i = 0; i <= this->max_degree_; ++i) {
+    //     this->polynomial_[i] = 0;
+    // }
 }
 
 Parser::~Parser() {}
@@ -36,9 +36,38 @@ Status Parser::parse_equation(
     if (itr != tokens.end() || itr == itr_copy) {
         return Status::FAILURE;
     }
+
+    std::cout << "before: ";
+    Parser::display_reduced_form();
+    Parser::adjust_equation_sign();
+    // Parser::display_polynomial();
+    std::cout << "after : ";
+    Parser::display_reduced_form();
+    std::cout << std::endl;
     return Status::SUCCESS;
 }
 
+// 最大次元の係数を正とするよう符号を調整
+void Parser::adjust_equation_sign() noexcept(true) {
+    auto highest_degree_term = this->polynomial_.crbegin();
+    if (highest_degree_term == this->polynomial_.crend()) {
+        return;
+    }
+    for (auto itr = this->polynomial_.crbegin(); itr != this->polynomial_.crend(); ++itr) {
+        int pow = itr->first;
+        double coef = itr->second;
+
+        if (pow == 0 && coef < 0) { break; }
+        if (coef == 0.0) { continue; }
+        if (0 < coef) { return; }
+        break;
+    }
+
+    std::cout << " adjust sign -> *= -1" << std::endl;
+    for (auto &itr : this->polynomial_) {
+        itr.second *= -1;
+    }
+}
 
 bool Parser::is_valid_degree(int degree) const noexcept(true) {
     return (0 <= degree && degree <= this->max_degree_);

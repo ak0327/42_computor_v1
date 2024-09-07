@@ -475,9 +475,9 @@ TEST(TestParser, TestParseEquationByStringOK) {
 
     equation = "  -X^0 + 2X^1 - 100X^2    = 100   ";
     expected_poly = {
-            {0, -101},
-            {1, 2},
-            {2, -100},
+            {0, 101},
+            {1, -2},
+            {2, 100},
     };
     tokenizer_res = t.tokenize(equation);
     tokens = t.tokens();
@@ -508,9 +508,9 @@ TEST(TestParser, TestParseEquationByStringOK) {
 
     equation = "0 = X^0 + X^1 + X^2";
     expected_poly = {
-            {0, -1},
-            {1, -1},
-            {2, -1},
+            {0, 1},
+            {1, 1},
+            {2, 1},
     };
     tokenizer_res = t.tokenize(equation);
     tokens = t.tokens();
@@ -525,9 +525,9 @@ TEST(TestParser, TestParseEquationByStringOK) {
     // subject
     equation = "5 * X^0 + 4 * X^1 - 9.3 * X^2 = 1 * X^0";
     expected_poly = {
-            {0, 4},
-            {1, 4},
-            {2, -9.3},
+            {0, -4},
+            {1, -4},
+            {2, 9.3},
     };
     tokenizer_res = t.tokenize(equation);
     tokens = t.tokens();
@@ -543,7 +543,6 @@ TEST(TestParser, TestParseEquationByStringOK) {
     expected_poly = {
             {0, 1},
             {1, 4},
-            {2, 0},
     };
     tokenizer_res = t.tokenize(equation);
     tokens = t.tokens();
@@ -554,6 +553,52 @@ TEST(TestParser, TestParseEquationByStringOK) {
     EXPECT_EQ(Status::SUCCESS, tokenizer_res);
     EXPECT_EQ(Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
+
+
+    equation = "0 = 0";
+    expected_poly = {
+            {0, 0},
+    };
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    actual_poly = p->polynomial();
+    delete p;
+    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(expected_poly, actual_poly);
+
+
+    equation = "1 = 0";
+    expected_poly = {
+            {0, 1},
+    };
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    actual_poly = p->polynomial();
+    delete p;
+    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(expected_poly, actual_poly);
+
+
+    equation = "0 = 1";
+    expected_poly = {
+            {0, 1},
+    };
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    actual_poly = p->polynomial();
+    delete p;
+    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(expected_poly, actual_poly);
+
 }
 
 
