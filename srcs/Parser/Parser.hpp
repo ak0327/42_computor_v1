@@ -1,8 +1,9 @@
 #pragma once
 
 #include <deque>
-#include <string>
 #include <map>
+#include <string>
+#include <utility>
 #include "computor.hpp"
 #include "Tokenizer.hpp"
 
@@ -33,8 +34,8 @@ class Parser {
 
 
     void parse_expression(
-            const std::deque<s_token> &tokens,
             std::deque<s_token>::const_iterator *itr,
+            const std::deque<s_token>::const_iterator &end,
             bool is_lhs) noexcept(true);
     void adjust_equation_sign() noexcept(true);
     std::string reduced_form(const std::map<int, double> &polynomial) const noexcept(true);
@@ -45,10 +46,27 @@ class Parser {
     bool is_valid_variable(char var, int degree) const noexcept(true);
 
     static s_term parse_term(
-            const std::deque<s_token> &tokens,
-            std::deque<s_token>::const_iterator *itr) noexcept(true);
+            std::deque<s_token>::const_iterator *current,
+            const std::deque<s_token>::const_iterator &end) noexcept(true);
+
     Computor::Status set_valid_term(const s_term &term, bool is_lhs) noexcept(true);
 
+    static std::pair<Computor::Status, double> stod(const std::string &word) noexcept(true);
+    static std::pair<Computor::Status, int> stoi(const std::string &word) noexcept(true);
+
+    static bool is_at_end(
+            std::deque<s_token>::const_iterator *current,
+            const std::deque<s_token>::const_iterator &end) noexcept(true);
+
+    static bool consume(
+            std::deque<s_token>::const_iterator *current,
+            const std::deque<s_token>::const_iterator &end,
+            TokenKind expected_kind) noexcept(true);
+
+    static bool expect(
+            std::deque<s_token>::const_iterator *current,
+            const std::deque<s_token>::const_iterator &end,
+            TokenKind expected_kind) noexcept(true);
 
     static void skip_sp(
             const std::string &str,

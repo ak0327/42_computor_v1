@@ -12,8 +12,8 @@ class TestParser : public ::testing::Test {
     }
 
     static s_term parse_term(
-            const std::deque<s_token> &tokens,
-            std::deque<s_token>::const_iterator *itr) noexcept(true) {
-        return Parser::parse_term(tokens, itr);
+            std::deque<s_token>::const_iterator *current,
+            std::deque<s_token>::const_iterator &end) noexcept(true) {
+        return Parser::parse_term(current, end);
     }
 };

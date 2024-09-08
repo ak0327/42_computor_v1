@@ -13,28 +13,28 @@ Parser::Parser() : polynomial_(), variable_() {
 
 Parser::~Parser() {}
 
-//  A0 * X^0 + A1 * X^1 + A2 * X^2 = 0
+// equation:  A0 * X^0 + A1 * X^1 + A2 * X^2 = 0
+// tokens  : [A0][*][X][^][0][+][A1][*][X][^][1][+][A2][*][X][^][2][=][0]
 Computor::Status Parser::parse_equation(
         const std::deque<s_token> &tokens) noexcept(true) {
     // token -> term
     if (tokens.empty()) {
         return Computor::Status::FAILURE;
     }
-    auto itr = tokens.begin();
-    auto itr_copy = itr;
-    parse_expression(tokens, &itr, true);
-    if (itr == tokens.end() || itr->kind != OperatorEqual || itr == itr_copy) {
+    auto current = tokens.cbegin();
+    auto end = tokens.cend();
+    auto begin = current;
+    parse_expression(&current, end, true);
+    if (current == begin || Parser::is_at_end(&current, end)) {
         return Computor::Status::FAILURE;
     }
-    ++itr;
-    if (itr == tokens.end()) {
+    if (!Parser::consume(&current, end, OperatorEqual)) {
         return Computor::Status::FAILURE;
     }
 
-    // "=" ?
-    itr_copy = itr;
-    parse_expression(tokens, &itr, false);
-    if (itr != tokens.end() || itr == itr_copy) {
+    begin = current;
+    parse_expression(&current, end, false);
+    if (current == begin || !Parser::is_at_end(&current, end)) {
         return Computor::Status::FAILURE;
     }
 
@@ -155,28 +155,103 @@ Computor::Status Parser::set_valid_term(const s_term &term, bool is_lhs) noexcep
 //  A0 * X^0 + A1 * X^1 + A2 * X^2 = 0
 //           ^先頭以外の項は、parse前に符号評価
 void Parser::parse_expression(
-        const std::deque<s_token> &tokens,
-        std::deque<s_token>::const_iterator *itr,
+        std::deque<s_token>::const_iterator *current,
+        const std::deque<s_token>::const_iterator &end,
         bool is_lhs) noexcept(true) {
-    if (*itr == tokens.end() || (*itr)->kind == OperatorEqual) {
+    if (!Parser::expect(current, end, TermCoef)
+        && !Parser::expect(current, end, TermBase)
+        && !Parser::expect(current, end, OperatorPlus)
+        && !Parser::expect(current, end, OperatorMinus)) {
         return;
     }
-    while (*itr != tokens.end()) {
+    while (!Parser::is_at_end(current, end)) {
         // parse term
-        s_term term = Parser::parse_term(tokens, itr);
-        // std::cout << term << std::endl;
+        auto begin = *current;
+        s_term term = Parser::parse_term(current, end);
+        if (*current == begin) {
+            break;
+        }
+        // std::cout << "parse_expression(): " << term << std::endl;
 
         // validate term
         if (Parser::set_valid_term(term, is_lhs) == Computor::Status::FAILURE) {
-            --(*itr);  // todo:
+            *current = begin;
             return;
         }
 
-        if (*itr != tokens.end()
-        && ((*itr)->kind == OperatorPlus || (*itr)->kind == OperatorMinus)) {
+        if (Parser::expect(current, end, OperatorPlus)
+        || Parser::expect(current, end, OperatorMinus)) {
             continue;
         }
         break;
+    }
+}
+
+bool Parser::is_at_end(
+        std::deque<s_token>::const_iterator *current,
+        const std::deque<s_token>::const_iterator &end) noexcept(true) {
+    return *current == end;
+}
+
+bool Parser::consume(
+        std::deque<s_token>::const_iterator *current,
+        const std::deque<s_token>::const_iterator &end,
+        TokenKind expected_kind) noexcept(true) {
+    if (expect(current, end, expected_kind)) {
+        ++(*current);
+        return true;
+    }
+    return false;
+}
+
+bool Parser::expect(
+        std::deque<s_token>::const_iterator *current,
+        const std::deque<s_token>::const_iterator &end,
+        TokenKind expected_kind) noexcept(true) {
+    return *current != end && (*current)->kind == expected_kind;
+}
+
+std::pair<Computor::Status, double> Parser::stod(const std::string &word) noexcept(true) {
+    std::pair<Computor::Status, double> result;
+    result.first = Computor::FAILURE;
+
+    if (word.empty() || !std::isdigit(word[0])) {
+        return result;
+    }
+    try {
+        std::size_t end;
+        double dnum = std::stod(word, &end);
+        if (end < word.length()) {
+            return result;
+        }
+        result.first = Computor::SUCCESS;
+        result.second = dnum;
+        return result;
+    } catch (const std::exception &e) {
+        // out of range, invalid argument
+        return result;
+    }
+}
+
+std::pair<Computor::Status, int> Parser::stoi(const std::string &word) noexcept(true) {
+    std::pair<Computor::Status, int> result;
+    result.first = Computor::FAILURE;
+
+    if (word.empty() || !std::isdigit(word[0])) {
+        return result;
+    }
+    try {
+        std::size_t end;
+        int inum = std::stoi(word, &end);
+        if (end < word.length()) {
+            return result;
+        }
+        result.first = Computor::SUCCESS;
+        result.second = inum;
+        return result;
+    } catch (const std::exception &e) {
+        // out of range, invalid argument
+        return result;
     }
 }
 
@@ -200,84 +275,73 @@ void Parser::parse_expression(
  */
 // term = ( operator ) [ coefficient ("*") ] ALPHA "^" 1*( DIGIT )
 s_term Parser::parse_term(
-        const std::deque<s_token> &tokens,
-        std::deque<s_token>::const_iterator *itr) noexcept(true) {
+        std::deque<s_token>::const_iterator *current,
+        const std::deque<s_token>::const_iterator &end) noexcept(true) {
     s_term term = {};
     double coefficient;
     char variable = '\0';
     int degree;
     int sign = 1;
-    std::size_t end;
 
     // operator
-    if ((*itr)->kind == OperatorPlus || (*itr)->kind == OperatorMinus) {
-        (*itr)->kind == OperatorPlus ? sign = 1 : sign = -1;
-        // std::cout << "1 " << (*itr)->word << std::endl;
-        ++(*itr);
+    // +a*X^b, -aX^b, X, +a, a
+    // ^       ^      ^  ^   ^ current
+    if (Parser::expect(current, end, OperatorPlus) || Parser::expect(current, end, OperatorMinus)) {
+        (*current)->kind == OperatorPlus ? sign = 1 : sign = -1;
+        ++(*current);
     }
-    // coef
-    if (*itr != tokens.end() && (*itr)->kind == TermCoef) {
-        // std::cout << "2 " << (*itr)->word << std::endl;
-        try {
-            coefficient = std::stod((*itr)->word, &end);
-            if (end < (*itr)->word.length()) {
-                // std::cout << "3" << std::endl;
-                return term;
-            }
-            ++(*itr);
 
-            if (*itr != tokens.end() && (*itr)->kind == OperatorMul) {
-                ++(*itr);
-                if ((*itr)->kind != TermBase) {
-                    // todo: error
-                    // std::cout << "4" << std::endl;
-                    return term;
-                }
-                // std::cout << "5" << std::endl;
-            }
-        } catch (const std::exception &e) {
-            // std::cout << "6" << std::endl;
-            // out of range, invalid argument
+    // std::cout << " parser_term: 3: " << std::endl;
+    // coef
+    // a*X^b, aX^b, X^b, aX, X, a
+    // ^      ^     ^    ^   ^  ^ current
+    if (Parser::expect(current, end, TermCoef)) {
+        // OK: aX^b, a*X^b, a
+        // NG: aX^, a*X^, a*, aXX, ...
+        std::pair<Computor::Status, double> result = Parser::stod((*current)->word);
+        if (result.first == Computor::Status::FAILURE) {
+            return term;
+        }
+        coefficient = result.second;
+        ++(*current);
+        if (Parser::consume(current, end, OperatorMul) && !Parser::expect(current, end, TermBase)) {
             return term;
         }
     } else {
-        // std::cout << "7" << std::endl;
+        // X^b, X
         coefficient = 1.0;
     }
 
-    if (*itr != tokens.end() && (*itr)->kind == TermBase) {
-        // var
-        // std::cout << "8 " << (*itr)->word << std::endl;
-        variable = (*itr)->word[0];
-        ++(*itr);
+    // base
+    // a*X^b, aX^b, X^b, aX, X, a
+    //   ^     ^    ^     ^  ^   ^ current
+    if (Parser::expect(current, end, TermBase)) {
+        // X^b, X
+        if ((*current)->word.length() != 1) {  // ok?
+            return term;
+        }
+        variable = (*current)->word[0];
+        ++(*current);
 
-        // pow
-        if (*itr != tokens.end() && (*itr)->kind == TermPowSymbol) {
-            // std::cout << "9 " << (*itr)->word << std::endl;
-            ++(*itr);
-
-            if (*itr != tokens.end() && (*itr)->kind == TermPower) {
-                degree = std::stoi((*itr)->word, &end);
-                // std::cout << "10 " << (*itr)->word << std::endl;
-                if (end < (*itr)->word.length()) {
+        if (Parser::consume(current, end, TermPowSymbol)) {
+            // X^b
+            if (Parser::expect(current, end, TermPower)) {
+                std::pair<Computor::Status, int> result = Parser::stoi((*current)->word);
+                if (result.first == Computor::Status::FAILURE) {
                     return term;
                 }
-                ++(*itr);
+                degree = result.second;
+                ++(*current);
             } else {
-                // std::cout << "11" << std::endl;
-                // todo: error
                 return term;
             }
-            // std::cout << "12" << std::endl;
         } else {
-            // std::cout << "13" << std::endl;
+            // X
             degree = 1;
         }
     } else {
-        // std::cout << "14" << std::endl;
         degree = 0;
     }
-    // std::cout << "15" << std::endl;
 
     term = {
             .coefficient = coefficient * sign,
@@ -302,31 +366,24 @@ std::string Parser::reduced_form(const std::map<int, double> &polynomial) const 
         double coef = itr->second;
         std::string sign = "";
 
-        // std::cout << "pow=" << pow
-        // << ", coef=" << coef << ", var=" << this->variable_ << std::endl;
         if (coef == 0.0) { continue; }
         if (coef < 0) {
             sign = "- ";
         } else if (0 < coef && !is_first_term) {
             sign = "+ ";
         }
-        // std::cout << "2" << std::endl;
 
         // reduced_form << sign << std::fixed << std::setprecision(2) << std::abs(coef);
         reduced_form << sign << std::abs(coef);
         if (pow == 1) {
-            // std::cout << "3" << std::endl;
             reduced_form << " * " << this->variable_;
         } else if (1 < pow) {
-            // std::cout << "4" << std::endl;
             reduced_form << " * " << this->variable_ << "^" << pow;
         }
         reduced_form << " ";
 
-        // std::cout << "5" << std::endl;
         if (is_first_term) { is_first_term = false; }
     }
-    // std::cout << "6" << std::endl;
     if (reduced_form.str().empty()) {
         reduced_form << "0 ";
     }
