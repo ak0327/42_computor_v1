@@ -18,17 +18,27 @@ class Parser {
     ~Parser();
 
     Computor::Status parse_equation(const std::deque<s_token> &tokens) noexcept(true);
+    void display_reduced_form() const noexcept(true);
+    void display_polynomial_degree() const noexcept(true);
+
+    std::map<int, double> polynomial() const noexcept(true);
+    std::string reduced_form() const noexcept(true);
+
+    friend class TestParser;
+
+ private:
+    int max_degree_ = 2;
+    std::map<int, double> polynomial_;
+    char variable_;
+
+
     void parse_expression(
             const std::deque<s_token> &tokens,
             std::deque<s_token>::const_iterator *itr,
             bool is_lhs) noexcept(true);
     void adjust_equation_sign() noexcept(true);
-    void display_reduced_form() const noexcept(true);
-    std::string reduced_form() const noexcept(true);
     std::string reduced_form(const std::map<int, double> &polynomial) const noexcept(true);
-    void display_polynomial_degree() const noexcept(true);
     void display_polynomial() const noexcept(true);
-    std::map<int, double> polynomial() const noexcept(true);
 
     bool is_valid_degree(int degree) const noexcept(true);
     bool is_valid_coef(int degree) const noexcept(true);
@@ -39,15 +49,12 @@ class Parser {
             std::deque<s_token>::const_iterator *itr) noexcept(true);
     Computor::Status set_valid_term(const s_term &term, bool is_lhs) noexcept(true);
 
+
     static void skip_sp(
             const std::string &str,
             std::size_t start_pos,
             std::size_t *end_pos) noexcept(true);
 
- private:
-    int max_degree_ = 2;
-    std::map<int, double> polynomial_;
-    char variable_;
 
     // copy invalid
     Parser &operator=(const Parser &rhs);
