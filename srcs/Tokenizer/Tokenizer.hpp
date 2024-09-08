@@ -61,6 +61,8 @@ class Tokenizer {
 
     std::deque<s_token> tokens() noexcept(true);
 
+    friend class TestTokenizer;
+
  private:
     std::deque<s_token> tokens_;
 
