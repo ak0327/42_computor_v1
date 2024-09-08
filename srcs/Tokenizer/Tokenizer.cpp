@@ -30,7 +30,7 @@ Computor::Status Tokenizer::tokenize(const std::string &equation) noexcept(true)
     return validate_tokens();
 }
 
-std::deque<s_token> Tokenizer::tokens() noexcept(true) {
+const std::deque<s_token> &Tokenizer::tokens() noexcept(true) {
     return this->tokens_;
 }
 

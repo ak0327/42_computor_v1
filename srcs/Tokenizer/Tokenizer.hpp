@@ -27,7 +27,7 @@ class Tokenizer {
     ~Tokenizer();
 
     Computor::Status tokenize(const std::string &equation) noexcept(true);
-    std::deque<s_token> tokens() noexcept(true);
+    const std::deque<s_token> &tokens() noexcept(true);
 
     friend class TestTokenizer;
 
