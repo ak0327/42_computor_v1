@@ -26,15 +26,18 @@ Computor::Status Parser::parse_equation(
     auto begin = current;
     parse_expression(&current, end, true);
     if (current == begin || Parser::is_at_end(&current, end)) {
+        print_invalid_token(&current, end);
         return Computor::Status::FAILURE;
     }
     if (!Parser::consume(&current, end, OperatorEqual)) {
+        print_invalid_token(&current, end);
         return Computor::Status::FAILURE;
     }
 
     begin = current;
     parse_expression(&current, end, false);
     if (current == begin || !Parser::is_at_end(&current, end)) {
+        print_invalid_token(&current, end);
         return Computor::Status::FAILURE;
     }
 
@@ -196,10 +199,6 @@ void Parser::parse_expression(
             continue;
         }
         break;
-    }
-
-    if (!Parser::is_at_end(current, end)) {
-        print_invalid_token(current, end);
     }
 }
 
