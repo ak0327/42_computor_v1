@@ -1,8 +1,8 @@
 #include "Calculator.hpp"
-#include "computor.hpp"
 #include <cmath>
 #include <iostream>
 #include <iomanip>
+#include "computor.hpp"
 
 bool DEBUG = false;
 
