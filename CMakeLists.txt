@@ -42,6 +42,7 @@ set (computor_srcs
 
 # test code
 set (utest_srcs
+        tests/utest/TestCalcEquation.cpp
         tests/utest/TestParser.cpp
         tests/utest/TestTokenizer.cpp
 )
