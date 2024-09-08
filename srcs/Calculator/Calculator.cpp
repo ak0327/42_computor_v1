@@ -26,8 +26,8 @@ void Calculator::solve_quadratic_equation() noexcept(true) {
 // aX^2 + bX^1 + cX^0 = 0
 //  a == 0 -> 一次
 QuadraticSolver::SolutionType Calculator::solve() noexcept(true) {
-    int polynomial_min_degree = polynomial_.begin()->first;
-    int polynomial_max_degree = polynomial_.rbegin()->first;
+    int polynomial_min_degree = this->polynomial_.begin()->first;
+    int polynomial_max_degree = this->polynomial_.rbegin()->first;
 
     if (polynomial_min_degree < this->kMinDegree_) {
         return QuadraticSolver::NoSolutionDegreeTooLow;
@@ -36,36 +36,30 @@ QuadraticSolver::SolutionType Calculator::solve() noexcept(true) {
         return QuadraticSolver::NoSolutionDegreeTooHigh;
     }
 
-    try {
-        double a, b, c;
-        a = this->polynomial_.at(2);
-        b = this->polynomial_.at(1);
-        c = this->polynomial_.at(0);
+    double a, b, c;
+    a = (this->polynomial_.find(2) != this->polynomial_.end()) ? this->polynomial_.at(2) : 0.0;
+    b = (this->polynomial_.find(1) != this->polynomial_.end()) ? this->polynomial_.at(1) : 0.0;
+    c = (this->polynomial_.find(0) != this->polynomial_.end()) ? this->polynomial_.at(0) : 0.0;
 
-        QuadraticSolver::EquationType eq_type = Calculator::get_equation_type(a, b);
-        QuadraticSolver::SolutionType solution_type;
-        std::vector<QuadraticSolver::Solution> solutions;
-        switch (eq_type) {
-            case QuadraticSolver::Quadratic: {
-                double D = b * b - 4 * a * c;
-                // std::cout << "D:" << D << std::endl;
-                solution_type = Calculator::get_quadratic_eq_solution_type(D);
-                this->solutions_ = Calculator::solve_quadratic(a, b, D, solution_type);
-                break;
-            }
-            case QuadraticSolver::Linear:
-                solution_type = QuadraticSolver::OneRealSolutionLinear;
-                this->solutions_ = Calculator::solve_linear(b, c, solution_type);
-                break;
-            case QuadraticSolver::Constant:
-                solution_type = Calculator::get_constant_eq_solution_type(c);
-                break;
+    QuadraticSolver::EquationType eq_type = Calculator::get_equation_type(a, b);
+    QuadraticSolver::SolutionType solution_type;
+    std::vector<QuadraticSolver::Solution> solutions;
+    switch (eq_type) {
+        case QuadraticSolver::Quadratic: {
+            double D = b * b - 4 * a * c;
+            solution_type = Calculator::get_quadratic_eq_solution_type(D);
+            this->solutions_ = Calculator::solve_quadratic(a, b, D, solution_type);
+            break;
         }
-        return solution_type;
-    } catch (const std::exception &e) {
-        // a, b, c not found
-        return QuadraticSolver::NoSolution;
+        case QuadraticSolver::Linear:
+            solution_type = QuadraticSolver::OneRealSolutionLinear;
+            this->solutions_ = Calculator::solve_linear(b, c, solution_type);
+            break;
+        case QuadraticSolver::Constant:
+            solution_type = Calculator::get_constant_eq_solution_type(c);
+            break;
     }
+    return solution_type;
 }
 
 std::vector<QuadraticSolver::Solution> Calculator::solve_quadratic(
