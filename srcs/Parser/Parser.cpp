@@ -1,12 +1,14 @@
 #include "Parser.hpp"
 #include <climits>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <deque>
 
 Parser::Parser() : polynomial_(), variable_() {
-    for (int i = 0; i <= this->max_degree_; ++i) {
-        this->polynomial_[i] = 0;
-    }
+    // for (int i = 0; i <= this->max_degree_; ++i) {
+    //     this->polynomial_[i] = 0;
+    // }
 }
 
 Parser::~Parser() {}
@@ -35,9 +37,39 @@ Status Parser::parse_equation(
     if (itr != tokens.end() || itr == itr_copy) {
         return Status::FAILURE;
     }
+
+    // std::cout << "before: ";
+    // Parser::display_reduced_form();
+    Parser::adjust_equation_sign();
+    // Parser::display_polynomial();
+    // std::cout << "after : ";
+    // Parser::display_reduced_form();
+    // std::cout << std::endl;
     return Status::SUCCESS;
 }
 
+// 最大次元の係数を正とするよう符号を調整
+void Parser::adjust_equation_sign() noexcept(true) {
+    auto highest_degree_term = this->polynomial_.crbegin();
+    if (highest_degree_term == this->polynomial_.crend()) {
+        return;
+    }
+    for (auto itr = this->polynomial_.crbegin(); itr != this->polynomial_.crend(); ++itr) {
+        int pow = itr->first;
+        double coef = itr->second;
+
+        if (pow == 0 && coef < 0) { break; }
+        if (coef == 0.0) { continue; }
+        if (0 < coef) { return; }
+        break;
+    }
+
+    // std::cout << " adjust sign -> *= -1" << std::endl;
+    for (auto &itr : this->polynomial_) {
+        double coef = itr.second * -1;
+        itr.second = normalize_zero(coef);
+    }
+}
 
 bool Parser::is_valid_degree(int degree) const noexcept(true) {
     return (0 <= degree && degree <= this->max_degree_);
@@ -69,14 +101,16 @@ Status Parser::set_variable(char var, int degree) {
     return Status::FAILURE;
 }
 
+// todo degreeの判定はあとで
+// var
 Status Parser::set_valid_term(const s_term &term, bool is_lhs) noexcept(true) {
     int degree = term.degree;
     char var = term.variable;
     double coef = term.coefficient;
 
-    if (!Parser::is_valid_degree(degree)) {
-        return Status::FAILURE;
-    }
+    // if (!Parser::is_valid_degree(degree)) {
+    //     return Status::FAILURE;
+    // }
     if (Parser::set_variable(var, degree) == Status::FAILURE) {
         return Status::FAILURE;
     }
@@ -228,6 +262,76 @@ s_term Parser::parse_term(
     return term;
 }
 
+void Parser::display_reduced_form() const noexcept(true) {
+    std::cout << "Reduced form     : " << Parser::reduced_form() << std::endl;
+}
+
+
+std::string Parser::reduced_form() const noexcept(true) {
+    return Parser::reduced_form(this->polynomial_);
+}
+
+// 0 = 0は表示, 0 * X + 1 = 0は非表示
+// ^           ^^^^^
+std::string Parser::reduced_form(const std::map<int, double> &polynomial) const noexcept(true) {
+    std::ostringstream reduced_form;
+    bool is_first_term = true;
+
+    for (auto itr = polynomial.crbegin(); itr != polynomial.crend(); ++itr) {
+        int pow = itr->first;
+        double coef = itr->second;
+        std::string sign = "";
+
+        // std::cout << "pow=" << pow
+        // << ", coef=" << coef << ", var=" << this->variable_ << std::endl;
+        if (coef == 0.0) { continue; }
+        if (coef < 0) {
+            sign = "- ";
+        } else if (0 < coef && !is_first_term) {
+            sign = "+ ";
+        }
+        // std::cout << "2" << std::endl;
+
+        // reduced_form << sign << std::fixed << std::setprecision(2) << std::abs(coef);
+        reduced_form << sign << std::abs(coef);
+        if (pow == 1) {
+            // std::cout << "3" << std::endl;
+            reduced_form << " * " << this->variable_;
+        } else if (1 < pow) {
+            // std::cout << "4" << std::endl;
+            reduced_form << " * " << this->variable_ << "^" << pow;
+        }
+        reduced_form << " ";
+
+        // std::cout << "5" << std::endl;
+        if (is_first_term) { is_first_term = false; }
+    }
+    // std::cout << "6" << std::endl;
+    if (reduced_form.str().empty()) {
+        reduced_form << "0 ";
+    }
+    reduced_form << "= 0";
+    return reduced_form.str();
+}
+
+void Parser::display_polynomial_degree() const noexcept(true) {
+    auto itr = this->polynomial_.crbegin();
+    if (itr == this->polynomial_.crend()) {
+        return;
+    }
+    int max_degree = itr->first;
+    std::cout << "Polynomial degree: " << max_degree << std::endl;
+}
+
+void Parser::display_polynomial() const noexcept(true) {
+    for (auto itr = this->polynomial_.crbegin(); itr != this->polynomial_.crend(); ++itr) {
+        int pow = itr->first;
+        double coef = itr->second;
+
+        std::cout << "[" << pow << "]: " << coef << "" << std::endl;
+    }
+}
+
 std::map<int, double> Parser::polynomial() const noexcept(true) {
     return this->polynomial_;
 }
@@ -266,4 +370,8 @@ std::ostream &operator<<(std::ostream &out, const s_term &term) {
     << ", var: " << term.variable
     << ", degree: " << term.degree << " ]";
     return out;
+}
+
+double normalize_zero(double value) noexcept(true) {
+    return value == 0.0 ? 0.0 : value;
 }

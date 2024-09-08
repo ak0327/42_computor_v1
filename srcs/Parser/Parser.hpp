@@ -22,6 +22,12 @@ class Parser {
             const std::deque<s_token> &tokens,
             std::deque<s_token>::const_iterator *itr,
             bool is_lhs) noexcept(true);
+    void adjust_equation_sign() noexcept(true);
+    void display_reduced_form() const noexcept(true);
+    std::string reduced_form() const noexcept(true);
+    std::string reduced_form(const std::map<int, double> &polynomial) const noexcept(true);
+    void display_polynomial_degree() const noexcept(true);
+    void display_polynomial() const noexcept(true);
     std::map<int, double> polynomial() const noexcept(true);
 
     bool is_valid_degree(int degree) const noexcept(true);
@@ -51,3 +57,5 @@ class Parser {
 };
 
 std::ostream &operator<<(std::ostream &out, const s_term &term);
+
+double normalize_zero(double value) noexcept(true);
