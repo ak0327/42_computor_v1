@@ -14,28 +14,28 @@ Parser::Parser() : polynomial_(), variable_() {
 Parser::~Parser() {}
 
 //  A0 * X^0 + A1 * X^1 + A2 * X^2 = 0
-Status Parser::parse_equation(
+Computor::Status Parser::parse_equation(
         const std::deque<s_token> &tokens) noexcept(true) {
     // token -> term
     if (tokens.empty()) {
-        return Status::FAILURE;
+        return Computor::Status::FAILURE;
     }
     auto itr = tokens.begin();
     auto itr_copy = itr;
     parse_expression(tokens, &itr, true);
     if (itr == tokens.end() || itr->kind != OperatorEqual || itr == itr_copy) {
-        return Status::FAILURE;
+        return Computor::Status::FAILURE;
     }
     ++itr;
     if (itr == tokens.end()) {
-        return Status::FAILURE;
+        return Computor::Status::FAILURE;
     }
 
     // "=" ?
     itr_copy = itr;
     parse_expression(tokens, &itr, false);
     if (itr != tokens.end() || itr == itr_copy) {
-        return Status::FAILURE;
+        return Computor::Status::FAILURE;
     }
 
     // std::cout << "before: ";
@@ -45,7 +45,7 @@ Status Parser::parse_equation(
     // std::cout << "after : ";
     // Parser::display_reduced_form();
     // std::cout << std::endl;
-    return Status::SUCCESS;
+    return Computor::Status::SUCCESS;
 }
 
 // 最大次元の係数を正とするよう符号を調整
@@ -90,38 +90,38 @@ bool Parser::is_valid_variable(char var, int degree) const noexcept(true) {
     return this->variable_ == var;
 }
 
-Status Parser::set_variable(char var, int degree) {
+Computor::Status Parser::set_variable(char var, int degree) {
     if (degree == 0 || this->variable_ != '\0') {
-        return Status::SUCCESS;
+        return Computor::Status::SUCCESS;
     }
     if (var != 0) {
         this->variable_ = var;
-        return Status::SUCCESS;
+        return Computor::Status::SUCCESS;
     }
-    return Status::FAILURE;
+    return Computor::Status::FAILURE;
 }
 
 // todo degreeの判定はあとで
 // var
-Status Parser::set_valid_term(const s_term &term, bool is_lhs) noexcept(true) {
+Computor::Status Parser::set_valid_term(const s_term &term, bool is_lhs) noexcept(true) {
     int degree = term.degree;
     char var = term.variable;
     double coef = term.coefficient;
 
     // if (!Parser::is_valid_degree(degree)) {
-    //     return Status::FAILURE;
+    //     return Computor::Status::FAILURE;
     // }
-    if (Parser::set_variable(var, degree) == Status::FAILURE) {
-        return Status::FAILURE;
+    if (Parser::set_variable(var, degree) == Computor::Status::FAILURE) {
+        return Computor::Status::FAILURE;
     }
     if (!Parser::is_valid_variable(var, degree)) {
-        return Status::FAILURE;
+        return Computor::Status::FAILURE;
     }
     this->polynomial_[degree] += (is_lhs ? 1 : -1) * coef;
     if (!Parser::is_valid_coef(degree)) {
-        return Status::FAILURE;
+        return Computor::Status::FAILURE;
     }
-    return Status::SUCCESS;
+    return Computor::Status::SUCCESS;
 }
 
 
@@ -142,7 +142,7 @@ void Parser::parse_expression(
         // std::cout << term << std::endl;
 
         // validate term
-        if (Parser::set_valid_term(term, is_lhs) == Status::FAILURE) {
+        if (Parser::set_valid_term(term, is_lhs) == Computor::Status::FAILURE) {
             --(*itr);  // todo:
             return;
         }

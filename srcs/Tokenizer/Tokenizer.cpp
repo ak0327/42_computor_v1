@@ -21,9 +21,9 @@ std::deque<s_token> Tokenizer::tokens() noexcept(true) {
  DIGIT       = 0-9
  SP          = " "
  */
-Status Tokenizer::tokenize(const std::string &equation) noexcept(true) {
+Computor::Status Tokenizer::tokenize(const std::string &equation) noexcept(true) {
     if (equation.empty()) {
-        return Status::FAILURE;
+        return Computor::Status::FAILURE;
     }
     std::deque<std::string> split = Tokenizer::split_equation(equation);
 
@@ -34,11 +34,11 @@ Status Tokenizer::tokenize(const std::string &equation) noexcept(true) {
     return validate_tokens();
 }
 
-Status Tokenizer::tagging(const std::deque<std::string> &split) noexcept(true) {
+Computor::Status Tokenizer::tagging(const std::deque<std::string> &split) noexcept(true) {
     Tokenizer::init_tokens(split);
     Tokenizer::tagging_operators();
     Tokenizer::tagging_terms();
-    return Status::SUCCESS;
+    return Computor::Status::SUCCESS;
 }
 
 void Tokenizer::init_tokens(
@@ -56,15 +56,15 @@ void Tokenizer::init_tokens(
 void Tokenizer::tagging_operators() noexcept(true) {
     // +, -, =, *, ^
     for (auto &token : this->tokens_) {
-        if (token.word == "+") {
+        if (token.word == std::string(1, Computor::OP_PLUS)) {
             token.kind = OperatorPlus;
-        } else if (token.word == "-") {
+        } else if (token.word == std::string(1, Computor::OP_MINUS)) {
             token.kind = OperatorMinus;
-        } else if (token.word == "*") {
+        } else if (token.word == std::string(1, Computor::OP_MUL)) {
             token.kind = OperatorMul;
-        } else if (token.word == "=") {
+        } else if (token.word == std::string(1, Computor::OP_EQUAL)) {
             token.kind = OperatorEqual;
-        } else if (token.word == "^") {
+        } else if (token.word == std::string(1, Computor::OP_POW)) {
             token.kind = TermPowSymbol;
         }
     }
@@ -169,7 +169,7 @@ bool Tokenizer::is_num(const std::string &str) noexcept(true) {
  DIGIT       = 0-9
  SP          = " "
  */
-Status Tokenizer::validate_tokens() const noexcept(true) {
+Computor::Status Tokenizer::validate_tokens() const noexcept(true) {
     std::string prev_word;
 
     for (auto &token : this->tokens_) {
@@ -179,11 +179,11 @@ Status Tokenizer::validate_tokens() const noexcept(true) {
                 std::cerr << ", near " << prev_word;
             }
             std::cerr << std::endl;
-            return Status::FAILURE;
+            return Computor::Status::FAILURE;
         }
         prev_word = token.word;
     }
-    return Status::SUCCESS;
+    return Computor::Status::SUCCESS;
 }
 
 // kind none -> split [coef][base]
@@ -225,17 +225,17 @@ std::deque<std::string> Tokenizer::split_equation(
     std::deque<std::string> split;
 
     // equation
-    split = Tokenizer::split_by_delimiter(equation, SP);
+    split = Tokenizer::split_by_delimiter(equation, Computor::SP);
 
     // expression
     bool keep = true;
-    split = Tokenizer::split_by_delimiter(split, OP_EQUAL, keep);
+    split = Tokenizer::split_by_delimiter(split, Computor::OP_EQUAL, keep);
 
     // term
-    split = Tokenizer::split_by_delimiter(split, OP_MUL, keep);
-    split = Tokenizer::split_by_delimiter(split, OP_PLUS, keep);
-    split = Tokenizer::split_by_delimiter(split, OP_MINUS, keep);
-    split = Tokenizer::split_by_delimiter(split, OP_POW, keep);
+    split = Tokenizer::split_by_delimiter(split, Computor::OP_MUL, keep);
+    split = Tokenizer::split_by_delimiter(split, Computor::OP_PLUS, keep);
+    split = Tokenizer::split_by_delimiter(split, Computor::OP_MINUS, keep);
+    split = Tokenizer::split_by_delimiter(split, Computor::OP_POW, keep);
     return split;
 }
 

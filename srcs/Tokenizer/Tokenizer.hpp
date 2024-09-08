@@ -26,12 +26,12 @@ class Tokenizer {
     Tokenizer();
     ~Tokenizer();
 
-    Status tokenize(const std::string &equation) noexcept(true);
-    Status tagging(const std::deque<std::string> &split) noexcept(true);
+    Computor::Status tokenize(const std::string &equation) noexcept(true);
+    Computor::Status tagging(const std::deque<std::string> &split) noexcept(true);
     void init_tokens(const std::deque<std::string> &split) noexcept(true);
     void tagging_operators() noexcept(true);
     void tagging_terms() noexcept(true);
-    Status validate_tokens() const noexcept(true);
+    Computor::Status validate_tokens() const noexcept(true);
     static std::deque<s_token> split_term_coef_and_base(
             const std::deque<s_token> &tokens) noexcept(true);
     static std::deque<std::string> split_equation(

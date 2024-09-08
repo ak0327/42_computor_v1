@@ -17,7 +17,7 @@ class Parser {
     Parser();
     ~Parser();
 
-    Status parse_equation(const std::deque<s_token> &tokens) noexcept(true);
+    Computor::Status parse_equation(const std::deque<s_token> &tokens) noexcept(true);
     void parse_expression(
             const std::deque<s_token> &tokens,
             std::deque<s_token>::const_iterator *itr,
@@ -37,7 +37,7 @@ class Parser {
     static s_term parse_term(
             const std::deque<s_token> &tokens,
             std::deque<s_token>::const_iterator *itr) noexcept(true);
-    Status set_valid_term(const s_term &term, bool is_lhs) noexcept(true);
+    Computor::Status set_valid_term(const s_term &term, bool is_lhs) noexcept(true);
 
     static void skip_sp(
             const std::string &str,
@@ -53,7 +53,7 @@ class Parser {
     Parser &operator=(const Parser &rhs);
     explicit Parser(const Parser &other);
 
-    Status set_variable(char var, int degree);
+    Computor::Status set_variable(char var, int degree);
 };
 
 std::ostream &operator<<(std::ostream &out, const s_term &term);
