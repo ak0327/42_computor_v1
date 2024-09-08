@@ -21,7 +21,7 @@ class Parser {
     void display_reduced_form() const noexcept(true);
     void display_polynomial_degree() const noexcept(true);
 
-    std::map<int, double> polynomial() const noexcept(true);
+    const std::map<int, double> &polynomial() const noexcept(true);
     std::string reduced_form() const noexcept(true);
 
     friend class TestParser;

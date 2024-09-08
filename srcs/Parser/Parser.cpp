@@ -61,7 +61,7 @@ void Parser::display_polynomial_degree() const noexcept(true) {
     std::cout << "Polynomial degree: " << max_degree << std::endl;
 }
 
-std::map<int, double> Parser::polynomial() const noexcept(true) {
+const std::map<int, double> &Parser::polynomial() const noexcept(true) {
     return this->polynomial_;
 }
 
