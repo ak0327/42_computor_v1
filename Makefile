@@ -17,7 +17,9 @@ DEPS		= $(OBJS:%.o=%.d)
 INCL_DIR 	= srcs \
 			  srcs/Calculator \
 			  srcs/Parser \
+			  srcs/Result \
 			  srcs/Tokenizer
+
 INCLUDES	= $(addprefix -I, $(INCL_DIR))
 
 .PHONY	: all

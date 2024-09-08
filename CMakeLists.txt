@@ -26,6 +26,7 @@ include_directories(
         srcs
         srcs/Calculator
         srcs/Parser
+        srcs/Result
         srcs/Tokenizer
         tests/utest
 )
