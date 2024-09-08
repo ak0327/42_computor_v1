@@ -46,14 +46,14 @@ std::deque<std::string> Tokenizer::split_equation(
     split = Tokenizer::split_by_delimiter(equation, Computor::SP);
 
     // expression
-    bool keep = true;
-    split = Tokenizer::split_by_delimiter(split, Computor::OP_EQUAL, keep);
+    bool keep_delimiter = true;
+    split = Tokenizer::split_by_delimiter(split, Computor::OP_EQUAL, keep_delimiter);
 
     // term
-    split = Tokenizer::split_by_delimiter(split, Computor::OP_MUL, keep);
-    split = Tokenizer::split_by_delimiter(split, Computor::OP_PLUS, keep);
-    split = Tokenizer::split_by_delimiter(split, Computor::OP_MINUS, keep);
-    split = Tokenizer::split_by_delimiter(split, Computor::OP_POW, keep);
+    split = Tokenizer::split_by_delimiter(split, Computor::OP_MUL, keep_delimiter);
+    split = Tokenizer::split_by_delimiter(split, Computor::OP_PLUS, keep_delimiter);
+    split = Tokenizer::split_by_delimiter(split, Computor::OP_MINUS, keep_delimiter);
+    split = Tokenizer::split_by_delimiter(split, Computor::OP_POW, keep_delimiter);
     return split;
 }
 
@@ -89,10 +89,9 @@ std::deque<std::string> Tokenizer::split_by_delimiter(
         char delimiter,
         bool keep_delimiter) noexcept(true) {
     std::deque<std::string> split, split_elem;
-    std::deque<std::string>::const_iterator itr;
 
-    for (itr = src.begin(); itr != src.end(); ++itr) {
-        split_elem = split_by_delimiter(*itr, delimiter, keep_delimiter);
+    for (const auto &itr : src) {
+        split_elem = split_by_delimiter(itr, delimiter, keep_delimiter);
         split.insert(split.end(), split_elem.begin(), split_elem.end());
     }
 
