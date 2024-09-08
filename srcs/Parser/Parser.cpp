@@ -48,6 +48,31 @@ Computor::Status Parser::parse_equation(
     return Computor::Status::SUCCESS;
 }
 
+void Parser::display_reduced_form() const noexcept(true) {
+    std::cout << "Reduced form     : " << Parser::reduced_form() << std::endl;
+}
+
+void Parser::display_polynomial_degree() const noexcept(true) {
+    auto itr = this->polynomial_.crbegin();
+    if (itr == this->polynomial_.crend()) {
+        return;
+    }
+    int max_degree = itr->first;
+    std::cout << "Polynomial degree: " << max_degree << std::endl;
+}
+
+std::map<int, double> Parser::polynomial() const noexcept(true) {
+    return this->polynomial_;
+}
+
+std::string Parser::reduced_form() const noexcept(true) {
+    return Parser::reduced_form(this->polynomial_);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 // 最大次元の係数を正とするよう符号を調整
 void Parser::adjust_equation_sign() noexcept(true) {
     auto highest_degree_term = this->polynomial_.crbegin();
@@ -262,14 +287,9 @@ s_term Parser::parse_term(
     return term;
 }
 
-void Parser::display_reduced_form() const noexcept(true) {
-    std::cout << "Reduced form     : " << Parser::reduced_form() << std::endl;
-}
 
+////////////////////////////////////////////////////////////////////////////////
 
-std::string Parser::reduced_form() const noexcept(true) {
-    return Parser::reduced_form(this->polynomial_);
-}
 
 // 0 = 0は表示, 0 * X + 1 = 0は非表示
 // ^           ^^^^^
@@ -314,14 +334,9 @@ std::string Parser::reduced_form(const std::map<int, double> &polynomial) const 
     return reduced_form.str();
 }
 
-void Parser::display_polynomial_degree() const noexcept(true) {
-    auto itr = this->polynomial_.crbegin();
-    if (itr == this->polynomial_.crend()) {
-        return;
-    }
-    int max_degree = itr->first;
-    std::cout << "Polynomial degree: " << max_degree << std::endl;
-}
+
+////////////////////////////////////////////////////////////////////////////////
+
 
 void Parser::display_polynomial() const noexcept(true) {
     for (auto itr = this->polynomial_.crbegin(); itr != this->polynomial_.crend(); ++itr) {
@@ -332,20 +347,10 @@ void Parser::display_polynomial() const noexcept(true) {
     }
 }
 
-std::map<int, double> Parser::polynomial() const noexcept(true) {
-    return this->polynomial_;
-}
 
-/*
- equation    = 1*expression "=" 1*expression
- expression  = 1*[ *(SP) term *(SP) ]
- term        = ( sign ) ( coefficient "*" ) ALPHA "^" 1*( DIGIT )
- sign        = "+" / "-"
- coefficient = 1*DIGIT
- ALPHA       = A-Z / a-z
- DIGIT       = 0-9
- SP          = " "
- */
+////////////////////////////////////////////////////////////////////////////////
+
+
 void Parser::skip_sp(const std::string &str,
                      std::size_t start_pos,
                      std::size_t *end_pos) noexcept(true) {
