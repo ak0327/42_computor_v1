@@ -653,44 +653,44 @@ TEST(TestParser, TestParseEquationByStringNG) {
     Computor::Status tokenizer_res, parser_res;
 
     // subject
-    // equation = "8 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 3 * X^0";
-    // tokenizer_res = t.tokenize(equation);
-    // tokens = t.tokens();
-    // p = new Parser();
-    // parser_res = p->parse_equation(tokens);
-    // delete p;
-    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
-    //
-    // // simple test
-    // equation = "X^3 = 0";
-    // tokenizer_res = t.tokenize(equation);
-    // tokens = t.tokens();
-    // p = new Parser();
-    // parser_res = p->parse_equation(tokens);
-    // delete p;
-    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
-    //
-    //
-    // equation = "X^0 == 0";
-    // tokenizer_res = t.tokenize(equation);
-    // tokens = t.tokens();
-    // p = new Parser();
-    // parser_res = p->parse_equation(tokens);
-    // delete p;
-    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
-    //
-    //
-    // equation = "X^0 = 0 = 0";
-    // tokenizer_res = t.tokenize(equation);
-    // tokens = t.tokens();
-    // p = new Parser();
-    // parser_res = p->parse_equation(tokens);
-    // delete p;
-    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
+    equation = "8 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 3 * X^0";
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    delete p;
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);  // parseの段階では成立していれば3次でもOK
+
+    // simple test
+    equation = "X^3 = 0";
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    delete p;
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);  // parseの段階では成立していれば3次でもOK
+
+
+    equation = "X^0 == 0";
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    delete p;
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::FAILURE, parser_res);
+
+
+    equation = "X^0 = 0 = 0";
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    delete p;
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::FAILURE, parser_res);
 
 
     equation = "= X^0";
@@ -723,24 +723,24 @@ TEST(TestParser, TestParseEquationByStringNG) {
     EXPECT_EQ(Computor::Status::FAILURE, parser_res);
 
 
-    // equation = "X^0 + Y^0";
-    // tokenizer_res = t.tokenize(equation);
-    // tokens = t.tokens();
-    // p = new Parser();
-    // parser_res = p->parse_equation(tokens);
-    // delete p;
-    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
-    //
-    //
-    // equation = "X^1 + Y^2 = 0";
-    // tokenizer_res = t.tokenize(equation);
-    // tokens = t.tokens();
-    // p = new Parser();
-    // parser_res = p->parse_equation(tokens);
-    // delete p;
-    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
+    equation = "X^0 + Y^0";
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    delete p;
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::FAILURE, parser_res);
+
+
+    equation = "X^1 + Y^2 = 0";
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    delete p;
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::FAILURE, parser_res);
 }
 
 
