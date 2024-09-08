@@ -5,10 +5,6 @@ Tokenizer::Tokenizer() {}
 
 Tokenizer::~Tokenizer() {}
 
-std::deque<s_token> Tokenizer::tokens() noexcept(true) {
-    return this->tokens_;
-}
-
 /*
  equation    = 1*expression "=" 1*expression
  expression  = 1*[ *(SP) term *(SP) ]
@@ -33,6 +29,113 @@ Computor::Status Tokenizer::tokenize(const std::string &equation) noexcept(true)
     tagging_terms();
     return validate_tokens();
 }
+
+std::deque<s_token> Tokenizer::tokens() noexcept(true) {
+    return this->tokens_;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+
+std::deque<std::string> Tokenizer::split_equation(
+        const std::string &equation) noexcept(true) {
+    std::deque<std::string> split;
+
+    // equation
+    split = Tokenizer::split_by_delimiter(equation, Computor::SP);
+
+    // expression
+    bool keep = true;
+    split = Tokenizer::split_by_delimiter(split, Computor::OP_EQUAL, keep);
+
+    // term
+    split = Tokenizer::split_by_delimiter(split, Computor::OP_MUL, keep);
+    split = Tokenizer::split_by_delimiter(split, Computor::OP_PLUS, keep);
+    split = Tokenizer::split_by_delimiter(split, Computor::OP_MINUS, keep);
+    split = Tokenizer::split_by_delimiter(split, Computor::OP_POW, keep);
+    return split;
+}
+
+std::deque<std::string> Tokenizer::split_by_delimiter(
+        const std::string &src,
+        char delimiter,
+        bool keep_delimiter) noexcept(true) {
+    std::deque<std::string> split = {};
+    std::string token = "";
+
+    for (char c : src) {
+        if (c != delimiter) {
+            token += c;
+        } else {
+            if (!token.empty()) {
+                split.push_back(token);
+                token.clear();
+            }
+            if (keep_delimiter) {
+                split.push_back(std::string(1, c));
+            }
+        }
+    }
+
+    if (!token.empty()) {
+        split.push_back(token);
+    }
+    return split;
+}
+
+std::deque<std::string> Tokenizer::split_by_delimiter(
+        const std::deque<std::string> &src,
+        char delimiter,
+        bool keep_delimiter) noexcept(true) {
+    std::deque<std::string> split, split_elem;
+    std::deque<std::string>::const_iterator itr;
+
+    for (itr = src.begin(); itr != src.end(); ++itr) {
+        split_elem = split_by_delimiter(*itr, delimiter, keep_delimiter);
+        split.insert(split.end(), split_elem.begin(), split_elem.end());
+    }
+
+    return split;
+}
+
+// kind none -> split [coef][base], like 2X -> [2][X]
+std::deque<s_token> Tokenizer::split_term_coef_and_base(
+        const std::deque<s_token> &tokens) noexcept(true) {
+    std::deque<s_token> split, new_tokens;
+
+    for (auto &token : tokens) {
+        new_tokens = {};
+
+        std::string word;
+        if (token.kind == None && std::isdigit(token.word[0])) {
+            std::size_t pos = 0;
+            while (token.word[pos] && !std::isalpha(token.word[pos])) {
+                ++pos;
+            }
+            if (pos < token.word.length()) {
+                std::string coef = token.word.substr(0, pos);
+                std::string base = token.word.substr(pos);
+                s_token coef_token = {}; coef_token.word = coef;
+                s_token base_token = {}; base_token.word = base;
+                new_tokens.push_back(coef_token);
+                new_tokens.push_back(base_token);
+            }
+        }
+
+        if (new_tokens.empty()) {
+            new_tokens.push_back(token);
+        }
+
+        split.insert(split.end(), new_tokens.begin(), new_tokens.end());
+    }
+
+    return split;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+
 
 Computor::Status Tokenizer::tagging(const std::deque<std::string> &split) noexcept(true) {
     Tokenizer::init_tokens(split);
@@ -157,6 +260,10 @@ bool Tokenizer::is_num(const std::string &str) noexcept(true) {
     }
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 /*
  equation    = 1*expression "=" 1*expression
  expression  = 1*[ *(SP) term *(SP) ]
@@ -184,99 +291,4 @@ Computor::Status Tokenizer::validate_tokens() const noexcept(true) {
         prev_word = token.word;
     }
     return Computor::Status::SUCCESS;
-}
-
-// kind none -> split [coef][base]
-std::deque<s_token> Tokenizer::split_term_coef_and_base(
-        const std::deque<s_token> &tokens) noexcept(true) {
-    std::deque<s_token> split, new_tokens;
-
-    for (auto &token : tokens) {
-        new_tokens = {};
-
-        std::string word;
-        if (token.kind == None && std::isdigit(token.word[0])) {
-            std::size_t pos = 0;
-            while (token.word[pos] && !std::isalpha(token.word[pos])) {
-                ++pos;
-            }
-            if (pos < token.word.length()) {
-                std::string coef = token.word.substr(0, pos);
-                std::string base = token.word.substr(pos);
-                s_token coef_token = {}; coef_token.word = coef;
-                s_token base_token = {}; base_token.word = base;
-                new_tokens.push_back(coef_token);
-                new_tokens.push_back(base_token);
-            }
-        }
-
-        if (new_tokens.empty()) {
-            new_tokens.push_back(token);
-        }
-
-        split.insert(split.end(), new_tokens.begin(), new_tokens.end());
-    }
-
-    return split;
-}
-
-std::deque<std::string> Tokenizer::split_equation(
-        const std::string &equation) noexcept(true) {
-    std::deque<std::string> split;
-
-    // equation
-    split = Tokenizer::split_by_delimiter(equation, Computor::SP);
-
-    // expression
-    bool keep = true;
-    split = Tokenizer::split_by_delimiter(split, Computor::OP_EQUAL, keep);
-
-    // term
-    split = Tokenizer::split_by_delimiter(split, Computor::OP_MUL, keep);
-    split = Tokenizer::split_by_delimiter(split, Computor::OP_PLUS, keep);
-    split = Tokenizer::split_by_delimiter(split, Computor::OP_MINUS, keep);
-    split = Tokenizer::split_by_delimiter(split, Computor::OP_POW, keep);
-    return split;
-}
-
-std::deque<std::string> Tokenizer::split_by_delimiter(
-        const std::string &src,
-        char delimiter,
-        bool keep_delimiter) noexcept(true) {
-    std::deque<std::string> split = {};
-    std::string token = "";
-
-    for (char c : src) {
-        if (c != delimiter) {
-            token += c;
-        } else {
-            if (!token.empty()) {
-                split.push_back(token);
-                token.clear();
-            }
-            if (keep_delimiter) {
-                split.push_back(std::string(1, c));
-            }
-        }
-    }
-
-    if (!token.empty()) {
-        split.push_back(token);
-    }
-    return split;
-}
-
-std::deque<std::string> Tokenizer::split_by_delimiter(
-        const std::deque<std::string> &src,
-        char delimiter,
-        bool keep_delimiter) noexcept(true) {
-    std::deque<std::string> split, split_elem;
-    std::deque<std::string>::const_iterator itr;
-
-    for (itr = src.begin(); itr != src.end(); ++itr) {
-        split_elem = split_by_delimiter(*itr, delimiter, keep_delimiter);
-        split.insert(split.end(), split_elem.begin(), split_elem.end());
-    }
-
-    return split;
 }
