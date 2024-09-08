@@ -20,5 +20,4 @@ namespace Computor {
 
 int calc_equation(const std::string &equation) noexcept(true);
 
-
 }  // namespace Computor

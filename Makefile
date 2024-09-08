@@ -53,5 +53,6 @@ utest	:
 	cmake --build build
 	./build/utest
 	#./build/utest --gtest_filter=TestParser.TestParseEquation*
+	#./build/utest --gtest_filter=TestParser.TestReducedForm
 
 -include $(DEPS)

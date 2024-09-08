@@ -1,5 +1,6 @@
 #include "Parser.hpp"
 #include <climits>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <deque>
@@ -37,13 +38,13 @@ Status Parser::parse_equation(
         return Status::FAILURE;
     }
 
-    std::cout << "before: ";
-    Parser::display_reduced_form();
+    // std::cout << "before: ";
+    // Parser::display_reduced_form();
     Parser::adjust_equation_sign();
     // Parser::display_polynomial();
-    std::cout << "after : ";
-    Parser::display_reduced_form();
-    std::cout << std::endl;
+    // std::cout << "after : ";
+    // Parser::display_reduced_form();
+    // std::cout << std::endl;
     return Status::SUCCESS;
 }
 
@@ -63,9 +64,10 @@ void Parser::adjust_equation_sign() noexcept(true) {
         break;
     }
 
-    std::cout << " adjust sign -> *= -1" << std::endl;
+    // std::cout << " adjust sign -> *= -1" << std::endl;
     for (auto &itr : this->polynomial_) {
-        itr.second *= -1;
+        double coef = itr.second * -1;
+        itr.second = normalize_zero(coef);
     }
 }
 
@@ -106,9 +108,9 @@ Status Parser::set_valid_term(const s_term &term, bool is_lhs) noexcept(true) {
     char var = term.variable;
     double coef = term.coefficient;
 
-    if (!Parser::is_valid_degree(degree)) {
-        return Status::FAILURE;
-    }
+    // if (!Parser::is_valid_degree(degree)) {
+    //     return Status::FAILURE;
+    // }
     if (Parser::set_variable(var, degree) == Status::FAILURE) {
         return Status::FAILURE;
     }
@@ -269,7 +271,8 @@ std::string Parser::reduced_form() const noexcept(true) {
     return Parser::reduced_form(this->polynomial_);
 }
 
-
+// 0 = 0は表示, 0 * X + 1 = 0は非表示
+// ^           ^^^^^
 std::string Parser::reduced_form(const std::map<int, double> &polynomial) const noexcept(true) {
     std::ostringstream reduced_form;
     bool is_first_term = true;
@@ -279,21 +282,33 @@ std::string Parser::reduced_form(const std::map<int, double> &polynomial) const 
         double coef = itr->second;
         std::string sign = "";
 
-        if (coef == 0.0 && 0 < pow) { continue; }
+        // std::cout << "pow=" << pow
+        // << ", coef=" << coef << ", var=" << this->variable_ << std::endl;
+        if (coef == 0.0) { continue; }
         if (coef < 0) {
             sign = "- ";
-            coef *= -1;
         } else if (0 < coef && !is_first_term) {
             sign = "+ ";
         }
+        // std::cout << "2" << std::endl;
 
-        reduced_form << sign << coef;
-        if (0 < pow) {
+        // reduced_form << sign << std::fixed << std::setprecision(2) << std::abs(coef);
+        reduced_form << sign << std::abs(coef);
+        if (pow == 1) {
+            // std::cout << "3" << std::endl;
+            reduced_form << " * " << this->variable_;
+        } else if (1 < pow) {
+            // std::cout << "4" << std::endl;
             reduced_form << " * " << this->variable_ << "^" << pow;
         }
         reduced_form << " ";
 
+        // std::cout << "5" << std::endl;
         if (is_first_term) { is_first_term = false; }
+    }
+    // std::cout << "6" << std::endl;
+    if (reduced_form.str().empty()) {
+        reduced_form << "0 ";
     }
     reduced_form << "= 0";
     return reduced_form.str();
@@ -355,4 +370,8 @@ std::ostream &operator<<(std::ostream &out, const s_term &term) {
     << ", var: " << term.variable
     << ", degree: " << term.degree << " ]";
     return out;
+}
+
+double normalize_zero(double value) noexcept(true) {
+    return value == 0.0 ? 0.0 : value;
 }
