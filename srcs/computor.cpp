@@ -31,8 +31,7 @@ int calc_equation(const std::string &equation) noexcept(true) {
     std::map<int, double> polynomial = parser.polynomial();
 
     Calculator calculator(polynomial);
-    calculator.solve_quadratic_equation();
-    return EXIT_SUCCESS;
+    return calculator.solve_quadratic_equation();
 }
 
 double normalize_zero(double value) noexcept(true) {

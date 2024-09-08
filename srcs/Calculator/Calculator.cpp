@@ -11,7 +11,7 @@ Calculator::Calculator(const std::map<int, double> &polynomial)
 
 Calculator::~Calculator() {}
 
-void Calculator::solve_quadratic_equation() noexcept(true) {
+int Calculator::solve_quadratic_equation() noexcept(true) {
     this->kMinDegree_ = 0;
     this->kMaxDegree_ = 2;
 
@@ -22,6 +22,7 @@ void Calculator::solve_quadratic_equation() noexcept(true) {
     // solve
     std::vector<QuadraticSolver::Solution> solutions = this->solutions_;
     Calculator::display_solutions(solutions, solution_type);
+    return Calculator::solve_result();
 }
 
 // aX^2 + bX^1 + cX^0 = 0
@@ -198,6 +199,13 @@ void Calculator::display_solutions(
         }
         std::cout << std::endl;
     }
+}
+
+int Calculator::solve_result() noexcept(true) {
+    if (0 < this->solutions_.size()) {
+        return EXIT_SUCCESS;
+    }
+    return EXIT_FAILURE;
 }
 
 std::string get_solution_type(QuadraticSolver::SolutionType type) noexcept(true) {

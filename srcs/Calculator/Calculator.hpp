@@ -47,7 +47,7 @@ class Calculator {
     ~Calculator();
 
     void solve_equation() noexcept(true);
-    void solve_quadratic_equation() noexcept(true);
+    int solve_quadratic_equation() noexcept(true);
 
  private:
     const std::map<int, double> polynomial_;
@@ -56,6 +56,7 @@ class Calculator {
     std::vector<QuadraticSolver::Solution> solutions_;
 
     QuadraticSolver::SolutionType solve() noexcept(true);
+    int solve_result() noexcept(true);
     static QuadraticSolver::EquationType get_equation_type(double a, double b) noexcept(true);
     static QuadraticSolver::SolutionType get_quadratic_eq_solution_type(double D) noexcept(true);
     static QuadraticSolver::SolutionType get_constant_eq_solution_type(double c) noexcept(true);
