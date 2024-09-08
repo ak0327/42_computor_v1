@@ -126,7 +126,6 @@ Computor::Status Parser::set_variable(char var, int degree) {
     return Computor::Status::FAILURE;
 }
 
-// todo degreeの判定はあとで
 // var
 Computor::Status Parser::set_valid_term(const s_term &term, bool is_lhs) noexcept(true) {
     int degree = term.degree;
@@ -137,18 +136,30 @@ Computor::Status Parser::set_valid_term(const s_term &term, bool is_lhs) noexcep
     //     return Computor::Status::FAILURE;
     // }
     if (Parser::set_variable(var, degree) == Computor::Status::FAILURE) {
+        std::cout << "[Error]: invalid variable: " << var << std::endl;
         return Computor::Status::FAILURE;
     }
     if (!Parser::is_valid_variable(var, degree)) {
+        std::cout << "[Error]: invalid variable: " << var << std::endl;
         return Computor::Status::FAILURE;
     }
     this->polynomial_[degree] += (is_lhs ? 1 : -1) * coef;
     if (!Parser::is_valid_coef(degree)) {
+        std::cout << "[Error]: invalid coefficient, too large or too small" << std::endl;
         return Computor::Status::FAILURE;
     }
     return Computor::Status::SUCCESS;
 }
 
+void Parser::print_invalid_token(
+        std::deque<s_token>::const_iterator *current,
+        const std::deque<s_token>::const_iterator &end) noexcept(true) {
+    if (Parser::is_at_end(current, end)) {
+        std::cout << "[Error] invalid equation" << std::endl;
+    } else {
+        std::cout << "[Error] invalid token: " << (*current)->word << std::endl;
+    }
+}
 
 //  lhs                              rhs
 //  vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv   v
@@ -162,6 +173,7 @@ void Parser::parse_expression(
         && !Parser::expect(current, end, TermBase)
         && !Parser::expect(current, end, OperatorPlus)
         && !Parser::expect(current, end, OperatorMinus)) {
+        print_invalid_token(current, end);
         return;
     }
     while (!Parser::is_at_end(current, end)) {
@@ -184,6 +196,10 @@ void Parser::parse_expression(
             continue;
         }
         break;
+    }
+
+    if (!Parser::is_at_end(current, end)) {
+        print_invalid_token(current, end);
     }
 }
 

@@ -854,6 +854,11 @@ TEST(TestParser, TestReducedForm) {
     expected_form = "0 = 0";
     expect_eq_reduced_form(equation, expected_form, __LINE__);
 
+    equation = "X^2 + 0*X^0 + X = 0";
+    expected_form = "1 * X^2 + 1 * X = 0";
+    expect_eq_reduced_form(equation, expected_form, __LINE__);
+
+
     // equation = "";
     // expected_form = "";
     // expect_eq_reduced_form(equation, expected_form, __LINE__);
@@ -865,4 +870,21 @@ TEST(TestParser, TestReducedForm) {
     // equation = "";
     // expected_form = "";
     // expect_eq_reduced_form(equation, expected_form, __LINE__);
+}
+
+
+TEST(TestParser, TestErrorEquation) {
+    std::string equation, expected_form;
+
+    (void)expected_form;
+
+    equation = "X^2 + 0*Y^0 + X = 0";
+
+    equation = "X^2 + 0*Y^0 + X^0 = 0";
+
+    equation = "X^2 + 0*Y^0 + X^1 = 0";
+
+    equation = "X^2 + 1*Y^1 + X^1 = 0";
+
+    equation = "X^2 + 0*Y^1 + 0*X^1 = 0";
 }

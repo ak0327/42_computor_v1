@@ -32,7 +32,6 @@ class Parser {
     std::map<int, double> polynomial_;
     char variable_;
 
-
     void parse_expression(
             std::deque<s_token>::const_iterator *itr,
             const std::deque<s_token>::const_iterator &end,
@@ -73,6 +72,9 @@ class Parser {
             std::size_t start_pos,
             std::size_t *end_pos) noexcept(true);
 
+    static void print_invalid_token(
+            std::deque<s_token>::const_iterator *current,
+            const std::deque<s_token>::const_iterator &end) noexcept(true);
 
     // copy invalid
     Parser &operator=(const Parser &rhs);
