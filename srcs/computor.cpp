@@ -35,4 +35,8 @@ int calc_equation(const std::string &equation) noexcept(true) {
     return EXIT_SUCCESS;
 }
 
+double normalize_zero(double value) noexcept(true) {
+    return value == 0.0 ? 0.0 : value;
+}
+
 }  // namespace Computor

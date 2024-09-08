@@ -16,5 +16,6 @@ extern const char OP_EQUAL;  // '='
 extern const char OP_POW;    // '^'
 
 int calc_equation(const std::string &equation) noexcept(true);
+double normalize_zero(double value) noexcept(true);
 
 }  // namespace Computor

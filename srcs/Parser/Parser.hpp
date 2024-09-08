@@ -84,5 +84,3 @@ class Parser {
 };
 
 std::ostream &operator<<(std::ostream &out, const s_term &term);
-
-double normalize_zero(double value) noexcept(true);

@@ -95,7 +95,7 @@ void Parser::adjust_equation_sign() noexcept(true) {
     // std::cout << " adjust sign -> *= -1" << std::endl;
     for (auto &itr : this->polynomial_) {
         double coef = itr.second * -1;
-        itr.second = normalize_zero(coef);
+        itr.second = Computor::normalize_zero(coef);
     }
 }
 
@@ -447,8 +447,4 @@ std::ostream &operator<<(std::ostream &out, const s_term &term) {
     << ", var: " << term.variable
     << ", degree: " << term.degree << " ]";
     return out;
-}
-
-double normalize_zero(double value) noexcept(true) {
-    return value == 0.0 ? 0.0 : value;
 }
