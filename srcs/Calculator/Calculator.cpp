@@ -1,4 +1,5 @@
 #include "Calculator.hpp"
+#include "computor.hpp"
 #include <cmath>
 #include <iostream>
 #include <iomanip>
@@ -74,12 +75,12 @@ std::vector<QuadraticSolver::Solution> Calculator::solve_quadratic(
             if (DEBUG) std::cout << "solve_quadratic() 2-complex" << std::endl;
             QuadraticSolver::Solution ans1, ans2;
             ans1 = {
-                    .re = -b / 2.0 / a,
-                    .im = std::sqrt(-D) / 2.0 / a
+                    .re = Computor::normalize_zero(-b / 2.0 / a),
+                    .im = Computor::normalize_zero(std::sqrt(-D) / 2.0 / a)
             };
             ans2 = {
-                    .re = -b / 2.0 / a,
-                    .im = -std::sqrt(-D) / 2.0 / a
+                    .re = Computor::normalize_zero(-b / 2.0 / a),
+                    .im = Computor::normalize_zero(-std::sqrt(-D) / 2.0 / a)
             };
             solutions.push_back(ans1);
             solutions.push_back(ans2);
@@ -88,8 +89,8 @@ std::vector<QuadraticSolver::Solution> Calculator::solve_quadratic(
         case QuadraticSolver::TwoRealSolutionsQuadratic: {
             if (DEBUG) std::cout << "solve_quadratic() 2-real" << std::endl;
             QuadraticSolver::Solution ans1, ans2;
-            ans1.re = (-b + std::sqrt(D)) / 2.0 / a;
-            ans2.re = (-b - std::sqrt(D)) / 2.0 / a;
+            ans1.re = Computor::normalize_zero((-b + std::sqrt(D)) / 2.0 / a);
+            ans2.re = Computor::normalize_zero((-b - std::sqrt(D)) / 2.0 / a);
             solutions.push_back(ans1);
             solutions.push_back(ans2);
             break;
@@ -97,7 +98,7 @@ std::vector<QuadraticSolver::Solution> Calculator::solve_quadratic(
         case QuadraticSolver::OneRealSolutionQuadratic: {
             if (DEBUG) std::cout << "solve_quadratic() 1-real" << std::endl;
             QuadraticSolver::Solution ans;
-            ans.re = -b / 2.0 / a;
+            ans.re = Computor::normalize_zero(-b / 2.0 / a);
             solutions.push_back(ans);
             break;
         }
@@ -117,7 +118,7 @@ std::vector<QuadraticSolver::Solution> Calculator::solve_linear(
         case QuadraticSolver::OneRealSolutionLinear: {
             if (DEBUG) std::cout << "solve_linear() 1-real" << std::endl;
             QuadraticSolver::Solution ans;
-            ans.re = -c / b;
+            ans.re = Computor::normalize_zero(-c / b);
             solutions.push_back(ans);
             break;
         }
