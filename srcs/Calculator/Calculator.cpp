@@ -3,7 +3,7 @@
 #include <iostream>
 #include <iomanip>
 
-bool DEBUG = true;
+bool DEBUG = false;
 
 Calculator::Calculator(const std::map<int, double> &polynomial)
     : polynomial_(polynomial) {}
