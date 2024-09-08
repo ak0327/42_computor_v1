@@ -1,4 +1,4 @@
-#include "Tokenizer.hpp"
+#include "TestTokenizer.hpp"
 #include "gtest/gtest.h"
 
 std::string get_kind_str(TokenKind kind) {
@@ -50,28 +50,28 @@ TEST(TestParser, SplitByDelimiterString) {
     delimiter = ' ';
     equation = "";
     expected_split = {};
-    actual_split = Tokenizer::split_by_delimiter(equation, delimiter);
+    actual_split = TestTokenizer::split_by_delimiter(equation, delimiter);
     EXPECT_EQ(expected_split, actual_split);
 
 
     delimiter = '\0';
     equation = "";
     expected_split = {};
-    actual_split = Tokenizer::split_by_delimiter(equation, delimiter);
+    actual_split = TestTokenizer::split_by_delimiter(equation, delimiter);
     EXPECT_EQ(expected_split, actual_split);
 
 
     delimiter = '\0';
     equation = " abc ";
     expected_split = {" abc "};
-    actual_split = Tokenizer::split_by_delimiter(equation, delimiter);
+    actual_split = TestTokenizer::split_by_delimiter(equation, delimiter);
     EXPECT_EQ(expected_split, actual_split);
 
 
     delimiter = ' ';
     equation = "A";
     expected_split = {"A"};
-    actual_split = Tokenizer::split_by_delimiter(equation, delimiter);
+    actual_split = TestTokenizer::split_by_delimiter(equation, delimiter);
     EXPECT_EQ(expected_split, actual_split);
 
 
@@ -79,7 +79,7 @@ TEST(TestParser, SplitByDelimiterString) {
     equation = "A B C";
     //          ^ ^ ^
     expected_split = {"A", "B", "C"};
-    actual_split = Tokenizer::split_by_delimiter(equation, delimiter);
+    actual_split = TestTokenizer::split_by_delimiter(equation, delimiter);
     EXPECT_EQ(expected_split, actual_split);
 
 
@@ -87,7 +87,7 @@ TEST(TestParser, SplitByDelimiterString) {
     equation = "+A - B*C";
     //          ^^ ^ ^^^
     expected_split = {"+A", "-", "B*C"};
-    actual_split = Tokenizer::split_by_delimiter(equation, delimiter);
+    actual_split = TestTokenizer::split_by_delimiter(equation, delimiter);
     EXPECT_EQ(expected_split, actual_split);
 
 
@@ -95,7 +95,7 @@ TEST(TestParser, SplitByDelimiterString) {
     equation = "-1 * A^X + B^1-C ^X + D^+2";
     //          ^^ ^ ^^^ ^ ^^^ ^
     expected_split = {"-1", "*", "A^X", "+", "B^1-C", "^X", "+", "D^+2"};
-    actual_split = Tokenizer::split_by_delimiter(equation, delimiter);
+    actual_split = TestTokenizer::split_by_delimiter(equation, delimiter);
     EXPECT_EQ(expected_split, actual_split);
 
 
@@ -103,7 +103,7 @@ TEST(TestParser, SplitByDelimiterString) {
     delimiter = '*';
     equation = "1*2*3";
     expected_split = {"1", "*", "2", "*", "3" };
-    actual_split = Tokenizer::split_by_delimiter(equation, delimiter, keep_delimiter);
+    actual_split = TestTokenizer::split_by_delimiter(equation, delimiter, keep_delimiter);
     EXPECT_EQ(expected_split, actual_split);
 
 
@@ -114,7 +114,7 @@ TEST(TestParser, SplitByDelimiterString) {
     expected_split = {
             "*", " 4", "*", "5", "*", " 666 ", "*", "7ab", "*", "c ", "*", "*", "  "
     };
-    actual_split = Tokenizer::split_by_delimiter(equation, delimiter, keep_delimiter);
+    actual_split = TestTokenizer::split_by_delimiter(equation, delimiter, keep_delimiter);
     EXPECT_EQ(expected_split, actual_split);
 }
 
@@ -127,7 +127,7 @@ TEST(TestParser, SplitByDelimiterDeque) {
     src = {"A^X", "+", "B^1-C"};
     //       ^           ^
     expected_split = {"A", "^", "X", "+", "B", "^", "1-C"};
-    actual_split = Tokenizer::split_by_delimiter(src, delimiter, keep_delimiter);
+    actual_split = TestTokenizer::split_by_delimiter(src, delimiter, keep_delimiter);
     EXPECT_EQ(expected_split, actual_split);
 
 
@@ -135,7 +135,7 @@ TEST(TestParser, SplitByDelimiterDeque) {
     src = {"A^X", "-", "B^1-C"};
     //             ^       ^
     expected_split = {"A^X", "-", "B^1", "-", "C"};
-    actual_split = Tokenizer::split_by_delimiter(src, delimiter, keep_delimiter);
+    actual_split = TestTokenizer::split_by_delimiter(src, delimiter, keep_delimiter);
     EXPECT_EQ(expected_split, actual_split);
 
 
@@ -143,7 +143,7 @@ TEST(TestParser, SplitByDelimiterDeque) {
     src = {"  X^0 + X^1 +X^2    = 0   "};
     //      ^^   ^ ^   ^    ^^^^   ^^^
     expected_split = {"X^0", "+", "X^1", "+X^2", "=",  "0"};
-    actual_split = Tokenizer::split_by_delimiter(src, delimiter);
+    actual_split = TestTokenizer::split_by_delimiter(src, delimiter);
     EXPECT_EQ(expected_split, actual_split);
 
 
@@ -151,14 +151,14 @@ TEST(TestParser, SplitByDelimiterDeque) {
     src = {"X^0", "+", "X^1", "+X^2", "=",  "0"};
     //             ^           ^
     expected_split = {"X^0", "+", "X^1", "+", "X^2", "=",  "0"};
-    actual_split = Tokenizer::split_by_delimiter(src, delimiter, keep_delimiter);
+    actual_split = TestTokenizer::split_by_delimiter(src, delimiter, keep_delimiter);
     EXPECT_EQ(expected_split, actual_split);
 
 
     delimiter = '-';
     src = {"X^0", "+", "X^1", "+", "X^2", "=",  "0"};
     expected_split = {"X^0", "+", "X^1", "+", "X^2", "=",  "0"};
-    actual_split = Tokenizer::split_by_delimiter(src, delimiter, keep_delimiter);
+    actual_split = TestTokenizer::split_by_delimiter(src, delimiter, keep_delimiter);
     EXPECT_EQ(expected_split, actual_split);
 
 
@@ -166,7 +166,7 @@ TEST(TestParser, SplitByDelimiterDeque) {
     src = {"X^0", "+", "X^1", "+", "X^2", "=",  "0"};
     //       ^           ^           ^
     expected_split = {"X", "^", "0", "+", "X", "^", "1", "+", "X", "^", "2", "=",  "0"};
-    actual_split = Tokenizer::split_by_delimiter(src, delimiter, keep_delimiter);
+    actual_split = TestTokenizer::split_by_delimiter(src, delimiter, keep_delimiter);
     EXPECT_EQ(expected_split, actual_split);
 }
 
@@ -177,42 +177,42 @@ TEST(TestParser, SplitEquation) {
 
     equation = "";
     expected_split = {};
-    actual_split = Tokenizer::split_equation(equation);
+    actual_split = TestTokenizer::split_equation(equation);
     EXPECT_EQ(expected_split, actual_split);
 
     equation = "     ";
     expected_split = {};
-    actual_split = Tokenizer::split_equation(equation);
+    actual_split = TestTokenizer::split_equation(equation);
     EXPECT_EQ(expected_split, actual_split);
 
 
     equation = "1";
     expected_split = {"1"};
-    actual_split = Tokenizer::split_equation(equation);
+    actual_split = TestTokenizer::split_equation(equation);
     EXPECT_EQ(expected_split, actual_split);
 
 
     equation = "+-=*^";
     expected_split = {"+", "-", "=", "*", "^"};
-    actual_split = Tokenizer::split_equation(equation);
+    actual_split = TestTokenizer::split_equation(equation);
     EXPECT_EQ(expected_split, actual_split);
 
 
     equation = " 1 + 2 = 3 ";
     expected_split = {"1", "+", "2", "=", "3"};
-    actual_split = Tokenizer::split_equation(equation);
+    actual_split = TestTokenizer::split_equation(equation);
     EXPECT_EQ(expected_split, actual_split);
 
 
     equation = "  X^0 + X^1 +X^2    = 0   ";
     expected_split = {"X", "^", "0", "+", "X", "^", "1", "+", "X", "^", "2", "=",  "0"};
-    actual_split = Tokenizer::split_equation(equation);
+    actual_split = TestTokenizer::split_equation(equation);
     EXPECT_EQ(expected_split, actual_split);
 
 
     equation = "  X ^ 0+X^  1 +X^+2    = 0  =0=++X^123  ";
     expected_split = { "X", "^", "0", "+", "X", "^", "1", "+", "X", "^", "+", "2", "=", "0", "=", "0", "=", "+", "+", "X", "^", "123" };
-    actual_split = Tokenizer::split_equation(equation);
+    actual_split = TestTokenizer::split_equation(equation);
     EXPECT_EQ(expected_split, actual_split);
 }
 
@@ -224,7 +224,7 @@ TEST(TestParser, SplitCoefAndBase) {
 
     tokens = {};
     expected_tokens = {};
-    actual_tokens = Tokenizer::split_term_coef_and_base(tokens);
+    actual_tokens = TestTokenizer::split_term_coef_and_base(tokens);
     expect_eq_tokens(expected_tokens, actual_tokens, __LINE__);
 
 
@@ -234,7 +234,7 @@ TEST(TestParser, SplitCoefAndBase) {
     expected_tokens = {
             {.word="", .kind=None},
     };
-    actual_tokens = Tokenizer::split_term_coef_and_base(tokens);
+    actual_tokens = TestTokenizer::split_term_coef_and_base(tokens);
     expect_eq_tokens(expected_tokens, actual_tokens, __LINE__);
 
 
@@ -246,7 +246,7 @@ TEST(TestParser, SplitCoefAndBase) {
             {.word="1", .kind=None},
             {.word="X", .kind=None},
     };
-    actual_tokens = Tokenizer::split_term_coef_and_base(tokens);
+    actual_tokens = TestTokenizer::split_term_coef_and_base(tokens);
     expect_eq_tokens(expected_tokens, actual_tokens, __LINE__);
 
 
@@ -257,7 +257,7 @@ TEST(TestParser, SplitCoefAndBase) {
             {.word="1.02", .kind=None},
             {.word="y", .kind=None},
     };
-    actual_tokens = Tokenizer::split_term_coef_and_base(tokens);
+    actual_tokens = TestTokenizer::split_term_coef_and_base(tokens);
     expect_eq_tokens(expected_tokens, actual_tokens, __LINE__);
 
 
@@ -268,7 +268,7 @@ TEST(TestParser, SplitCoefAndBase) {
             {.word="1.02", .kind=None},
             {.word="xyz", .kind=None},
     };
-    actual_tokens = Tokenizer::split_term_coef_and_base(tokens);
+    actual_tokens = TestTokenizer::split_term_coef_and_base(tokens);
     expect_eq_tokens(expected_tokens, actual_tokens, __LINE__);
 
 
@@ -289,7 +289,7 @@ TEST(TestParser, SplitCoefAndBase) {
             {.word="X123", .kind=None},
             {.word="1x", .kind=TermCoef},
     };
-    actual_tokens = Tokenizer::split_term_coef_and_base(tokens);
+    actual_tokens = TestTokenizer::split_term_coef_and_base(tokens);
     expect_eq_tokens(expected_tokens, actual_tokens, __LINE__);
 }
 

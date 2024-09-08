@@ -5,6 +5,8 @@
 #include "Tokenizer.hpp"
 #include "Parser.hpp"
 
+namespace Computor {
+
 const char SP        = ' ';
 const char OP_PLUS   = '+';
 const char OP_MINUS  = '-';
@@ -13,7 +15,7 @@ const char OP_EQUAL  = '=';
 const char OP_POW    = '^';
 
 
-int Computor::calc_equation(const std::string &equation) noexcept(true) {
+int calc_equation(const std::string &equation) noexcept(true) {
     Tokenizer tokenizer;
     if (tokenizer.tokenize(equation) == Status::FAILURE) {
         return EXIT_FAILURE;
@@ -32,3 +34,5 @@ int Computor::calc_equation(const std::string &equation) noexcept(true) {
     calculator.solve_quadratic_equation();
     return EXIT_SUCCESS;
 }
+
+}  // namespace Computor

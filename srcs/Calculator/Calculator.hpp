@@ -5,12 +5,13 @@
 #include <vector>
 
 
+namespace QuadraticSolver {
+
 enum EquationType {
     Quadratic,
     Linear,
     Constant,
 };
-
 
 enum SolutionType {
     // 2次方程式
@@ -32,11 +33,12 @@ enum SolutionType {
     NoSolutionDegreeTooLow          // 次数が低すぎる場合のエラー
 };
 
-
 struct Solution {
     double re;
     double im;
 };
+
+}  // namespace QuadraticSolver
 
 
 class Calculator {
@@ -51,27 +53,27 @@ class Calculator {
     const std::map<int, double> polynomial_;
     int kMinDegree_, kMaxDegree_;
 
-    std::vector<Solution> solutions_;
+    std::vector<QuadraticSolver::Solution> solutions_;
 
-    SolutionType solve() noexcept(true);
-    static EquationType get_equation_type(double a, double b) noexcept(true);
-    static SolutionType get_quadratic_eq_solution_type(double D) noexcept(true);
-    static SolutionType get_constant_eq_solution_type(double c) noexcept(true);
+    QuadraticSolver::SolutionType solve() noexcept(true);
+    static QuadraticSolver::EquationType get_equation_type(double a, double b) noexcept(true);
+    static QuadraticSolver::SolutionType get_quadratic_eq_solution_type(double D) noexcept(true);
+    static QuadraticSolver::SolutionType get_constant_eq_solution_type(double c) noexcept(true);
 
-    static void display_solution_type(SolutionType type) noexcept(true);
+    static void display_solution_type(QuadraticSolver::SolutionType type) noexcept(true);
 
-    static std::vector<Solution> solve_quadratic(
+    static std::vector<QuadraticSolver::Solution> solve_quadratic(
             double a,
             double b,
             double D,
-            SolutionType type) noexcept(true);
-    static std::vector<Solution> solve_linear(
+            QuadraticSolver::SolutionType type) noexcept(true);
+    static std::vector<QuadraticSolver::Solution> solve_linear(
             double b,
             double c,
-            SolutionType type) noexcept(true);
+            QuadraticSolver::SolutionType type) noexcept(true);
     static void display_solutions(
-            const std::vector<Solution> &solutions,
-            SolutionType type) noexcept(true);
+            const std::vector<QuadraticSolver::Solution> &solutions,
+            QuadraticSolver::SolutionType type) noexcept(true);
 
     // invalid
     Calculator();
@@ -79,4 +81,4 @@ class Calculator {
     Calculator &operator=(const Calculator &rhs);
 };
 
-std::string get_solution_type(SolutionType type) noexcept(true);
+std::string get_solution_type(QuadraticSolver::SolutionType type) noexcept(true);

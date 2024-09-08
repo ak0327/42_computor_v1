@@ -1,4 +1,4 @@
-#include "Parser.hpp"
+#include "TestParser.hpp"
 #include "gtest/gtest.h"
 
 TEST(TestParser, TestSkipSP) {
@@ -10,7 +10,7 @@ TEST(TestParser, TestSkipSP) {
     //   st^^end
     start = 0;
     expected_end = 1;
-    Parser::skip_sp(str, start, &actual_end);
+    TestParser::skip_sp(str, start, &actual_end);
     EXPECT_EQ(expected_end, actual_end);
 
     str = "   1";
@@ -18,7 +18,7 @@ TEST(TestParser, TestSkipSP) {
     //   st^  ^end
     start = 0;
     expected_end = 3;
-    Parser::skip_sp(str, start, &actual_end);
+    TestParser::skip_sp(str, start, &actual_end);
     EXPECT_EQ(expected_end, actual_end);
 
     str = "   1";
@@ -26,7 +26,7 @@ TEST(TestParser, TestSkipSP) {
     //   st^  ^end
     start = 0;
     expected_end = 3;
-    Parser::skip_sp(str, start, &actual_end);
+    TestParser::skip_sp(str, start, &actual_end);
     EXPECT_EQ(expected_end, actual_end);
 
     str = "";
@@ -34,7 +34,7 @@ TEST(TestParser, TestSkipSP) {
     //   st^end
     start = 0;
     expected_end = start;
-    Parser::skip_sp(str, start, &actual_end);
+    TestParser::skip_sp(str, start, &actual_end);
     EXPECT_EQ(expected_end, actual_end);
 
     str = "";
@@ -42,7 +42,7 @@ TEST(TestParser, TestSkipSP) {
     //       st^end
     start = 4;
     expected_end = start;
-    Parser::skip_sp(str, start, &actual_end);
+    TestParser::skip_sp(str, start, &actual_end);
     EXPECT_EQ(expected_end, actual_end);
 
     str = "abc";
@@ -50,7 +50,7 @@ TEST(TestParser, TestSkipSP) {
     //   st^end
     start = 0;
     expected_end = start;
-    Parser::skip_sp(str, start, &actual_end);
+    TestParser::skip_sp(str, start, &actual_end);
     EXPECT_EQ(expected_end, actual_end);
 
     str = " abc    ";
@@ -58,7 +58,7 @@ TEST(TestParser, TestSkipSP) {
     //   st^^end
     start = 0;
     expected_end = 1;
-    Parser::skip_sp(str, start, &actual_end);
+    TestParser::skip_sp(str, start, &actual_end);
     EXPECT_EQ(expected_end, actual_end);
 
 
@@ -67,7 +67,7 @@ TEST(TestParser, TestSkipSP) {
     //    st^end
     start = 1;
     expected_end = start;
-    Parser::skip_sp(str, start, &actual_end);
+    TestParser::skip_sp(str, start, &actual_end);
     EXPECT_EQ(expected_end, actual_end);
 }
 
@@ -75,7 +75,7 @@ TEST(TestParser, TestSkipSP) {
 TEST(TestParser, TestParseTermOK) {
     Parser parser;
     std::deque<s_token> tokens;
-    std::deque<s_token>::const_iterator itr;
+    std::deque<s_token>::const_iterator itr, end;
     s_term actual_term, expected_term;
 
     tokens = {
@@ -87,7 +87,8 @@ TEST(TestParser, TestParseTermOK) {
             .degree = 0,
     };
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -102,7 +103,8 @@ TEST(TestParser, TestParseTermOK) {
             .degree = 1,
     };
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -121,7 +123,8 @@ TEST(TestParser, TestParseTermOK) {
             .degree = 0,
     };
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -142,7 +145,8 @@ TEST(TestParser, TestParseTermOK) {
             .degree = 2,
     };
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -160,7 +164,8 @@ TEST(TestParser, TestParseTermOK) {
             .degree = 0,
     };
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -178,7 +183,8 @@ TEST(TestParser, TestParseTermOK) {
             .degree = 0,
     };
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -197,7 +203,8 @@ TEST(TestParser, TestParseTermOK) {
             .degree = 5,
     };
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -215,7 +222,8 @@ TEST(TestParser, TestParseTermOK) {
             .degree = 2147483647,
     };
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -232,7 +240,8 @@ TEST(TestParser, TestParseTermOK) {
             .degree = 1,
     };
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -244,7 +253,7 @@ TEST(TestParser, TestParseTermOK) {
 TEST(TestParser, TestParseTermNG) {
     Parser parser;
     std::deque<s_token> tokens;
-    std::deque<s_token>::const_iterator itr;
+    std::deque<s_token>::const_iterator itr, end;
     s_term actual_term, expected_term;
 
     tokens = {
@@ -254,7 +263,8 @@ TEST(TestParser, TestParseTermNG) {
     };
     expected_term = {};
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -267,7 +277,8 @@ TEST(TestParser, TestParseTermNG) {
     };
     expected_term = {};
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -280,7 +291,8 @@ TEST(TestParser, TestParseTermNG) {
     };
     expected_term = {};
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -293,7 +305,8 @@ TEST(TestParser, TestParseTermNG) {
     };
     expected_term = {};
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -307,7 +320,8 @@ TEST(TestParser, TestParseTermNG) {
     };
     expected_term = {};
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -319,7 +333,8 @@ TEST(TestParser, TestParseTermNG) {
     };
     expected_term = {};
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -332,7 +347,8 @@ TEST(TestParser, TestParseTermNG) {
     };
     expected_term = {};
     itr = tokens.begin();
-    actual_term = Parser::parse_term(tokens, &itr);
+    end = tokens.end();
+    actual_term = TestParser::parse_term(&itr, end);
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -342,11 +358,11 @@ TEST(TestParser, TestParseTermNG) {
 TEST(TestParser, TestParseEquationByTokenNG) {
     Parser parser;
     std::deque<s_token> tokens;
-    Status expected_status, actual_status;
+    Computor::Status expected_status, actual_status;
 
     tokens = {};
     actual_status = parser.parse_equation(tokens);
-    expected_status = Status::FAILURE;
+    expected_status = Computor::Status::FAILURE;
     EXPECT_EQ(expected_status, actual_status);
 
 
@@ -354,7 +370,7 @@ TEST(TestParser, TestParseEquationByTokenNG) {
             {.word="y", .kind=TermBase},
     };
     actual_status = parser.parse_equation(tokens);
-    expected_status = Status::FAILURE;
+    expected_status = Computor::Status::FAILURE;
     EXPECT_EQ(expected_status, actual_status);
 
 
@@ -362,7 +378,7 @@ TEST(TestParser, TestParseEquationByTokenNG) {
             {.word="1", .kind=TermCoef},
     };
     actual_status = parser.parse_equation(tokens);
-    expected_status = Status::FAILURE;
+    expected_status = Computor::Status::FAILURE;
     EXPECT_EQ(expected_status, actual_status);
 
 
@@ -370,7 +386,7 @@ TEST(TestParser, TestParseEquationByTokenNG) {
             {.word="=", .kind=OperatorEqual},
     };
     actual_status = parser.parse_equation(tokens);
-    expected_status = Status::FAILURE;
+    expected_status = Computor::Status::FAILURE;
     EXPECT_EQ(expected_status, actual_status);
 
 
@@ -378,7 +394,7 @@ TEST(TestParser, TestParseEquationByTokenNG) {
             {.word="+", .kind=OperatorPlus},
     };
     actual_status = parser.parse_equation(tokens);
-    expected_status = Status::FAILURE;
+    expected_status = Computor::Status::FAILURE;
     EXPECT_EQ(expected_status, actual_status);
 
 
@@ -388,7 +404,7 @@ TEST(TestParser, TestParseEquationByTokenNG) {
             {.word="y", .kind=TermBase},
     };
     actual_status = parser.parse_equation(tokens);
-    expected_status = Status::FAILURE;
+    expected_status = Computor::Status::FAILURE;
     EXPECT_EQ(expected_status, actual_status);
 
 
@@ -398,7 +414,7 @@ TEST(TestParser, TestParseEquationByTokenNG) {
             {.word="y", .kind=TermBase},
     };
     actual_status = parser.parse_equation(tokens);
-    expected_status = Status::FAILURE;
+    expected_status = Computor::Status::FAILURE;
     EXPECT_EQ(expected_status, actual_status);
 
 
@@ -408,7 +424,7 @@ TEST(TestParser, TestParseEquationByTokenNG) {
             {.word="y", .kind=TermBase},
     };
     actual_status = parser.parse_equation(tokens);
-    expected_status = Status::FAILURE;
+    expected_status = Computor::Status::FAILURE;
     EXPECT_EQ(expected_status, actual_status);
 
 
@@ -418,7 +434,7 @@ TEST(TestParser, TestParseEquationByTokenNG) {
             {.word="=", .kind=OperatorEqual},
     };
     actual_status = parser.parse_equation(tokens);
-    expected_status = Status::FAILURE;
+    expected_status = Computor::Status::FAILURE;
     EXPECT_EQ(expected_status, actual_status);
 
 
@@ -430,7 +446,7 @@ TEST(TestParser, TestParseEquationByTokenNG) {
             {.word="1", .kind=TermCoef},
     };
     actual_status = parser.parse_equation(tokens);
-    expected_status = Status::FAILURE;
+    expected_status = Computor::Status::FAILURE;
     EXPECT_EQ(expected_status, actual_status);
 
 
@@ -442,7 +458,7 @@ TEST(TestParser, TestParseEquationByTokenNG) {
             {.word="1", .kind=TermCoef},
     };
     actual_status = parser.parse_equation(tokens);
-    expected_status = Status::FAILURE;
+    expected_status = Computor::Status::FAILURE;
     EXPECT_EQ(expected_status, actual_status);
 
 }
@@ -454,7 +470,7 @@ TEST(TestParser, TestParseEquationByStringOK) {
     std::string actual_form, expected_form;
     std::deque<s_token> tokens;
     std::map<int, double> actual_poly, expected_poly;
-    Status tokenizer_res, parser_res;
+    Computor::Status tokenizer_res, parser_res;
 
     // simple equation
     equation = "X^0 + X^1 + X^2 = 0";
@@ -471,8 +487,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -491,8 +507,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -511,8 +527,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -530,8 +546,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -550,8 +566,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -568,8 +584,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -586,8 +602,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -604,8 +620,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -622,8 +638,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Status::SUCCESS, parser_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 }
@@ -634,7 +650,7 @@ TEST(TestParser, TestParseEquationByStringNG) {
     Parser *p;
     std::string equation;
     std::deque<s_token> tokens;
-    Status tokenizer_res, parser_res;
+    Computor::Status tokenizer_res, parser_res;
 
     // subject
     // equation = "8 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 3 * X^0";
@@ -643,8 +659,8 @@ TEST(TestParser, TestParseEquationByStringNG) {
     // p = new Parser();
     // parser_res = p->parse_equation(tokens);
     // delete p;
-    // EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Status::FAILURE, parser_res);
+    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
     //
     // // simple test
     // equation = "X^3 = 0";
@@ -653,8 +669,8 @@ TEST(TestParser, TestParseEquationByStringNG) {
     // p = new Parser();
     // parser_res = p->parse_equation(tokens);
     // delete p;
-    // EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Status::FAILURE, parser_res);
+    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
     //
     //
     // equation = "X^0 == 0";
@@ -663,8 +679,8 @@ TEST(TestParser, TestParseEquationByStringNG) {
     // p = new Parser();
     // parser_res = p->parse_equation(tokens);
     // delete p;
-    // EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Status::FAILURE, parser_res);
+    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
     //
     //
     // equation = "X^0 = 0 = 0";
@@ -673,8 +689,8 @@ TEST(TestParser, TestParseEquationByStringNG) {
     // p = new Parser();
     // parser_res = p->parse_equation(tokens);
     // delete p;
-    // EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Status::FAILURE, parser_res);
+    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
 
 
     equation = "= X^0";
@@ -683,8 +699,8 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Status::FAILURE, parser_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::FAILURE, parser_res);
 
 
     equation = "^ X^0";
@@ -693,8 +709,8 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Status::FAILURE, parser_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::FAILURE, parser_res);
 
 
     equation = "X^0 =";
@@ -703,8 +719,8 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Status::FAILURE, parser_res);
+    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_EQ(Computor::Status::FAILURE, parser_res);
 
 
     // equation = "X^0 + Y^0";
@@ -713,8 +729,8 @@ TEST(TestParser, TestParseEquationByStringNG) {
     // p = new Parser();
     // parser_res = p->parse_equation(tokens);
     // delete p;
-    // EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Status::FAILURE, parser_res);
+    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
     //
     //
     // equation = "X^1 + Y^2 = 0";
@@ -723,8 +739,8 @@ TEST(TestParser, TestParseEquationByStringNG) {
     // p = new Parser();
     // parser_res = p->parse_equation(tokens);
     // delete p;
-    // EXPECT_EQ(Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Status::FAILURE, parser_res);
+    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
 }
 
 
@@ -765,6 +781,10 @@ TEST(TestParser, TestReducedForm) {
 
     equation = "X^2 - 2X^2 + X^1 - 1 * X^1 + 0*X^0 = X^0 + 2";
     expected_form = "1 * X^2 + 3 = 0";
+    expect_eq_reduced_form(equation, expected_form, __LINE__);
+
+    equation = "X^1 = 0";
+    expected_form = "1 * X = 0";
     expect_eq_reduced_form(equation, expected_form, __LINE__);
 
     equation = "X = 0";
@@ -834,6 +854,11 @@ TEST(TestParser, TestReducedForm) {
     expected_form = "0 = 0";
     expect_eq_reduced_form(equation, expected_form, __LINE__);
 
+    equation = "X^2 + 0*X^0 + X = 0";
+    expected_form = "1 * X^2 + 1 * X = 0";
+    expect_eq_reduced_form(equation, expected_form, __LINE__);
+
+
     // equation = "";
     // expected_form = "";
     // expect_eq_reduced_form(equation, expected_form, __LINE__);
@@ -845,4 +870,21 @@ TEST(TestParser, TestReducedForm) {
     // equation = "";
     // expected_form = "";
     // expect_eq_reduced_form(equation, expected_form, __LINE__);
+}
+
+
+TEST(TestParser, TestErrorEquation) {
+    std::string equation, expected_form;
+
+    (void)expected_form;
+
+    equation = "X^2 + 0*Y^0 + X = 0";
+
+    equation = "X^2 + 0*Y^0 + X^0 = 0";
+
+    equation = "X^2 + 0*Y^0 + X^1 = 0";
+
+    equation = "X^2 + 1*Y^1 + X^1 = 0";
+
+    equation = "X^2 + 0*Y^1 + 0*X^1 = 0";
 }

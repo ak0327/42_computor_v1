@@ -1,8 +1,9 @@
 #pragma once
 
 #include <deque>
-#include <string>
 #include <map>
+#include <string>
+#include <utility>
 #include "computor.hpp"
 #include "Tokenizer.hpp"
 
@@ -17,43 +18,69 @@ class Parser {
     Parser();
     ~Parser();
 
-    Status parse_equation(const std::deque<s_token> &tokens) noexcept(true);
-    void parse_expression(
-            const std::deque<s_token> &tokens,
-            std::deque<s_token>::const_iterator *itr,
-            bool is_lhs) noexcept(true);
-    void adjust_equation_sign() noexcept(true);
+    Computor::Status parse_equation(const std::deque<s_token> &tokens) noexcept(true);
     void display_reduced_form() const noexcept(true);
-    std::string reduced_form() const noexcept(true);
-    std::string reduced_form(const std::map<int, double> &polynomial) const noexcept(true);
     void display_polynomial_degree() const noexcept(true);
-    void display_polynomial() const noexcept(true);
-    std::map<int, double> polynomial() const noexcept(true);
 
-    bool is_valid_degree(int degree) const noexcept(true);
-    bool is_valid_coef(int degree) const noexcept(true);
-    bool is_valid_variable(char var, int degree) const noexcept(true);
+    const std::map<int, double> &polynomial() const noexcept(true);
+    std::string reduced_form() const noexcept(true);
 
-    static s_term parse_term(
-            const std::deque<s_token> &tokens,
-            std::deque<s_token>::const_iterator *itr) noexcept(true);
-    Status set_valid_term(const s_term &term, bool is_lhs) noexcept(true);
-
-    static void skip_sp(
-            const std::string &str,
-            std::size_t start_pos,
-            std::size_t *end_pos) noexcept(true);
+    friend class TestParser;
 
  private:
     int max_degree_ = 2;
     std::map<int, double> polynomial_;
     char variable_;
 
+    void parse_expression(
+            std::deque<s_token>::const_iterator *itr,
+            const std::deque<s_token>::const_iterator &end,
+            bool is_lhs) noexcept(true);
+    void adjust_equation_sign() noexcept(true);
+    std::string reduced_form(const std::map<int, double> &polynomial) const noexcept(true);
+    void display_polynomial() const noexcept(true);
+
+    bool is_valid_degree(int degree) const noexcept(true);
+    bool is_valid_coef(int degree) const noexcept(true);
+    bool is_valid_variable(char var, int degree) const noexcept(true);
+
+    static s_term parse_term(
+            std::deque<s_token>::const_iterator *current,
+            const std::deque<s_token>::const_iterator &end) noexcept(true);
+
+    Computor::Status set_valid_term(const s_term &term, bool is_lhs) noexcept(true);
+
+    static std::pair<Computor::Status, double> stod(const std::string &word) noexcept(true);
+    static std::pair<Computor::Status, int> stoi(const std::string &word) noexcept(true);
+
+    static bool is_at_end(
+            std::deque<s_token>::const_iterator *current,
+            const std::deque<s_token>::const_iterator &end) noexcept(true);
+
+    static bool consume(
+            std::deque<s_token>::const_iterator *current,
+            const std::deque<s_token>::const_iterator &end,
+            TokenKind expected_kind) noexcept(true);
+
+    static bool expect(
+            std::deque<s_token>::const_iterator *current,
+            const std::deque<s_token>::const_iterator &end,
+            TokenKind expected_kind) noexcept(true);
+
+    static void skip_sp(
+            const std::string &str,
+            std::size_t start_pos,
+            std::size_t *end_pos) noexcept(true);
+
+    static void print_invalid_token(
+            std::deque<s_token>::const_iterator *current,
+            const std::deque<s_token>::const_iterator &end) noexcept(true);
+
     // copy invalid
     Parser &operator=(const Parser &rhs);
     explicit Parser(const Parser &other);
 
-    Status set_variable(char var, int degree);
+    Computor::Status set_variable(char var, int degree);
 };
 
 std::ostream &operator<<(std::ostream &out, const s_term &term);

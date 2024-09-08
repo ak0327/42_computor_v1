@@ -26,26 +26,33 @@ class Tokenizer {
     Tokenizer();
     ~Tokenizer();
 
-    Status tokenize(const std::string &equation) noexcept(true);
-    Status tagging(const std::deque<std::string> &split) noexcept(true);
-    void init_tokens(const std::deque<std::string> &split) noexcept(true);
-    void tagging_operators() noexcept(true);
-    void tagging_terms() noexcept(true);
-    Status validate_tokens() const noexcept(true);
-    static std::deque<s_token> split_term_coef_and_base(
-            const std::deque<s_token> &tokens) noexcept(true);
+    Computor::Status tokenize(const std::string &equation) noexcept(true);
+    const std::deque<s_token> &tokens() noexcept(true);
+
+    friend class TestTokenizer;
+
+ private:
+    std::deque<s_token> tokens_;
+
+    // split
     static std::deque<std::string> split_equation(
             const std::string &equation) noexcept(true);
-
     static std::deque<std::string> split_by_delimiter(
             const std::string &src,
             char delimiter,
             bool keep_delimiter = false) noexcept(true);
-
     static std::deque<std::string> split_by_delimiter(
             const std::deque<std::string> &src,
             char delimiter,
             bool keep_delimiter = false) noexcept(true);
+    static std::deque<s_token> split_term_coef_and_base(
+            const std::deque<s_token> &tokens) noexcept(true);
+
+    // tag
+    Computor::Status tagging(const std::deque<std::string> &split) noexcept(true);
+    void init_tokens(const std::deque<std::string> &split) noexcept(true);
+    void tagging_operators() noexcept(true);
+    void tagging_terms() noexcept(true);
 
     static bool is_term_base(const std::string &str) noexcept(true);
     static bool is_term_coef(
@@ -59,10 +66,9 @@ class Tokenizer {
 
     static bool is_num(const std::string &str) noexcept(true);
 
-    std::deque<s_token> tokens() noexcept(true);
+    // validate
+    Computor::Status validate_tokens() const noexcept(true);
 
- private:
-    std::deque<s_token> tokens_;
 
     // copy invalid
     Tokenizer &operator=(const Tokenizer &rhs);
