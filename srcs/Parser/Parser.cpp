@@ -43,6 +43,7 @@ Result<Polynomials, ErrMsg> Parser::parse_equation(
         return Result<Polynomials, ErrMsg>::err(err_msg);
     }
 
+    // valid poly, nan, inf, etc...
     Parser::reduce();
     return Result<Polynomials, ErrMsg>::ok(this->polynomial_);
 }
@@ -195,8 +196,9 @@ void Parser::parse_expression(
         TokenItr *current,
         const TokenItr &end,
         bool is_lhs) noexcept(true) {
-    if (!Parser::expect(current, end, TermCoef)
-        && !Parser::expect(current, end, TermBase)
+    if (!Parser::expect(current, end, Char)
+        && !Parser::expect(current, end, Integer)
+        && !Parser::expect(current, end, Decimal)
         && !Parser::expect(current, end, OperatorPlus)
         && !Parser::expect(current, end, OperatorMinus)) {
         return;
@@ -332,7 +334,7 @@ s_term Parser::parse_term(
     // coef
     // a*X^b, aX^b, X^b, aX, X, a
     // ^      ^     ^    ^   ^  ^ current
-    if (Parser::expect(current, end, TermCoef)) {
+    if (Parser::expect(current, end, Integer) || Parser::expect(current, end, Decimal)) {
         // OK: aX^b, a*X^b, a
         // NG: aX^, a*X^, a*, aXX, ...
         std::pair<Computor::Status, double> result = Parser::stod((*current)->word);
@@ -341,7 +343,7 @@ s_term Parser::parse_term(
         }
         coefficient = result.second;
         ++(*current);
-        if (Parser::consume(current, end, OperatorMul) && !Parser::expect(current, end, TermBase)) {
+        if (Parser::consume(current, end, OperatorMul) && !Parser::expect(current, end, Char)) {
             return term;
         }
     } else {
@@ -352,17 +354,14 @@ s_term Parser::parse_term(
     // base
     // a*X^b, aX^b, X^b, aX, X, a
     //   ^     ^    ^     ^  ^   ^ current
-    if (Parser::expect(current, end, TermBase)) {
+    if (Parser::expect(current, end, Char)) {
         // X^b, X
-        if ((*current)->word.length() != 1) {  // ok?
-            return term;
-        }
         variable = (*current)->word[0];
         ++(*current);
 
         if (Parser::consume(current, end, TermPowSymbol)) {
             // X^b
-            if (Parser::expect(current, end, TermPower)) {
+            if (Parser::expect(current, end, Integer)) {
                 std::pair<Computor::Status, int> result = Parser::stoi((*current)->word);
                 if (result.first == Computor::Status::FAILURE) {
                     return term;

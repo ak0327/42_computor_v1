@@ -26,7 +26,7 @@ Result<Tokens, ErrMsg> Tokenizer::tokenize(const std::string &equation) noexcept
 
     tagging(split);
 
-    this->tokens_ = split_term_coef_and_base(this->tokens_);
+    this->tokens_ = split_coef_and_base(this->tokens_);
     tagging_terms();
     return validate_tokens();
 }
@@ -99,9 +99,11 @@ std::deque<std::string> Tokenizer::split_by_delimiter(
     return split;
 }
 
-// kind none -> split [coef][base], like 2X -> [2][X]
-Tokens Tokenizer::split_term_coef_and_base(
-        const Tokens &tokens) noexcept(true) {
+// kind none -> split [digit][alpha], like 2X -> [2][X]
+// isalpha()までをdigitと判定するため、is_integer(), is_decimal()で評価
+// alphaは先頭がisalphaであることのみ保証
+// -> num, alphaともにtaggingで再評価されるため、分離できていればOK
+Tokens Tokenizer::split_coef_and_base(const Tokens &tokens) noexcept(true) {
     Tokens split, new_tokens;
 
     for (auto &token : tokens) {
@@ -113,11 +115,11 @@ Tokens Tokenizer::split_term_coef_and_base(
             while (token.word[pos] && !std::isalpha(token.word[pos])) {
                 ++pos;
             }
-            if (pos < token.word.length()) {
-                std::string coef = token.word.substr(0, pos);
-                std::string base = token.word.substr(pos);
-                s_token coef_token = {}; coef_token.word = coef;
-                s_token base_token = {}; base_token.word = base;
+            std::string num = token.word.substr(0, pos);
+            if ((Tokenizer::is_integer(num) || Tokenizer::is_decimal(num))) {
+                std::string alpha = token.word.substr(pos);
+                s_token coef_token = {}; coef_token.word = num;
+                s_token base_token = {}; base_token.word = alpha;
                 new_tokens.push_back(coef_token);
                 new_tokens.push_back(base_token);
             }
@@ -176,88 +178,47 @@ void Tokenizer::tagging_operators() noexcept(true) {
 void Tokenizer::tagging_terms() noexcept(true) {
     // aX^b
     // ^^ ^ tagging
-    TokenKind prev, next;
-    prev = None;
-    next = None;
-    for (auto itr = this->tokens_.begin(); itr != this->tokens_.end(); ++itr) {
-        auto &token = *itr;
-        auto next_it = std::next(itr);
-        if (next_it != this->tokens_.end()) {
-            auto &next_token = *next_it;
-            next = next_token.kind;
-        }
+    for (auto &token : this->tokens_) {
+        if (token.kind != None) { continue; }
 
-        if (token.kind == None) {
-            if (Tokenizer::is_term_base(token.word)) {
-                token.kind = TermBase;
-            } else if (Tokenizer::is_term_coef(token.word, prev, next)) {
-                token.kind = TermCoef;
-            } else if (Tokenizer::is_term_pow(token.word, prev, next)) {
-                token.kind = TermPower;
-            }
+        if (Tokenizer::is_char(token.word)) {
+            token.kind = Char;
+        } else if (Tokenizer::is_integer(token.word)) {
+            token.kind = Integer;
+        } else if (Tokenizer::is_decimal(token.word)) {
+            token.kind = Decimal;
         }
-        prev = token.kind;
-        next = None;
     }
 }
 
-bool Tokenizer::is_term_base(const std::string &str) noexcept(true) {
+bool Tokenizer::is_char(const std::string &str) noexcept(true) {
     return (str.length() == 1 && std::isalpha(str[0]));
 }
 
-bool Tokenizer::is_term_coef(
-        const std::string &str,
-        TokenKind prev_kind,
-        TokenKind next_kind) noexcept(true) {
-    if (!Tokenizer::is_num(str)) {
-        return false;
-    }
-    if (prev_kind == TermPowSymbol || prev_kind == OperatorMul) {
-        return false;
-    }
-    if (next_kind == TermPowSymbol) {
-        return false;
+//  integer     = 1*DIGIT
+bool Tokenizer::is_integer(const std::string &str) noexcept(true) {
+    if (str.empty()) { return false; }
+    for (auto c : str) {
+        if (!std::isdigit(c)) { return false; }
     }
     return true;
 }
 
-bool Tokenizer::is_term_pow(
-        const std::string &str,
-        TokenKind prev_kind,
-        TokenKind next_kind) noexcept(true) {
-    if (!Tokenizer::is_num(str)) {
-        return false;
-    }
-    if (prev_kind != TermPowSymbol) {
-        return false;
-    }
-    return (next_kind == None
-            || next_kind == OperatorPlus
-            || next_kind == OperatorMinus
-            || next_kind == OperatorEqual);
-}
+//  decimal     = 1*DIGIT "." 1*DIGIT
+bool Tokenizer::is_decimal(const std::string &str) noexcept(true) {
+    if (str.empty()) { return false; }
 
-bool Tokenizer::is_num(const std::string &str) noexcept(true) {
-    if (str.empty() || !std::isdigit(str[0])) {
-        // NG: .1
-        return false;
+    std::size_t int_len = 0;
+    while (std::isdigit(str[int_len])) {
+        ++int_len;
     }
-
-    if (str.find('E') != std::string::npos
-        || str.find('e') != std::string::npos) {
-        // NG: E+10
-        return false;
+    if (int_len == 0 || str[int_len] != '.') { return false; }
+    std::size_t frac_len = 0;
+    while (std::isdigit(str[int_len + 1 + frac_len])) {
+        ++frac_len;
     }
-
-    std::size_t end;
-    try {
-        std::stod(str, &end);
-        return end == str.length();
-    } catch (const std::invalid_argument &) {
-        return false;
-    } catch (const std::out_of_range &) {
-        return false;
-    }
+    if (frac_len == 0 || str[int_len + 1 + frac_len]) { return false; }
+    return true;
 }
 
 

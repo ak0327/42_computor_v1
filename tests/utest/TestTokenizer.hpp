@@ -24,8 +24,21 @@ class TestTokenizer : public ::testing::Test {
         return Tokenizer::split_equation(equation);
     }
 
-    static std::deque<s_token> split_term_coef_and_base(
+    static std::deque<s_token> split_coef_and_base(
             const std::deque<s_token> &tokens) noexcept(true) {
-        return Tokenizer::split_term_coef_and_base(tokens);
+        return Tokenizer::split_coef_and_base(tokens);
     }
+
+    static bool is_char(const std::string &str) noexcept(true) {
+        return Tokenizer::is_char(str);
+    }
+
+    static bool is_integer(const std::string &str) noexcept(true) {
+        return Tokenizer::is_integer(str);
+    }
+
+    static bool is_decimal(const std::string &str) noexcept(true) {
+        return Tokenizer::is_decimal(str);
+    }
+
 };

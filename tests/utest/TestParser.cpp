@@ -80,7 +80,7 @@ TEST(TestParser, TestParseTermOK) {
     s_term actual_term, expected_term;
 
     tokens = {
-            {.word="1", .kind=TermCoef},
+            {.word="1", .kind=Integer},
     };
     expected_term = {
             .coefficient = 1,
@@ -96,7 +96,7 @@ TEST(TestParser, TestParseTermOK) {
 
 
     tokens = {
-            {.word="X", .kind=TermBase},
+            {.word="X", .kind=Char},
     };
     expected_term = {
             .coefficient = 1,
@@ -112,11 +112,11 @@ TEST(TestParser, TestParseTermOK) {
 
 
     tokens = {
-            {.word="2", .kind=TermCoef},
+            {.word="2", .kind=Integer},
             {.word="*", .kind=OperatorMul},
-            {.word="X", .kind=TermBase},
+            {.word="X", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="0", .kind=TermPower},
+            {.word="0", .kind=Integer},
     };
     expected_term = {
             .coefficient = 2,
@@ -133,12 +133,12 @@ TEST(TestParser, TestParseTermOK) {
 
     tokens = {
             {.word="-", .kind=OperatorMinus},
-            {.word="5.2", .kind=TermCoef},
-            {.word="a", .kind=TermBase},
+            {.word="5.2", .kind=Decimal},
+            {.word="a", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="2", .kind=TermPower},
+            {.word="2", .kind=Integer},
             {.word="=", .kind=OperatorEqual},
-            {.word="2", .kind=TermCoef},
+            {.word="2", .kind=Integer},
     };
     expected_term = {
             .coefficient = -5.2,
@@ -155,9 +155,9 @@ TEST(TestParser, TestParseTermOK) {
 
     tokens = {
             {.word="+", .kind=OperatorPlus},
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="0", .kind=TermPower},
+            {.word="0", .kind=Integer},
     };
     expected_term = {
             .coefficient = 1,
@@ -174,9 +174,9 @@ TEST(TestParser, TestParseTermOK) {
 
     tokens = {
             {.word="+", .kind=OperatorPlus},
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="0", .kind=TermPower},
+            {.word="0", .kind=Integer},
     };
     expected_term = {
             .coefficient = 1,
@@ -193,10 +193,10 @@ TEST(TestParser, TestParseTermOK) {
 
     tokens = {
             {.word="-", .kind=OperatorPlus},
-            {.word="0.02500", .kind=TermCoef},
-            {.word="x", .kind=TermBase},
+            {.word="0.02500", .kind=Decimal},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="05", .kind=TermPower},
+            {.word="05", .kind=Integer},
     };
     expected_term = {
             .coefficient = 0.02500,
@@ -212,10 +212,10 @@ TEST(TestParser, TestParseTermOK) {
 
 
     tokens = {
-            {.word="2147483647", .kind=TermCoef},
-            {.word="a", .kind=TermBase},
+            {.word="2147483647", .kind=Integer},
+            {.word="a", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="2147483647", .kind=TermPower},
+            {.word="2147483647", .kind=Integer},
     };
     expected_term = {
             .coefficient = 2147483647,
@@ -231,9 +231,9 @@ TEST(TestParser, TestParseTermOK) {
 
 
     tokens = {
-            {.word="x", .kind=TermBase},  // ここまで解析
+            {.word="x", .kind=Char},  // ここまで解析
             {.word="*", .kind=OperatorMul},
-            {.word="y", .kind=TermBase},
+            {.word="y", .kind=Char},
     };
     expected_term = {
             .coefficient = 1,
@@ -258,9 +258,9 @@ TEST(TestParser, TestParseTermNG) {
     s_term actual_term, expected_term;
 
     tokens = {
-            {.word="1", .kind=TermCoef},
+            {.word="1", .kind=Integer},
             {.word="*", .kind=OperatorMul},
-            {.word="1", .kind=TermCoef},
+            {.word="1", .kind=Integer},
     };
     expected_term = {};
     itr = tokens.begin();
@@ -272,7 +272,7 @@ TEST(TestParser, TestParseTermNG) {
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
             {.word="^", .kind=TermPowSymbol},
     };
@@ -286,9 +286,9 @@ TEST(TestParser, TestParseTermNG) {
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
     };
     expected_term = {};
     itr = tokens.begin();
@@ -300,9 +300,9 @@ TEST(TestParser, TestParseTermNG) {
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="1.2", .kind=TermPower},
+            {.word="1.2", .kind=Decimal},
     };
     expected_term = {};
     itr = tokens.begin();
@@ -314,10 +314,10 @@ TEST(TestParser, TestParseTermNG) {
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
             {.word="-", .kind=OperatorMinus},
-            {.word="2", .kind=TermPower},
+            {.word="2", .kind=Integer},
     };
     expected_term = {};
     itr = tokens.begin();
@@ -329,7 +329,7 @@ TEST(TestParser, TestParseTermNG) {
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
     };
     expected_term = {};
@@ -342,7 +342,7 @@ TEST(TestParser, TestParseTermNG) {
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
             {.word="=", .kind=OperatorEqual},
     };
@@ -367,14 +367,14 @@ TEST(TestParser, TestParseEquationByTokenNG) {
 
 
     tokens = {
-            {.word="y", .kind=TermBase},
+            {.word="y", .kind=Char},
     };
     parse_res = parser.parse_equation(tokens);
     EXPECT_TRUE(parse_res.is_err());
 
 
     tokens = {
-            {.word="1", .kind=TermCoef},
+            {.word="1", .kind=Integer},
     };
     parse_res = parser.parse_equation(tokens);
     EXPECT_TRUE(parse_res.is_err());
@@ -395,9 +395,9 @@ TEST(TestParser, TestParseEquationByTokenNG) {
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="*", .kind=OperatorMul},
-            {.word="y", .kind=TermBase},
+            {.word="y", .kind=Char},
     };
     parse_res = parser.parse_equation(tokens);
     EXPECT_TRUE(parse_res.is_err());
@@ -406,7 +406,7 @@ TEST(TestParser, TestParseEquationByTokenNG) {
     tokens = {
             {.word="+", .kind=OperatorPlus},
             {.word="*", .kind=OperatorMul},
-            {.word="y", .kind=TermBase},
+            {.word="y", .kind=Char},
     };
     parse_res = parser.parse_equation(tokens);
     EXPECT_TRUE(parse_res.is_err());
@@ -415,14 +415,14 @@ TEST(TestParser, TestParseEquationByTokenNG) {
     tokens = {
             {.word="+", .kind=OperatorPlus},
             {.word="-", .kind=OperatorMinus},
-            {.word="y", .kind=TermBase},
+            {.word="y", .kind=Char},
     };
     parse_res = parser.parse_equation(tokens);
     EXPECT_TRUE(parse_res.is_err());
 
 
     tokens = {
-            {.word="y", .kind=TermBase},
+            {.word="y", .kind=Char},
             {.word="=", .kind=OperatorEqual},
             {.word="=", .kind=OperatorEqual},
     };
@@ -431,22 +431,22 @@ TEST(TestParser, TestParseEquationByTokenNG) {
 
 
     tokens = {
-            {.word="y", .kind=TermBase},
+            {.word="y", .kind=Char},
             {.word="=", .kind=OperatorEqual},
-            {.word="1", .kind=TermCoef},
+            {.word="1", .kind=Decimal},
             {.word="=", .kind=OperatorEqual},
-            {.word="1", .kind=TermCoef},
+            {.word="1", .kind=Decimal},
     };
     parse_res = parser.parse_equation(tokens);
     EXPECT_TRUE(parse_res.is_err());
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="3", .kind=TermPower},
+            {.word="3", .kind=Integer},
             {.word="=", .kind=OperatorEqual},
-            {.word="1", .kind=TermCoef},
+            {.word="1", .kind=Decimal},
     };
     parse_res = parser.parse_equation(tokens);
     EXPECT_TRUE(parse_res.is_err());

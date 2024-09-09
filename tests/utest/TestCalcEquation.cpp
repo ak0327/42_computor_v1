@@ -61,6 +61,103 @@ TEST_F(TestComputor, InvalidDegree01) {
     EXPECT_EQ(expected_stderr, captured_cerr.str());
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
+TEST_F(TestComputor, ConstantEquation01) {
+    std::string equation = "1 = 1";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "Reduced form     : 0 = 0\n"
+                                  "Polynomial degree: 0\n"
+                                  "The equation is indeterminate, infinite solutions.\n";
+    std::string expected_stderr = "";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, ConstantEquation02) {
+    std::string equation = " +1 = +1 ";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "Reduced form     : 0 = 0\n"
+                                  "Polynomial degree: 0\n"
+                                  "The equation is indeterminate, infinite solutions.\n";
+    std::string expected_stderr = "";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, ConstantEquation03) {
+    std::string equation = "-1=-1";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "Reduced form     : 0 = 0\n"
+                                  "Polynomial degree: 0\n"
+                                  "The equation is indeterminate, infinite solutions.\n";
+    std::string expected_stderr = "";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, ConstantEquation04) {
+    std::string equation = "123.567 = 123.567";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "Reduced form     : 0 = 0\n"
+                                  "Polynomial degree: 0\n"
+                                  "The equation is indeterminate, infinite solutions.\n";
+    std::string expected_stderr = "";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+
+TEST_F(TestComputor, ConstantEquation05) {
+    std::string equation = "X=X";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "Reduced form     : 0 = 0\n"
+                                  "Polynomial degree: 0\n"
+                                  "The equation is indeterminate, infinite solutions.\n";
+    std::string expected_stderr = "";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, ConstantEquation06) {
+    std::string equation = "+0*X^0= 0*X +1X^0 - 1X^0";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "Reduced form     : 0 = 0\n"
+                                  "Polynomial degree: 0\n"
+                                  "The equation is indeterminate, infinite solutions.\n";
+    std::string expected_stderr = "";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, ConstantEquation07) {
+    std::string equation = "+X^100 = X^100";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "Reduced form     : 0 = 0\n"
+                                  "Polynomial degree: 0\n"
+                                  "The equation is indeterminate, infinite solutions.\n";
+    std::string expected_stderr = "";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+
 TEST_F(TestComputor, InvalidEquation01) {
     std::string equation = "This is not an equation";
     int result = Computor::calc_equation(equation);

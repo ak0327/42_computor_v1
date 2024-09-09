@@ -8,10 +8,10 @@
 
 enum TokenKind {
     None = 0,
-    TermCoef,       // aX^b a
-    TermBase,       // aX^b X
-    TermPowSymbol,  // aX^b ^
-    TermPower,      // aX^b b
+    Char,
+    Integer,
+    Decimal,
+    TermPowSymbol,  // ^
     OperatorPlus,   // +
     OperatorMinus,  // -
     OperatorMul,    // *
@@ -51,8 +51,7 @@ class Tokenizer {
             const std::deque<std::string> &src,
             char delimiter,
             bool keep_delimiter = false) noexcept(true);
-    static Tokens split_term_coef_and_base(
-            const Tokens &tokens) noexcept(true);
+    static Tokens split_coef_and_base(const Tokens &tokens) noexcept(true);
 
     // tag
     Computor::Status tagging(const std::deque<std::string> &split) noexcept(true);
@@ -60,17 +59,9 @@ class Tokenizer {
     void tagging_operators() noexcept(true);
     void tagging_terms() noexcept(true);
 
-    static bool is_term_base(const std::string &str) noexcept(true);
-    static bool is_term_coef(
-            const std::string &str,
-            TokenKind prev_kind,
-            TokenKind next_kind) noexcept(true);
-    static bool is_term_pow(
-            const std::string &str,
-            TokenKind prev_kind,
-            TokenKind next_kind) noexcept(true);
-
-    static bool is_num(const std::string &str) noexcept(true);
+    static bool is_char(const std::string &str) noexcept(true);
+    static bool is_integer(const std::string &str) noexcept(true);
+    static bool is_decimal(const std::string &str) noexcept(true);
 
     // validate
     Result<Tokens, ErrMsg> validate_tokens() const noexcept(true);
