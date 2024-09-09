@@ -20,7 +20,7 @@ Tokenizer::~Tokenizer() {}
  */
 Result<Tokens, ErrMsg> Tokenizer::tokenize(const std::string &equation) noexcept(true) {
     if (equation.empty()) {
-        return Result<Tokens, ErrMsg>::err("invalid equation");
+        return Result<Tokens, ErrMsg>::err("empty equation");
     }
     std::deque<std::string> split = Tokenizer::split_equation(equation);
 
@@ -239,18 +239,18 @@ bool Tokenizer::is_decimal(const std::string &str) noexcept(true) {
  SP          = " "
  */
 Result<Tokens, ErrMsg> Tokenizer::validate_tokens() const noexcept(true) {
-    std::string prev_word;
+    // std::string prev_word;
 
     for (auto &token : this->tokens_) {
         if (token.kind == None) {
             std::ostringstream err_oss;
-            err_oss << "unexpected token [" << token.word << "]";
-            if (!prev_word.empty()) {
-                err_oss << ", near " << prev_word;
-            }
+            err_oss << "syntax error: unexpected token: " << token.word << "";
+            // if (!prev_word.empty()) {
+            //     err_oss << ", near " << prev_word;
+            // }
             return Result<Tokens, ErrMsg>::err(err_oss.str());
         }
-        prev_word = token.word;
+        // prev_word = token.word;
     }
     return Result<Tokens, ErrMsg>::ok(this->tokens_);
 }

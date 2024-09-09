@@ -158,11 +158,111 @@ TEST_F(TestComputor, ConstantEquation07) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+TEST_F(TestComputor, InvalidEquationEmpty01) {
+    std::string equation = "";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] empty equation\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, InvalidEquationEmpty02) {
+    std::string equation = "  ";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] empty equation\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
 TEST_F(TestComputor, InvalidEquation01) {
+    std::string equation = "+";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] syntax error: unexpected token: +\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, InvalidEquation04) {
+    std::string equation = "-";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] syntax error: unexpected token: -\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, InvalidEquation05) {
+    std::string equation = "*";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] syntax error: unexpected token: *\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, InvalidEquation06) {
+    std::string equation = "^";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] syntax error: unexpected token: ^\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, InvalidEquation07) {
+    std::string equation = "=";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] syntax error: unexpected token: =\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, InvalidEquation08) {
+    std::string equation = ".";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] syntax error: unexpected token: .\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+
+TEST_F(TestComputor, InvalidEquation09) {
+    std::string equation = "1 == 2";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] syntax error: unexpected token: =\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, InvalidEquation10) {
     std::string equation = "This is not an equation";
     int result = Computor::calc_equation(equation);
     std::string expected_stdout = "";
-    std::string expected_stderr = "[Error] unexpected token [This]\n";
+    std::string expected_stderr = "[Error] syntax error: unexpected token: This\n";
 
     EXPECT_EQ(EXIT_FAILURE, result);
     EXPECT_EQ(expected_stdout, captured_cout.str());
