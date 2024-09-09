@@ -31,7 +31,7 @@ Result<Tokens, ErrMsg> Tokenizer::tokenize(const std::string &equation) noexcept
     return validate_tokens();
 }
 
-const std::deque<s_token> &Tokenizer::tokens() noexcept(true) {
+const Tokens &Tokenizer::tokens() noexcept(true) {
     return this->tokens_;
 }
 
@@ -100,9 +100,9 @@ std::deque<std::string> Tokenizer::split_by_delimiter(
 }
 
 // kind none -> split [coef][base], like 2X -> [2][X]
-std::deque<s_token> Tokenizer::split_term_coef_and_base(
-        const std::deque<s_token> &tokens) noexcept(true) {
-    std::deque<s_token> split, new_tokens;
+Tokens Tokenizer::split_term_coef_and_base(
+        const Tokens &tokens) noexcept(true) {
+    Tokens split, new_tokens;
 
     for (auto &token : tokens) {
         new_tokens = {};

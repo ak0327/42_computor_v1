@@ -33,12 +33,12 @@ class Tokenizer {
     ~Tokenizer();
 
     Result<Tokens, ErrMsg> tokenize(const std::string &equation) noexcept(true);
-    const std::deque<s_token> &tokens() noexcept(true);
+    const Tokens &tokens() noexcept(true);
 
     friend class TestTokenizer;
 
  private:
-    std::deque<s_token> tokens_;
+    Tokens tokens_;
 
     // split
     static std::deque<std::string> split_equation(
@@ -51,8 +51,8 @@ class Tokenizer {
             const std::deque<std::string> &src,
             char delimiter,
             bool keep_delimiter = false) noexcept(true);
-    static std::deque<s_token> split_term_coef_and_base(
-            const std::deque<s_token> &tokens) noexcept(true);
+    static Tokens split_term_coef_and_base(
+            const Tokens &tokens) noexcept(true);
 
     // tag
     Computor::Status tagging(const std::deque<std::string> &split) noexcept(true);
