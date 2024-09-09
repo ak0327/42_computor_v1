@@ -43,13 +43,7 @@ Result<Polynomials, ErrMsg> Parser::parse_equation(
         return Result<Polynomials, ErrMsg>::err(err_msg);
     }
 
-    // std::cout << "before: ";
-    // Parser::display_reduced_form();
-    Parser::adjust_equation_sign();
-    // Parser::display_polynomial();
-    // std::cout << "after : ";
-    // Parser::display_reduced_form();
-    // std::cout << std::endl;
+    Parser::reduce();
     return Result<Polynomials, ErrMsg>::ok(this->polynomial_);
 }
 
@@ -77,9 +71,36 @@ std::string Parser::reduced_form() const noexcept(true) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+void Parser::reduce() noexcept(true) {
+    // std::cout << "before: ";
+    // Parser::display_reduced_form();
+    Parser::drop_zero_term();
+    Parser::adjust_sign();
+    // Parser::display_polynomial();
+    // std::cout << "after : ";
+    // Parser::display_reduced_form();
+    // std::cout << std::endl;
+}
+
+// delete term; coef == 0.0
+// min poly: {0, 0}
+void Parser::drop_zero_term() noexcept(true) {
+    Polynomials new_poly;
+
+    for (auto poly : this->polynomial_) {
+        int pow = poly.first;
+        double coef = poly.second;
+        if (coef == 0.0) { continue; }
+        new_poly[pow] = coef;
+    }
+    if (new_poly.empty()) {
+        new_poly[0] = 0.0;
+    }
+    this->polynomial_ = new_poly;
+}
 
 // 最大次元の係数を正とするよう符号を調整
-void Parser::adjust_equation_sign() noexcept(true) {
+void Parser::adjust_sign() noexcept(true) {
     auto highest_degree_term = this->polynomial_.crbegin();
     if (highest_degree_term == this->polynomial_.crend()) {
         return;

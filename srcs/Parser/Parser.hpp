@@ -40,7 +40,9 @@ class Parser {
             TokenItr *itr,
             const TokenItr &end,
             bool is_lhs) noexcept(true);
-    void adjust_equation_sign() noexcept(true);
+    void reduce() noexcept(true);
+    void drop_zero_term() noexcept(true);
+    void adjust_sign() noexcept(true);
     std::string reduced_form(const Polynomials &polynomial) const noexcept(true);
     void display_polynomial() const noexcept(true);
 
