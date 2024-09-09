@@ -16,7 +16,7 @@ Parser::~Parser() {}
 // equation:  A0 * X^0 + A1 * X^1 + A2 * X^2 = 0
 // tokens  : [A0][*][X][^][0][+][A1][*][X][^][1][+][A2][*][X][^][2][=][0]
 Result<Polynomials, ErrMsg> Parser::parse_equation(
-        const std::deque<s_token> &tokens) noexcept(true) {
+        const Tokens &tokens) noexcept(true) {
     // token -> term
     auto current = tokens.cbegin();
     auto end = tokens.cend();
@@ -157,8 +157,8 @@ Computor::Status Parser::set_valid_term(const s_term &term, bool is_lhs) noexcep
 }
 
 std::string Parser::error_message(
-        std::deque<s_token>::const_iterator *current,
-        const std::deque<s_token>::const_iterator &end) noexcept(true) {
+        TokenItr *current,
+        const TokenItr &end) noexcept(true) {
     if (Parser::is_at_end(current, end)) {
         return "empty equation";
     } else {
@@ -171,8 +171,8 @@ std::string Parser::error_message(
 //  A0 * X^0 + A1 * X^1 + A2 * X^2 = 0
 //           ^先頭以外の項は、parse前に符号評価
 void Parser::parse_expression(
-        std::deque<s_token>::const_iterator *current,
-        const std::deque<s_token>::const_iterator &end,
+        TokenItr *current,
+        const TokenItr &end,
         bool is_lhs) noexcept(true) {
     if (!Parser::expect(current, end, TermCoef)
         && !Parser::expect(current, end, TermBase)
@@ -204,14 +204,14 @@ void Parser::parse_expression(
 }
 
 bool Parser::is_at_end(
-        std::deque<s_token>::const_iterator *current,
-        const std::deque<s_token>::const_iterator &end) noexcept(true) {
+        TokenItr *current,
+        const TokenItr &end) noexcept(true) {
     return *current == end;
 }
 
 bool Parser::consume(
-        std::deque<s_token>::const_iterator *current,
-        const std::deque<s_token>::const_iterator &end,
+        TokenItr *current,
+        const TokenItr &end,
         TokenKind expected_kind) noexcept(true) {
     if (expect(current, end, expected_kind)) {
         ++(*current);
@@ -221,8 +221,8 @@ bool Parser::consume(
 }
 
 bool Parser::expect(
-        std::deque<s_token>::const_iterator *current,
-        const std::deque<s_token>::const_iterator &end,
+        TokenItr *current,
+        const TokenItr &end,
         TokenKind expected_kind) noexcept(true) {
     return *current != end && (*current)->kind == expected_kind;
 }
@@ -291,8 +291,8 @@ std::pair<Computor::Status, int> Parser::stoi(const std::string &word) noexcept(
  */
 // term = ( operator ) [ coefficient ("*") ] ALPHA "^" 1*( DIGIT )
 s_term Parser::parse_term(
-        std::deque<s_token>::const_iterator *current,
-        const std::deque<s_token>::const_iterator &end) noexcept(true) {
+        TokenItr *current,
+        const TokenItr &end) noexcept(true) {
     s_term term = {};
     double coefficient;
     char variable = '\0';

@@ -15,14 +15,14 @@ struct s_term {
 
 
 typedef std::map<int, double> Polynomials;
-
+typedef Tokens::const_iterator TokenItr;
 
 class Parser {
  public:
     Parser();
     ~Parser();
 
-    Result<Polynomials, ErrMsg> parse_equation(const std::deque<s_token> &tokens) noexcept(true);
+    Result<Polynomials, ErrMsg> parse_equation(const Tokens &tokens) noexcept(true);
     void display_reduced_form() const noexcept(true);
     void display_polynomial_degree() const noexcept(true);
 
@@ -37,8 +37,8 @@ class Parser {
     char variable_;
 
     void parse_expression(
-            std::deque<s_token>::const_iterator *itr,
-            const std::deque<s_token>::const_iterator &end,
+            TokenItr *itr,
+            const TokenItr &end,
             bool is_lhs) noexcept(true);
     void adjust_equation_sign() noexcept(true);
     std::string reduced_form(const Polynomials &polynomial) const noexcept(true);
@@ -49,8 +49,8 @@ class Parser {
     bool is_valid_variable(char var, int degree) const noexcept(true);
 
     static s_term parse_term(
-            std::deque<s_token>::const_iterator *current,
-            const std::deque<s_token>::const_iterator &end) noexcept(true);
+            TokenItr *current,
+            const TokenItr &end) noexcept(true);
 
     Computor::Status set_valid_term(const s_term &term, bool is_lhs) noexcept(true);
 
@@ -58,17 +58,17 @@ class Parser {
     static std::pair<Computor::Status, int> stoi(const std::string &word) noexcept(true);
 
     static bool is_at_end(
-            std::deque<s_token>::const_iterator *current,
-            const std::deque<s_token>::const_iterator &end) noexcept(true);
+            TokenItr *current,
+            const TokenItr &end) noexcept(true);
 
     static bool consume(
-            std::deque<s_token>::const_iterator *current,
-            const std::deque<s_token>::const_iterator &end,
+            TokenItr *current,
+            const TokenItr &end,
             TokenKind expected_kind) noexcept(true);
 
     static bool expect(
-            std::deque<s_token>::const_iterator *current,
-            const std::deque<s_token>::const_iterator &end,
+            TokenItr *current,
+            const TokenItr &end,
             TokenKind expected_kind) noexcept(true);
 
     static void skip_sp(
@@ -77,8 +77,8 @@ class Parser {
             std::size_t *end_pos) noexcept(true);
 
     static std::string error_message(
-            std::deque<s_token>::const_iterator *current,
-            const std::deque<s_token>::const_iterator &end) noexcept(true);
+            TokenItr *current,
+            const TokenItr &end) noexcept(true);
 
     // copy invalid
     Parser &operator=(const Parser &rhs);
