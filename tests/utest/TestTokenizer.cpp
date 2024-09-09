@@ -41,7 +41,7 @@ void expect_eq_tokens(
 }
 
 
-TEST(TestParser, SplitByDelimiterString) {
+TEST(TestTokenizer, SplitByDelimiterString) {
     std::string equation;
     std::deque<std::string> expected_split, actual_split, src;
     char delimiter;
@@ -118,7 +118,7 @@ TEST(TestParser, SplitByDelimiterString) {
     EXPECT_EQ(expected_split, actual_split);
 }
 
-TEST(TestParser, SplitByDelimiterDeque) {
+TEST(TestTokenizer, SplitByDelimiterDeque) {
     std::deque<std::string> expected_split, actual_split, src;
     char delimiter;
     bool keep_delimiter = true;
@@ -171,7 +171,7 @@ TEST(TestParser, SplitByDelimiterDeque) {
 }
 
 
-TEST(TestParser, SplitEquation) {
+TEST(TestTokenizer, SplitEquation) {
     std::string equation;
     std::deque<std::string> expected_split, actual_split;
 
@@ -218,7 +218,7 @@ TEST(TestParser, SplitEquation) {
 
 
 
-TEST(TestParser, SplitCoefAndBase) {
+TEST(TestTokenizer, SplitCoefAndBase) {
     std::deque<s_token> tokens, actual_tokens, expected_tokens;
 
 
@@ -294,7 +294,7 @@ TEST(TestParser, SplitCoefAndBase) {
 }
 
 
-TEST(TestParser, Tagging) {
+TEST(TestTokenizer, Tagging) {
     Tokenizer tokenizer;
     std::string equation;
     std::deque<s_token> actual_tokens, expected_tokens;
