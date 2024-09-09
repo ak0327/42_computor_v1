@@ -1,6 +1,7 @@
 #pragma once
-#include "Tokenizer.hpp"
-#include "gtest/gtest.h"
+
+# include "Tokenizer.hpp"
+# include "gtest/gtest.h"
 
 class TestTokenizer : public ::testing::Test {
  public:

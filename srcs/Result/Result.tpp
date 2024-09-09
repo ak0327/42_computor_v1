@@ -1,7 +1,6 @@
 #pragma once
 
-#include <stdexcept>
-
+# include <stdexcept>
 
 template <typename OkType, typename ErrType>
 Result<OkType, ErrType>::Result()

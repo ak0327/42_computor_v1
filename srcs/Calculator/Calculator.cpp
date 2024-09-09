@@ -1,7 +1,7 @@
 #include "Calculator.hpp"
 #include <cmath>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include "computor.hpp"
 
 bool DEBUG = false;

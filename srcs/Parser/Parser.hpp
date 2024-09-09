@@ -1,11 +1,11 @@
 #pragma once
 
-#include <deque>
-#include <map>
-#include <string>
-#include <utility>
-#include "computor.hpp"
-#include "Tokenizer.hpp"
+# include <deque>
+# include <map>
+# include <string>
+# include <utility>
+# include "computor.hpp"
+# include "Tokenizer.hpp"
 
 struct s_term {
     double  coefficient;

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <string>
-#include <deque>
-#include "computor.hpp"
-#include "Result.hpp"
+# include <deque>
+# include <string>
+# include "computor.hpp"
+# include "Result.hpp"
 
 
 enum TokenKind {

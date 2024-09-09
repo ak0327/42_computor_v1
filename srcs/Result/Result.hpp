@@ -1,7 +1,4 @@
 #pragma once
-#include <stdexcept>
-
-typedef std::string ErrMsg;
 
 template <typename OkType, typename ErrType>
 class Result {

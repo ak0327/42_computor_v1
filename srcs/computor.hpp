@@ -1,5 +1,8 @@
 #pragma once
-#include <string>
+
+# include <string>
+
+typedef std::string ErrMsg;
 
 namespace Computor {
 

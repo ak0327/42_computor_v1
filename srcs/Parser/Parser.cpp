@@ -1,9 +1,9 @@
 #include "Parser.hpp"
 #include <climits>
+#include <deque>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <deque>
 
 Parser::Parser() : polynomial_(), variable_() {
     // for (int i = 0; i <= this->max_degree_; ++i) {

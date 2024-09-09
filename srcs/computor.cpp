@@ -1,7 +1,5 @@
 #include "computor.hpp"
-#include <deque>
 #include <iostream>
-#include <map>
 #include "Calculator.hpp"
 #include "Tokenizer.hpp"
 #include "Result.hpp"

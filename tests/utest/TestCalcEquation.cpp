@@ -1,6 +1,5 @@
 #include "computor.hpp"
 #include "gtest/gtest.h"
-#include <sstream>
 
 class TestComputor : public ::testing::Test {
  protected:
