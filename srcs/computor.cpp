@@ -1,8 +1,10 @@
 #include "computor.hpp"
 #include <deque>
+#include <iostream>
 #include <map>
 #include "Calculator.hpp"
 #include "Tokenizer.hpp"
+#include "Result.hpp"
 #include "Parser.hpp"
 
 namespace Computor {
@@ -17,10 +19,12 @@ const char OP_POW    = '^';
 
 int calc_equation(const std::string &equation) noexcept(true) {
     Tokenizer tokenizer;
-    if (tokenizer.tokenize(equation) == Status::FAILURE) {
+    Result<Tokens, ErrMsg> tokenize_result = tokenizer.tokenize(equation);
+    if (tokenize_result.is_err()) {
+        std::cerr << tokenize_result.err_value() << std::endl;
         return EXIT_FAILURE;
     }
-    std::deque<s_token> tokens = tokenizer.tokens();
+    Tokens tokens = tokenize_result.ok_value();
 
     Parser parser;
     if (parser.parse_equation(tokens) == Status::FAILURE) {

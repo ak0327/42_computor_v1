@@ -1,4 +1,5 @@
 #include "TestParser.hpp"
+#include "Result.hpp"
 #include "gtest/gtest.h"
 
 TEST(TestParser, TestSkipSP) {
@@ -470,7 +471,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     std::string actual_form, expected_form;
     std::deque<s_token> tokens;
     std::map<int, double> actual_poly, expected_poly;
-    Computor::Status tokenizer_res, parser_res;
+    Computor::Status parser_res;
+    Result<Tokens, ErrMsg> tokenizer_res;
 
     // simple equation
     equation = "X^0 + X^1 + X^2 = 0";
@@ -487,7 +489,7 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
@@ -507,7 +509,7 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
@@ -527,7 +529,7 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
@@ -546,7 +548,7 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
@@ -566,7 +568,7 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
@@ -584,7 +586,7 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
@@ -602,7 +604,7 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
@@ -620,7 +622,7 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
@@ -638,7 +640,7 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
@@ -650,7 +652,8 @@ TEST(TestParser, TestParseEquationByStringNG) {
     Parser *p;
     std::string equation;
     std::deque<s_token> tokens;
-    Computor::Status tokenizer_res, parser_res;
+    Computor::Status parser_res;
+    Result<Tokens, ErrMsg> tokenizer_res;
 
     // subject
     equation = "8 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 3 * X^0";
@@ -659,7 +662,7 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::SUCCESS, parser_res);  // parseの段階では成立していれば3次でもOK
 
     // simple test
@@ -669,7 +672,7 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::SUCCESS, parser_res);  // parseの段階では成立していれば3次でもOK
 
 
@@ -679,7 +682,7 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::FAILURE, parser_res);
 
 
@@ -689,7 +692,7 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::FAILURE, parser_res);
 
 
@@ -699,7 +702,7 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::FAILURE, parser_res);
 
 
@@ -709,7 +712,7 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::FAILURE, parser_res);
 
 
@@ -719,7 +722,7 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::FAILURE, parser_res);
 
 
@@ -729,7 +732,7 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::FAILURE, parser_res);
 
 
@@ -739,7 +742,7 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
     EXPECT_EQ(Computor::Status::FAILURE, parser_res);
 }
 

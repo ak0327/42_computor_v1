@@ -3,6 +3,8 @@
 #include <string>
 #include <deque>
 #include "computor.hpp"
+#include "Result.hpp"
+
 
 enum TokenKind {
     None = 0,
@@ -21,12 +23,16 @@ struct s_token {
     TokenKind kind;
 };
 
+
+typedef std::deque<s_token> Tokens;
+
+
 class Tokenizer {
  public:
     Tokenizer();
     ~Tokenizer();
 
-    Computor::Status tokenize(const std::string &equation) noexcept(true);
+    Result<Tokens, ErrMsg> tokenize(const std::string &equation) noexcept(true);
     const std::deque<s_token> &tokens() noexcept(true);
 
     friend class TestTokenizer;
@@ -67,7 +73,7 @@ class Tokenizer {
     static bool is_num(const std::string &str) noexcept(true);
 
     // validate
-    Computor::Status validate_tokens() const noexcept(true);
+    Result<Tokens, ErrMsg> validate_tokens() const noexcept(true);
 
 
     // copy invalid

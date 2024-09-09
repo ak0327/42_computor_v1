@@ -1,5 +1,6 @@
 #include "Tokenizer.hpp"
 #include <iostream>
+#include <sstream>
 
 Tokenizer::Tokenizer() {}
 
@@ -17,9 +18,10 @@ Tokenizer::~Tokenizer() {}
  DIGIT       = 0-9
  SP          = " "
  */
-Computor::Status Tokenizer::tokenize(const std::string &equation) noexcept(true) {
+Result<Tokens, ErrMsg> Tokenizer::tokenize(const std::string &equation) noexcept(true) {
     if (equation.empty()) {
-        return Computor::Status::FAILURE;
+        std::string err_msg = "[Error] invalid equation";
+        return Result<Tokens, ErrMsg>::err(err_msg);
     }
     std::deque<std::string> split = Tokenizer::split_equation(equation);
 
@@ -275,19 +277,19 @@ bool Tokenizer::is_num(const std::string &str) noexcept(true) {
  DIGIT       = 0-9
  SP          = " "
  */
-Computor::Status Tokenizer::validate_tokens() const noexcept(true) {
+Result<Tokens, ErrMsg> Tokenizer::validate_tokens() const noexcept(true) {
     std::string prev_word;
 
     for (auto &token : this->tokens_) {
         if (token.kind == None) {
-            std::cerr << "[Error] unexpected token [" << token.word << "]";
+            std::ostringstream err_oss;
+            err_oss << "[Error] unexpected token [" << token.word << "]";
             if (!prev_word.empty()) {
-                std::cerr << ", near " << prev_word;
+                err_oss << ", near " << prev_word;
             }
-            std::cerr << std::endl;
-            return Computor::Status::FAILURE;
+            return Result<Tokens, ErrMsg>::err(err_oss.str());
         }
         prev_word = token.word;
     }
-    return Computor::Status::SUCCESS;
+    return Result<Tokens, ErrMsg>::ok(this->tokens_);
 }
