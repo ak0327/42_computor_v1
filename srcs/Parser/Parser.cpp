@@ -171,7 +171,7 @@ Computor::Status Parser::set_valid_term(const s_term &term, bool is_lhs) noexcep
         return Computor::Status::FAILURE;
     }
     this->polynomial_[degree] += (is_lhs ? 1 : -1) * coef;
-    if (!Parser::is_valid_coef(degree)) {
+    if (!Parser::is_valid_coef(degree)) {  // todo: unnecessary?
         std::cerr << "[Error] invalid coefficient, too large or too small" << std::endl;
         return Computor::Status::FAILURE;
     }
@@ -184,7 +184,7 @@ std::string Parser::error_message(
     if (Parser::is_at_end(current, end)) {
         return "empty equation";
     } else {
-        return "invalid token: " + (*current)->word;
+        return "syntax error: unexpected token: " + (*current)->word;
     }
 }
 
@@ -210,7 +210,6 @@ void Parser::parse_expression(
         if (*current == begin) {
             break;
         }
-        // std::cout << "parse_expression(): " << term << std::endl;
 
         // validate term
         if (Parser::set_valid_term(term, is_lhs) == Computor::Status::FAILURE) {
@@ -327,10 +326,16 @@ s_term Parser::parse_term(
     // ^       ^      ^  ^   ^ current
     if (Parser::expect(current, end, OperatorPlus) || Parser::expect(current, end, OperatorMinus)) {
         (*current)->kind == OperatorPlus ? sign = 1 : sign = -1;
-        ++(*current);
+
+        auto next = std::next(*current);
+        if (!Parser::expect(&next, end, Integer)
+        && !Parser::expect(&next, end, Decimal)
+        && !Parser::expect(&next, end, Char)) {
+            return term;
+        }
+        *current = next;
     }
 
-    // std::cout << " parser_term: 3: " << std::endl;
     // coef
     // a*X^b, aX^b, X^b, aX, X, a
     // ^      ^     ^    ^   ^  ^ current
@@ -341,11 +346,13 @@ s_term Parser::parse_term(
         if (result.first == Computor::Status::FAILURE) {
             return term;
         }
-        coefficient = result.second;
-        ++(*current);
-        if (Parser::consume(current, end, OperatorMul) && !Parser::expect(current, end, Char)) {
+
+        auto next = std::next(*current);
+        if (Parser::consume(&next, end, OperatorMul) && !Parser::expect(&next, end, Char)) {
             return term;
         }
+        *current = next;
+        coefficient = result.second;
     } else {
         // X^b, X
         coefficient = 1.0;
