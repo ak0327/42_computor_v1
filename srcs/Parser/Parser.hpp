@@ -26,14 +26,14 @@ class Parser {
     void display_reduced_form() const noexcept(true);
     void display_polynomial_degree() const noexcept(true);
 
-    const std::map<int, double> &polynomial() const noexcept(true);
+    const Polynomials &polynomial() const noexcept(true);
     std::string reduced_form() const noexcept(true);
 
     friend class TestParser;
 
  private:
     int max_degree_ = 2;
-    std::map<int, double> polynomial_;
+    Polynomials polynomial_;
     char variable_;
 
     void parse_expression(
@@ -41,7 +41,7 @@ class Parser {
             const std::deque<s_token>::const_iterator &end,
             bool is_lhs) noexcept(true);
     void adjust_equation_sign() noexcept(true);
-    std::string reduced_form(const std::map<int, double> &polynomial) const noexcept(true);
+    std::string reduced_form(const Polynomials &polynomial) const noexcept(true);
     void display_polynomial() const noexcept(true);
 
     bool is_valid_degree(int degree) const noexcept(true);

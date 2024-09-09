@@ -66,7 +66,7 @@ void Parser::display_polynomial_degree() const noexcept(true) {
     std::cout << "Polynomial degree: " << max_degree << std::endl;
 }
 
-const std::map<int, double> &Parser::polynomial() const noexcept(true) {
+const Polynomials &Parser::polynomial() const noexcept(true) {
     return this->polynomial_;
 }
 
@@ -373,7 +373,7 @@ s_term Parser::parse_term(
 
 // 0 = 0は表示, 0 * X + 1 = 0は非表示
 // ^           ^^^^^
-std::string Parser::reduced_form(const std::map<int, double> &polynomial) const noexcept(true) {
+std::string Parser::reduced_form(const Polynomials &polynomial) const noexcept(true) {
     std::ostringstream reduced_form;
     bool is_first_term = true;
 
