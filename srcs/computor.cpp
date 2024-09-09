@@ -27,12 +27,14 @@ int calc_equation(const std::string &equation) noexcept(true) {
     Tokens tokens = tokenize_result.ok_value();
 
     Parser parser;
-    if (parser.parse_equation(tokens) == Status::FAILURE) {
+    Result<Polynomials, ErrMsg> parse_result = parser.parse_equation(tokens);
+    if (parse_result.is_err()) {
+        std::cerr << parse_result.err_value() << std::endl;
         return EXIT_FAILURE;
     }
     parser.display_reduced_form();
     parser.display_polynomial_degree();
-    std::map<int, double> polynomial = parser.polynomial();
+    Polynomials polynomial = parse_result.ok_value();
 
     Calculator calculator(polynomial);
     return calculator.solve_quadratic_equation();

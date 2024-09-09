@@ -13,12 +13,16 @@ struct s_term {
     int     degree;
 };
 
+
+typedef std::map<int, double> Polynomials;
+
+
 class Parser {
  public:
     Parser();
     ~Parser();
 
-    Computor::Status parse_equation(const std::deque<s_token> &tokens) noexcept(true);
+    Result<Polynomials, ErrMsg> parse_equation(const std::deque<s_token> &tokens) noexcept(true);
     void display_reduced_form() const noexcept(true);
     void display_polynomial_degree() const noexcept(true);
 
@@ -72,7 +76,7 @@ class Parser {
             std::size_t start_pos,
             std::size_t *end_pos) noexcept(true);
 
-    static void print_invalid_token(
+    static std::string error_message(
             std::deque<s_token>::const_iterator *current,
             const std::deque<s_token>::const_iterator &end) noexcept(true);
 

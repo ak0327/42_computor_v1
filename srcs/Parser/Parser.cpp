@@ -15,30 +15,32 @@ Parser::~Parser() {}
 
 // equation:  A0 * X^0 + A1 * X^1 + A2 * X^2 = 0
 // tokens  : [A0][*][X][^][0][+][A1][*][X][^][1][+][A2][*][X][^][2][=][0]
-Computor::Status Parser::parse_equation(
+Result<Polynomials, ErrMsg> Parser::parse_equation(
         const std::deque<s_token> &tokens) noexcept(true) {
     // token -> term
-    if (tokens.empty()) {
-        return Computor::Status::FAILURE;
-    }
     auto current = tokens.cbegin();
     auto end = tokens.cend();
     auto begin = current;
+
+    if (tokens.empty()) {
+        std::string err_msg = error_message(&current, end);
+        return Result<Polynomials, ErrMsg>::err(err_msg);
+    }
     parse_expression(&current, end, true);
     if (current == begin || Parser::is_at_end(&current, end)) {
-        print_invalid_token(&current, end);
-        return Computor::Status::FAILURE;
+        std::string err_msg = error_message(&current, end);
+        return Result<Polynomials, ErrMsg>::err(err_msg);
     }
     if (!Parser::consume(&current, end, OperatorEqual)) {
-        print_invalid_token(&current, end);
-        return Computor::Status::FAILURE;
+        std::string err_msg = error_message(&current, end);
+        return Result<Polynomials, ErrMsg>::err(err_msg);
     }
 
     begin = current;
     parse_expression(&current, end, false);
     if (current == begin || !Parser::is_at_end(&current, end)) {
-        print_invalid_token(&current, end);
-        return Computor::Status::FAILURE;
+        std::string err_msg = error_message(&current, end);
+        return Result<Polynomials, ErrMsg>::err(err_msg);
     }
 
     // std::cout << "before: ";
@@ -48,7 +50,7 @@ Computor::Status Parser::parse_equation(
     // std::cout << "after : ";
     // Parser::display_reduced_form();
     // std::cout << std::endl;
-    return Computor::Status::SUCCESS;
+    return Result<Polynomials, ErrMsg>::ok(this->polynomial_);
 }
 
 void Parser::display_reduced_form() const noexcept(true) {
@@ -154,13 +156,13 @@ Computor::Status Parser::set_valid_term(const s_term &term, bool is_lhs) noexcep
     return Computor::Status::SUCCESS;
 }
 
-void Parser::print_invalid_token(
+std::string Parser::error_message(
         std::deque<s_token>::const_iterator *current,
         const std::deque<s_token>::const_iterator &end) noexcept(true) {
     if (Parser::is_at_end(current, end)) {
-        std::cerr << "[Error] invalid equation" << std::endl;
+        return "[Error] invalid equation";
     } else {
-        std::cerr << "[Error] invalid token: " << (*current)->word << std::endl;
+        return "[Error] invalid token: " + (*current)->word;
     }
 }
 
@@ -176,7 +178,6 @@ void Parser::parse_expression(
         && !Parser::expect(current, end, TermBase)
         && !Parser::expect(current, end, OperatorPlus)
         && !Parser::expect(current, end, OperatorMinus)) {
-        print_invalid_token(current, end);
         return;
     }
     while (!Parser::is_at_end(current, end)) {
