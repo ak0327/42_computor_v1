@@ -54,10 +54,10 @@ class Tokenizer {
     static Tokens split_coef_and_base(const Tokens &tokens) noexcept(true);
 
     // tag
-    Computor::Status tagging(const std::deque<std::string> &split) noexcept(true);
-    void init_tokens(const std::deque<std::string> &split) noexcept(true);
-    void tagging_operators() noexcept(true);
-    void tagging_terms() noexcept(true);
+    static Tokens tagging(const std::deque<std::string> &split) noexcept(true);
+    static Tokens init_tokens(const std::deque<std::string> &split) noexcept(true);
+    static void tagging_operators(Tokens *tokens) noexcept(true);
+    static void tagging_terms(Tokens *tokens) noexcept(true);
 
     static bool is_char(const std::string &str) noexcept(true);
     static bool is_integer(const std::string &str) noexcept(true);

@@ -24,10 +24,9 @@ Result<Tokens, ErrMsg> Tokenizer::tokenize(const std::string &equation) noexcept
     }
     std::deque<std::string> split = Tokenizer::split_equation(equation);
 
-    tagging(split);
-
-    this->tokens_ = split_coef_and_base(this->tokens_);
-    tagging_terms();
+    Tokens tokens = tagging(split);
+    this->tokens_ = split_coef_and_base(tokens);  // split [coef][var]
+    tagging_terms(&this->tokens_);                //         ^tag  ^tag
     return validate_tokens();
 }
 
@@ -139,28 +138,29 @@ Tokens Tokenizer::split_coef_and_base(const Tokens &tokens) noexcept(true) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-Computor::Status Tokenizer::tagging(const std::deque<std::string> &split) noexcept(true) {
-    Tokenizer::init_tokens(split);
-    Tokenizer::tagging_operators();
-    Tokenizer::tagging_terms();
-    return Computor::Status::SUCCESS;
+Tokens Tokenizer::tagging(const std::deque<std::string> &split) noexcept(true) {
+    Tokens tokens = Tokenizer::init_tokens(split);
+    Tokenizer::tagging_operators(&tokens);
+    Tokenizer::tagging_terms(&tokens);
+    return tokens;
 }
 
-void Tokenizer::init_tokens(
-        const std::deque<std::string> &split) noexcept(true) {
-    this->tokens_ = {};
+Tokens Tokenizer::init_tokens(const std::deque<std::string> &split) noexcept(true) {
+    Tokens tokens = {};
 
     for (auto itr = split.cbegin(); itr != split.cend(); ++itr) {
         s_token token = {};
         token.word = *itr;
         token.kind = None;
-        this->tokens_.push_back(token);
+        tokens.push_back(token);
     }
+    return tokens;
 }
 
-void Tokenizer::tagging_operators() noexcept(true) {
+void Tokenizer::tagging_operators(Tokens *tokens) noexcept(true) {
+    if (!tokens) { return; }
     // +, -, =, *, ^
-    for (auto &token : this->tokens_) {
+    for (auto &token : *tokens) {
         if (token.word == std::string(1, Computor::OP_PLUS)) {
             token.kind = OperatorPlus;
         } else if (token.word == std::string(1, Computor::OP_MINUS)) {
@@ -175,10 +175,11 @@ void Tokenizer::tagging_operators() noexcept(true) {
     }
 }
 
-void Tokenizer::tagging_terms() noexcept(true) {
+void Tokenizer::tagging_terms(Tokens *tokens) noexcept(true) {
+    if (!tokens) { return; }
     // aX^b
     // ^^ ^ tagging
-    for (auto &token : this->tokens_) {
+    for (auto &token : *tokens) {
         if (token.kind != None) { continue; }
 
         if (Tokenizer::is_char(token.word)) {
