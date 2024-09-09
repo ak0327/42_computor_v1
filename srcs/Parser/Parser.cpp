@@ -160,9 +160,9 @@ std::string Parser::error_message(
         std::deque<s_token>::const_iterator *current,
         const std::deque<s_token>::const_iterator &end) noexcept(true) {
     if (Parser::is_at_end(current, end)) {
-        return "[Error] invalid equation";
+        return "empty equation";
     } else {
-        return "[Error] invalid token: " + (*current)->word;
+        return "invalid token: " + (*current)->word;
     }
 }
 

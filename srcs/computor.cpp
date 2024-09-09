@@ -21,7 +21,7 @@ int calc_equation(const std::string &equation) noexcept(true) {
     Tokenizer tokenizer;
     Result<Tokens, ErrMsg> tokenize_result = tokenizer.tokenize(equation);
     if (tokenize_result.is_err()) {
-        std::cerr << tokenize_result.err_value() << std::endl;
+        std::cerr << "[Error] " << tokenize_result.err_value() << std::endl;
         return EXIT_FAILURE;
     }
     Tokens tokens = tokenize_result.ok_value();
@@ -29,7 +29,7 @@ int calc_equation(const std::string &equation) noexcept(true) {
     Parser parser;
     Result<Polynomials, ErrMsg> parse_result = parser.parse_equation(tokens);
     if (parse_result.is_err()) {
-        std::cerr << parse_result.err_value() << std::endl;
+        std::cerr << "[Error] " << parse_result.err_value() << std::endl;
         return EXIT_FAILURE;
     }
     parser.display_reduced_form();
