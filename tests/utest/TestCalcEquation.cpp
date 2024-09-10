@@ -19,6 +19,53 @@ class TestComputor : public ::testing::Test {
     }
 };
 
+
+////////////////////////////////////////////////////////////////////////////////
+
+TEST_F(TestComputor, SubjectEquation01) {
+    std::string equation = "5 * X^0 + 4 * X^1 - 9.3 * X^2 = 1 * X^0";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "Reduced form     : 9.3 * X^2 - 4 * X - 4 = 0\n"
+                                  "Polynomial degree: 2\n"
+                                  "Discriminant is positive, the two solutions are:\n"
+                                  " 0.91\n"
+                                  "-0.48\n";
+    std::string expected_stderr = "";
+
+    EXPECT_EQ(EXIT_SUCCESS, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, SubjectEquation02) {
+    std::string equation = "5 * X^0 + 4 * X^1 = 4 * X^0";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "Reduced form     : 4 * X + 1 = 0\n"
+                                  "Polynomial degree: 1\n"
+                                  "The solution is:\n"
+                                  "-0.25\n";
+    std::string expected_stderr = "";
+
+    EXPECT_EQ(EXIT_SUCCESS, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, SubjectEquation03) {
+    std::string equation = "8 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 3 * X^0";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "Reduced form     : 5.6 * X^3 + 6 * X - 5 = 0\n"
+                                  "Polynomial degree: 3\n"
+                                  "The polynomial degree is strictly greater than 2, I can't solve.\n";
+    std::string expected_stderr = "";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 TEST_F(TestComputor, ValidEquation01) {
     std::string equation = "X = 0";
     std::string expected_stdout = "Reduced form     : 1 * X = 0\n"
