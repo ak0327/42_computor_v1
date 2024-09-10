@@ -410,7 +410,22 @@ TEST_F(TestComputor, ValidEquation02) {
     EXPECT_EQ(expected_stderr, captured_cerr.str());
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 TEST_F(TestComputor, InvalidDegree01) {
+    std::string equation = "X^3 = 0";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "Reduced form     : 1 * X^3 = 0\n"
+                                  "Polynomial degree: 3\n"
+                                  "The polynomial degree is strictly greater than 2, I can't solve.\n";
+    std::string expected_stderr = "";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, InvalidDegree02) {
     std::string equation = "x^3 - 2x + 1 = 0";
     int result = Computor::calc_equation(equation);
     std::string expected_stdout = "Reduced form     : 1 * x^3 - 2 * x + 1 = 0\n"
@@ -422,6 +437,33 @@ TEST_F(TestComputor, InvalidDegree01) {
     EXPECT_EQ(expected_stdout, captured_cout.str());
     EXPECT_EQ(expected_stderr, captured_cerr.str());
 }
+
+TEST_F(TestComputor, InvalidDegree03) {
+    std::string equation = "X^2147483647 = 0";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "Reduced form     : 1 * X^2147483647 = 0\n"
+                                  "Polynomial degree: 2147483647\n"
+                                  "The polynomial degree is strictly greater than 2, I can't solve.\n";
+    std::string expected_stderr = "";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, InvalidDegree04) {
+    std::string equation = "0 * X^2147483647 + 1 * X^3 = 0";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "Reduced form     : 1 * X^3 = 0\n"
+                                  "Polynomial degree: 3\n"
+                                  "The polynomial degree is strictly greater than 2, I can't solve.\n";
+    std::string expected_stderr = "";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
