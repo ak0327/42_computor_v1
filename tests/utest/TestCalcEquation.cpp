@@ -576,3 +576,80 @@ TEST_F(TestComputor, InvalidEquation10) {
     EXPECT_EQ(expected_stdout, captured_cout.str());
     EXPECT_EQ(expected_stderr, captured_cerr.str());
 }
+
+TEST_F(TestComputor, InvalidEquation11) {
+    std::string equation = "X^-1 = 0";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] syntax error: unexpected token: -\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, InvalidEquation12) {
+    std::string equation = "X^+1 = 0";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] syntax error: unexpected token: +\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, InvalidEquation13) {
+    std::string equation = "X^1.0 = 0";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] syntax error: unexpected token: 1.0\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, InvalidEquation14) {
+    std::string equation = "X^a = 0";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] syntax error: unexpected token: a\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, InvalidEquation15) {
+    std::string equation = "X^1a = 0";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] syntax error: unexpected token: a\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, InvalidEquation16) {
+    std::string equation = "X^1^1 = 0";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] syntax error: unexpected token: ^\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, InvalidEquation17) {
+    std::string equation = "X^^1 = 0";
+    int result = Computor::calc_equation(equation);
+    std::string expected_stdout = "";
+    std::string expected_stderr = "[Error] syntax error: unexpected token: ^\n";
+
+    EXPECT_EQ(EXIT_FAILURE, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
