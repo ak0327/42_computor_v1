@@ -206,10 +206,11 @@ void Parser::parse_expression(
     while (!Parser::is_at_end(current, end)) {
         // parse term
         auto begin = *current;
-        s_term term = Parser::parse_term(current, end);
-        if (*current == begin) {
-            break;
+        Result<s_term, Computor::Status> result = Parser::parse_term(current, end);
+        if (result.is_err()) {
+            return;
         }
+        s_term term = result.ok_value();
 
         // validate term
         if (Parser::set_valid_term(term, is_lhs) == Computor::Status::FAILURE) {
@@ -312,7 +313,7 @@ std::pair<Computor::Status, int> Parser::stoi(const std::string &word) noexcept(
     };
  */
 // term = ( operator ) [ coefficient ("*") ] ALPHA "^" 1*( DIGIT )
-s_term Parser::parse_term(
+Result<s_term, Computor::Status> Parser::parse_term(
         TokenItr *current,
         const TokenItr &end) noexcept(true) {
     s_term term = {};
@@ -331,7 +332,7 @@ s_term Parser::parse_term(
         if (!Parser::expect(&next, end, Integer)
         && !Parser::expect(&next, end, Decimal)
         && !Parser::expect(&next, end, Char)) {
-            return term;
+            return Result<s_term, Computor::Status>::err(Computor::Status::FAILURE);
         }
         *current = next;
     }
@@ -344,12 +345,12 @@ s_term Parser::parse_term(
         // NG: aX^, a*X^, a*, aXX, ...
         std::pair<Computor::Status, double> result = Parser::stod((*current)->word);
         if (result.first == Computor::Status::FAILURE) {
-            return term;
+            return Result<s_term, Computor::Status>::err(Computor::Status::FAILURE);
         }
 
         auto next = std::next(*current);
         if (Parser::consume(&next, end, OperatorMul) && !Parser::expect(&next, end, Char)) {
-            return term;
+            return Result<s_term, Computor::Status>::err(Computor::Status::FAILURE);
         }
         *current = next;
         coefficient = result.second;
@@ -371,12 +372,12 @@ s_term Parser::parse_term(
             if (Parser::expect(current, end, Integer)) {
                 std::pair<Computor::Status, int> result = Parser::stoi((*current)->word);
                 if (result.first == Computor::Status::FAILURE) {
-                    return term;
+                    return Result<s_term, Computor::Status>::err(Computor::Status::FAILURE);
                 }
                 degree = result.second;
                 ++(*current);
             } else {
-                return term;
+                return Result<s_term, Computor::Status>::err(Computor::Status::FAILURE);
             }
         } else {
             // X
@@ -391,7 +392,7 @@ s_term Parser::parse_term(
             .variable = variable,
             .degree = degree
     };
-    return term;
+    return Result<s_term, Computor::Status>::ok(term);
 }
 
 

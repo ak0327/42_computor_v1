@@ -50,7 +50,7 @@ class Parser {
     bool is_valid_coef(int degree) const noexcept(true);
     bool is_valid_variable(char var, int degree) const noexcept(true);
 
-    static s_term parse_term(
+    static Result<s_term, Computor::Status> parse_term(
             TokenItr *current,
             const TokenItr &end) noexcept(true);
 

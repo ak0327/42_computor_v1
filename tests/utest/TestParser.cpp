@@ -77,6 +77,7 @@ TEST(TestParser, TestParseTermOK) {
     Parser parser;
     std::deque<s_token> tokens;
     std::deque<s_token>::const_iterator itr, end;
+    Result<s_term, Computor::Status> result;
     s_term actual_term, expected_term;
 
     tokens = {
@@ -89,7 +90,9 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -105,7 +108,9 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -125,7 +130,9 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -147,7 +154,9 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -166,7 +175,9 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -185,7 +196,9 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -205,7 +218,9 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -224,7 +239,9 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -242,7 +259,9 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -255,6 +274,7 @@ TEST(TestParser, TestParseTermNG) {
     Parser parser;
     std::deque<s_token> tokens;
     std::deque<s_token>::const_iterator itr, end;
+    Result<s_term, Computor::Status> result;
     s_term actual_term, expected_term;
 
     tokens = {
@@ -265,7 +285,9 @@ TEST(TestParser, TestParseTermNG) {
     expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -279,7 +301,9 @@ TEST(TestParser, TestParseTermNG) {
     expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -293,7 +317,9 @@ TEST(TestParser, TestParseTermNG) {
     expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -307,7 +333,9 @@ TEST(TestParser, TestParseTermNG) {
     expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -322,7 +350,9 @@ TEST(TestParser, TestParseTermNG) {
     expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -335,7 +365,9 @@ TEST(TestParser, TestParseTermNG) {
     expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -349,7 +381,9 @@ TEST(TestParser, TestParseTermNG) {
     expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
