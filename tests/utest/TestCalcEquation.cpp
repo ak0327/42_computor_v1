@@ -27,8 +27,8 @@ TEST_F(TestComputor, SubjectEquation01) {
     std::string expected_stdout = "Reduced form     : 9.3 * X^2 - 4 * X - 4 = 0\n"
                                   "Polynomial degree: 2\n"
                                   "Discriminant is positive, the two solutions are:\n"
-                                  " 0.91\n"
-                                  "-0.48\n";
+                                  " 0.905239\n"
+                                  "-0.475131\n";
     std::string expected_stderr = "";
 
     EXPECT_EQ(EXIT_SUCCESS, result);
@@ -401,8 +401,8 @@ TEST_F(TestComputor, ValidEquation02) {
     std::string expected_stdout = "Reduced form     : 2 * X^2 + 3 * X - 5 = 0\n"
                                   "Polynomial degree: 2\n"
                                   "Discriminant is positive, the two solutions are:\n"
-                                  " 1.00\n"
-                                  "-2.50\n";
+                                  " 1\n"
+                                  "-2.5\n";
     std::string expected_stderr = "";
 
     EXPECT_EQ(EXIT_SUCCESS, result);
