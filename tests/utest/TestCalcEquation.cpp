@@ -252,12 +252,12 @@ TEST_F(TestComputor, ConstantEquationNoSolution05) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TEST_F(TestComputor, ValidEquation01) {
+TEST_F(TestComputor, LinearEquation01) {
     std::string equation = "X = 0";
     std::string expected_stdout = "Reduced form     : 1 * X = 0\n"
                                   "Polynomial degree: 1\n"
                                   "The solution is:\n"
-                                  "0.00\n";
+                                  "0\n";
     std::string expected_stderr = "";
     int result = Computor::calc_equation(equation);
 
@@ -265,6 +265,135 @@ TEST_F(TestComputor, ValidEquation01) {
     EXPECT_EQ(expected_stdout, captured_cout.str());
     EXPECT_EQ(expected_stderr, captured_cerr.str());
 }
+
+TEST_F(TestComputor, LinearEquation02) {
+    std::string equation = "X = 1";
+    std::string expected_stdout = "Reduced form     : 1 * X - 1 = 0\n"
+                                  "Polynomial degree: 1\n"
+                                  "The solution is:\n"
+                                  " 1\n";
+    std::string expected_stderr = "";
+    int result = Computor::calc_equation(equation);
+
+    EXPECT_EQ(EXIT_SUCCESS, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, LinearEquation03) {
+    std::string equation = "X = -  5";
+    std::string expected_stdout = "Reduced form     : 1 * X + 5 = 0\n"
+                                  "Polynomial degree: 1\n"
+                                  "The solution is:\n"
+                                  "-5\n";
+    std::string expected_stderr = "";
+    int result = Computor::calc_equation(equation);
+
+    EXPECT_EQ(EXIT_SUCCESS, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, LinearEquation04) {
+    std::string equation = "2 * X = 4";
+    std::string expected_stdout = "Reduced form     : 2 * X - 4 = 0\n"
+                                  "Polynomial degree: 1\n"
+                                  "The solution is:\n"
+                                  " 2\n";
+    std::string expected_stderr = "";
+    int result = Computor::calc_equation(equation);
+
+    EXPECT_EQ(EXIT_SUCCESS, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, LinearEquation05) {
+    std::string equation = "0.5 * X = 1";
+    std::string expected_stdout = "Reduced form     : 0.5 * X - 1 = 0\n"
+                                  "Polynomial degree: 1\n"
+                                  "The solution is:\n"
+                                  " 2\n";
+    std::string expected_stderr = "";
+    int result = Computor::calc_equation(equation);
+
+    EXPECT_EQ(EXIT_SUCCESS, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, LinearEquation06) {
+    std::string equation = "-3 * X = 9";
+    std::string expected_stdout = "Reduced form     : 3 * X + 9 = 0\n"
+                                  "Polynomial degree: 1\n"
+                                  "The solution is:\n"
+                                  "-3\n";
+    std::string expected_stderr = "";
+    int result = Computor::calc_equation(equation);
+
+    EXPECT_EQ(EXIT_SUCCESS, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, LinearEquation07) {
+    std::string equation = "100.0X + 3.5 = 5";
+    std::string expected_stdout = "Reduced form     : 100 * X - 1.5 = 0\n"
+                                  "Polynomial degree: 1\n"
+                                  "The solution is:\n"
+                                  " 0.015\n";
+    std::string expected_stderr = "";
+    int result = Computor::calc_equation(equation);
+
+    EXPECT_EQ(EXIT_SUCCESS, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, LinearEquation08) {
+    std::string equation = "1000.0X + 3.0 = 5";
+    std::string expected_stdout = "Reduced form     : 1000 * X - 2 = 0\n"
+                                  "Polynomial degree: 1\n"
+                                  "The solution is:\n"
+                                  " 0.002\n";
+    std::string expected_stderr = "";
+    int result = Computor::calc_equation(equation);
+
+    EXPECT_EQ(EXIT_SUCCESS, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, LinearEquation09) {
+    std::string equation = " - 100a + 101 = 1.0";
+    std::string expected_stdout = "Reduced form     : 100 * a - 100 = 0\n"
+                                  "Polynomial degree: 1\n"
+                                  "The solution is:\n"
+                                  " 1\n";
+    std::string expected_stderr = "";
+    int result = Computor::calc_equation(equation);
+
+    EXPECT_EQ(EXIT_SUCCESS, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+TEST_F(TestComputor, LinearEquation10) {
+    std::string equation = " - 100  a + 101 = 1.0";
+    std::string expected_stdout = "Reduced form     : 100 * a - 100 = 0\n"
+                                  "Polynomial degree: 1\n"
+                                  "The solution is:\n"
+                                  " 1\n";
+    std::string expected_stderr = "";
+    int result = Computor::calc_equation(equation);
+
+    EXPECT_EQ(EXIT_SUCCESS, result);
+    EXPECT_EQ(expected_stdout, captured_cout.str());
+    EXPECT_EQ(expected_stderr, captured_cerr.str());
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
 
 TEST_F(TestComputor, ValidEquation02) {
     std::string equation = "2X^2 + 3X - 5 = 0";

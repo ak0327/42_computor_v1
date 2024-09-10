@@ -190,12 +190,14 @@ void Calculator::display_solutions(
         if (0 < solution.re) {
             std::cout << " ";
         }
-        std::cout << std::fixed << std::setprecision(2) << solution.re;
+        // std::cout << std::fixed << std::setprecision(2) << solution.re;
+        std::cout << solution.re;
         if (type == QuadraticSolver::TwoComplexSolutionsQuadratic) {
             if (0 < solution.im) {
                 std::cout << "+";
             }
-            std::cout << std::fixed << std::setprecision(2) << solution.im << "i";
+            // std::cout << std::fixed << std::setprecision(2) << solution.im << "i";
+            std::cout << solution.im << "i";
         }
         std::cout << std::endl;
     }
