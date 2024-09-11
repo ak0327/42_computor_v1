@@ -9,7 +9,14 @@
 
 # srcs
 !srcs
-!srcs/main.cpp
+!srcs/Calculator
+!srcs/Parser
+!srcs/Result
+!srcs/Tokenizer
+
+!srcs/**/*.cpp
+!srcs/**/*.hpp
+!srcs/**/*.tpp
 
 # tests
 !tests

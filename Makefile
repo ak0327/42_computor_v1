@@ -3,13 +3,24 @@ NAME		= computor
 CXX			= c++
 CXXFLAGS	= -std=c++20 -Wall -Wextra -Werror -MMD -MP -pedantic
 
-SRCS		= main.cpp
+SRCS_DIR	= srcs
+SRCS		= main.cpp \
+			  computor.cpp \
+			  Calculator/Calculator.cpp \
+			  Parser/Parser.cpp \
+			  Tokenizer/Tokenizer.cpp
 
-OBJ_DIR		= objs
-OBJS		= $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
+OBJS_DIR	= objs
+OBJS		= $(SRCS:%.cpp=$(OBJS_DIR)/%.o)
 DEPS		= $(OBJS:%.o=%.d)
 
-INCLUDES	= -I.
+INCL_DIR 	= srcs \
+			  srcs/Calculator \
+			  srcs/Parser \
+			  srcs/Result \
+			  srcs/Tokenizer
+
+INCLUDES	= $(addprefix -I, $(INCL_DIR))
 
 .PHONY	: all
 all		: $(NAME)
@@ -17,13 +28,13 @@ all		: $(NAME)
 $(NAME)	: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-$(OBJ_DIR)/%.o	: %.cpp
-	@mkdir -p $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -o $@ -c $<
+$(OBJS_DIR)/%.o	: $(SRCS_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ -c $<
 
 .PHONY	: clean
 clean	:
-	rm -rf $(OBJ_DIR)
+	rm -rf $(OBJS_DIR)
 
 .PHONY	: fclean
 fclean	: clean
@@ -43,5 +54,10 @@ utest	:
 	cmake -S . -B build
 	cmake --build build
 	./build/utest
+	#./build/utest --gtest_filter=TestTokenizer.*
+	#./build/utest --gtest_filter=TestParser.TestParseTermOK
+	#./build/utest --gtest_filter=TestParser.TestParseEquation*
+	#./build/utest --gtest_filter=TestParser.TestReducedForm
+	#./build/utest --gtest_filter=*TestComputor.*
 
 -include $(DEPS)
