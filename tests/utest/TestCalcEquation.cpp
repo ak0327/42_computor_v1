@@ -597,3 +597,19 @@ INSTANTIATE_TEST_SUITE_P(
                 TestCase{"X^^1 = 0",    EXIT_FAILURE, "", "[Error] syntax error: unexpected token: ^\n", __LINE__}
         )
 );
+
+std::string DMAX = "179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368";
+INSTANTIATE_TEST_SUITE_P(
+        CalculationError,
+        TestComputor,
+        ::testing::Values(
+                TestCase{DMAX+"x + " + DMAX + "x = 1",    EXIT_FAILURE, "", "[Error] calculation error: coefficient is infinity at degree 1\n", __LINE__},
+                TestCase{"-" + DMAX + "x - " + DMAX + "x = 1",    EXIT_FAILURE, "", "[Error] calculation error: coefficient is infinity at degree 1\n", __LINE__},
+                TestCase{"x^" + DMAX + " + x = 1",    EXIT_FAILURE, "", "[Error] syntax error: unexpected token: " + DMAX + "\n", __LINE__},
+                TestCase{DMAX + "x + " + DMAX + "x = 1",    EXIT_FAILURE, "", "[Error] calculation error: coefficient is infinity at degree 1\n", __LINE__},
+                TestCase{DMAX + "x^2 + " + DMAX + "x + " + DMAX + "= " + DMAX,    EXIT_FAILURE,
+                        .expected_stdout = "Reduced form     : 1.79769e+308 * x^2 + 1.79769e+308 * x = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Calculation error occurred, I can't solve.\n", "", __LINE__}
+        )
+);
