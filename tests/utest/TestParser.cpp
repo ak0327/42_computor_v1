@@ -275,22 +275,16 @@ TEST(TestParser, TestParseTermNG) {
     std::deque<s_token> tokens;
     std::deque<s_token>::const_iterator itr, end;
     Result<s_term, Computor::Status> result;
-    s_term actual_term, expected_term;
 
     tokens = {
             {.word="1", .kind=Integer},
             {.word="*", .kind=OperatorMul},
             {.word="1", .kind=Integer},
     };
-    expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
     result = TestParser::parse_term(&itr, end);
-    EXPECT_TRUE(result.is_ok());
-    actual_term = result.ok_value();
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
+    EXPECT_TRUE(result.is_err());
 
 
     tokens = {
@@ -298,15 +292,10 @@ TEST(TestParser, TestParseTermNG) {
             {.word="^", .kind=TermPowSymbol},
             {.word="^", .kind=TermPowSymbol},
     };
-    expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
     result = TestParser::parse_term(&itr, end);
-    EXPECT_TRUE(result.is_ok());
-    actual_term = result.ok_value();
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
+    EXPECT_TRUE(result.is_err());
 
 
     tokens = {
@@ -314,15 +303,10 @@ TEST(TestParser, TestParseTermNG) {
             {.word="^", .kind=TermPowSymbol},
             {.word="x", .kind=Char},
     };
-    expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
     result = TestParser::parse_term(&itr, end);
-    EXPECT_TRUE(result.is_ok());
-    actual_term = result.ok_value();
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
+    EXPECT_TRUE(result.is_err());
 
 
     tokens = {
@@ -330,15 +314,10 @@ TEST(TestParser, TestParseTermNG) {
             {.word="^", .kind=TermPowSymbol},
             {.word="1.2", .kind=Decimal},
     };
-    expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
     result = TestParser::parse_term(&itr, end);
-    EXPECT_TRUE(result.is_ok());
-    actual_term = result.ok_value();
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
+    EXPECT_TRUE(result.is_err());
 
 
     tokens = {
@@ -347,30 +326,20 @@ TEST(TestParser, TestParseTermNG) {
             {.word="-", .kind=OperatorMinus},
             {.word="2", .kind=Integer},
     };
-    expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
     result = TestParser::parse_term(&itr, end);
-    EXPECT_TRUE(result.is_ok());
-    actual_term = result.ok_value();
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
+    EXPECT_TRUE(result.is_err());
 
 
     tokens = {
             {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
     };
-    expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
     result = TestParser::parse_term(&itr, end);
-    EXPECT_TRUE(result.is_ok());
-    actual_term = result.ok_value();
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
+    EXPECT_TRUE(result.is_err());
 
 
     tokens = {
@@ -378,15 +347,10 @@ TEST(TestParser, TestParseTermNG) {
             {.word="^", .kind=TermPowSymbol},
             {.word="=", .kind=OperatorEqual},
     };
-    expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
     result = TestParser::parse_term(&itr, end);
-    EXPECT_TRUE(result.is_ok());
-    actual_term = result.ok_value();
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
+    EXPECT_TRUE(result.is_err());
 }
 
 
@@ -755,7 +719,7 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(tokenizer_res.is_err());  // X, Y
     EXPECT_TRUE(parser_res.is_err());
 
 
@@ -765,7 +729,7 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(tokenizer_res.is_err());  // X, Y
     EXPECT_TRUE(parser_res.is_err());
 }
 
