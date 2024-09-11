@@ -24,7 +24,7 @@ struct s_token {
 };
 
 
-typedef std::deque<s_token> Tokens;
+using Tokens = std::deque<s_token>;
 
 
 class Tokenizer {

@@ -2,7 +2,7 @@
 
 # include <string>
 
-typedef std::string ErrMsg;
+using ErrMsg = std::string;
 
 namespace Computor {
 

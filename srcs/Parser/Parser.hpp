@@ -14,8 +14,8 @@ struct s_term {
 };
 
 
-typedef std::map<int, double> Polynomials;
-typedef Tokens::const_iterator TokenItr;
+using Polynomials = std::map<int, double>;
+using TokenItr = Tokens::const_iterator;
 
 class Parser {
  public:
