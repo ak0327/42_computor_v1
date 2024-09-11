@@ -1,5 +1,5 @@
 #include "Parser.hpp"
-#include <climits>
+#include <cmath>
 #include <deque>
 #include <iomanip>
 #include <iostream>

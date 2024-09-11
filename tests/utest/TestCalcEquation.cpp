@@ -655,13 +655,42 @@ INSTANTIATE_TEST_SUITE_P(
         CalculationError,
         TestComputor,
         ::testing::Values(
-                TestCase{DMAX+"x + " + DMAX + "x = 1",    EXIT_FAILURE, "", "[Error] calculation error: coefficient is infinity at degree 1\n", __LINE__},
-                TestCase{"-" + DMAX + "x - " + DMAX + "x = 1",    EXIT_FAILURE, "", "[Error] calculation error: coefficient is infinity at degree 1\n", __LINE__},
-                TestCase{"x^" + DMAX + " + x = 1",    EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: x\n", __LINE__},
-                TestCase{DMAX + "x + " + DMAX + "x = 1",    EXIT_FAILURE, "", "[Error] calculation error: coefficient is infinity at degree 1\n", __LINE__},
-                TestCase{DMAX + "x^2 + " + DMAX + "x + " + DMAX + "= " + DMAX,    EXIT_FAILURE,
-                        .expected_stdout = "Reduced form     : 1.79769e+308 * x^2 + 1.79769e+308 * x = 0\n"
-                                           "Polynomial degree: 2\n"
-                                           "Calculation error occurred, I can't solve.\n", "", __LINE__}
+                TestCase{
+                    .equation        = DMAX+"x + " + DMAX + "x = 1",
+                    .expected_result = EXIT_FAILURE,
+                    .expected_stdout = "",
+                    .expected_stderr = "[Error] calculation error: coefficient is infinity at degree 1\n",
+                    .line = __LINE__
+                },
+                TestCase{
+                    .equation        = "-" + DMAX + "x - " + DMAX + "x = 1",
+                    .expected_result = EXIT_FAILURE,
+                    .expected_stdout = "",
+                    .expected_stderr = "[Error] calculation error: coefficient is infinity at degree 1\n",
+                    .line = __LINE__
+                },
+                TestCase{
+                    .equation        = "x^" + DMAX + " + x = 1",
+                    .expected_result = EXIT_FAILURE,
+                    .expected_stdout = "",
+                    .expected_stderr = "[Error] syntax error: unexpected token near: x\n",
+                    .line = __LINE__
+                },
+                TestCase{
+                    .equation        = DMAX + "x + " + DMAX + "x = 1",
+                    .expected_result = EXIT_FAILURE,
+                    .expected_stdout = "",
+                    .expected_stderr = "[Error] calculation error: coefficient is infinity at degree 1\n",
+                    .line = __LINE__
+                },
+                TestCase{
+                    .equation        = DMAX + "x^2 + " + DMAX + "x + " + DMAX + "= " + DMAX,
+                    .expected_result = EXIT_FAILURE,
+                    .expected_stdout = "Reduced form     : 1.79769e+308 * x^2 + 1.79769e+308 * x = 0\n"
+                                       "Polynomial degree: 2\n"
+                                       "Calculation error occurred, I can't solve.\n",
+                    .expected_stderr = "",
+                    .line = __LINE__
+                }
         )
 );
