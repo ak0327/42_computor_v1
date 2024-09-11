@@ -83,11 +83,13 @@ Result<Computor::Status, ErrMsg> Parser::validate() noexcept(true) {
         int degree = poly.first;
         double coef = poly.second;
         if (std::isnan(coef)) {
-            std::string err_msg = "calculation error: coefficient is NaN at degree " + std::to_string(degree);
+            std::string err_msg = "calculation error: coefficient is NaN at degree ";
+            err_msg.append(std::to_string(degree));
             return Result<Computor::Status, ErrMsg>::err(err_msg);
         }
         if (std::isinf(coef)) {
-            std::string err_msg = "calculation error: coefficient is infinity at degree " + std::to_string(degree);
+            std::string err_msg = "calculation error: coefficient is infinity at degree ";
+            err_msg.append(std::to_string(degree));
             return Result<Computor::Status, ErrMsg>::err(err_msg);
         }
     }
