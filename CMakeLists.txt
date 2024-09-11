@@ -26,6 +26,7 @@ include_directories(
         srcs
         srcs/Calculator
         srcs/Parser
+        srcs/Result
         srcs/Tokenizer
         tests/utest
 )
@@ -42,6 +43,7 @@ set (computor_srcs
 
 # test code
 set (utest_srcs
+        tests/utest/TestCalcEquation.cpp
         tests/utest/TestParser.cpp
         tests/utest/TestTokenizer.cpp
 )

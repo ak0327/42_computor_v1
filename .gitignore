@@ -11,10 +11,12 @@
 !srcs
 !srcs/Calculator
 !srcs/Parser
+!srcs/Result
 !srcs/Tokenizer
 
 !srcs/**/*.cpp
 !srcs/**/*.hpp
+!srcs/**/*.tpp
 
 # tests
 !tests

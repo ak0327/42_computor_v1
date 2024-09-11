@@ -1,16 +1,17 @@
 #include "Calculator.hpp"
 #include <cmath>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
+#include "computor.hpp"
 
-bool DEBUG = true;
+bool DEBUG = false;
 
 Calculator::Calculator(const std::map<int, double> &polynomial)
     : polynomial_(polynomial) {}
 
 Calculator::~Calculator() {}
 
-void Calculator::solve_quadratic_equation() noexcept(true) {
+int Calculator::solve_quadratic_equation() noexcept(true) {
     this->kMinDegree_ = 0;
     this->kMaxDegree_ = 2;
 
@@ -21,6 +22,7 @@ void Calculator::solve_quadratic_equation() noexcept(true) {
     // solve
     std::vector<QuadraticSolver::Solution> solutions = this->solutions_;
     Calculator::display_solutions(solutions, solution_type);
+    return Calculator::solve_result();
 }
 
 // aX^2 + bX^1 + cX^0 = 0
@@ -74,12 +76,12 @@ std::vector<QuadraticSolver::Solution> Calculator::solve_quadratic(
             if (DEBUG) std::cout << "solve_quadratic() 2-complex" << std::endl;
             QuadraticSolver::Solution ans1, ans2;
             ans1 = {
-                    .re = -b / 2.0 / a,
-                    .im = std::sqrt(-D) / 2.0 / a
+                    .re = Computor::normalize_zero(-b / 2.0 / a),
+                    .im = Computor::normalize_zero(std::sqrt(-D) / 2.0 / a)
             };
             ans2 = {
-                    .re = -b / 2.0 / a,
-                    .im = -std::sqrt(-D) / 2.0 / a
+                    .re = Computor::normalize_zero(-b / 2.0 / a),
+                    .im = Computor::normalize_zero(-std::sqrt(-D) / 2.0 / a)
             };
             solutions.push_back(ans1);
             solutions.push_back(ans2);
@@ -88,8 +90,8 @@ std::vector<QuadraticSolver::Solution> Calculator::solve_quadratic(
         case QuadraticSolver::TwoRealSolutionsQuadratic: {
             if (DEBUG) std::cout << "solve_quadratic() 2-real" << std::endl;
             QuadraticSolver::Solution ans1, ans2;
-            ans1.re = (-b + std::sqrt(D)) / 2.0 / a;
-            ans2.re = (-b - std::sqrt(D)) / 2.0 / a;
+            ans1.re = Computor::normalize_zero((-b + std::sqrt(D)) / 2.0 / a);
+            ans2.re = Computor::normalize_zero((-b - std::sqrt(D)) / 2.0 / a);
             solutions.push_back(ans1);
             solutions.push_back(ans2);
             break;
@@ -97,7 +99,7 @@ std::vector<QuadraticSolver::Solution> Calculator::solve_quadratic(
         case QuadraticSolver::OneRealSolutionQuadratic: {
             if (DEBUG) std::cout << "solve_quadratic() 1-real" << std::endl;
             QuadraticSolver::Solution ans;
-            ans.re = -b / 2.0 / a;
+            ans.re = Computor::normalize_zero(-b / 2.0 / a);
             solutions.push_back(ans);
             break;
         }
@@ -117,7 +119,7 @@ std::vector<QuadraticSolver::Solution> Calculator::solve_linear(
         case QuadraticSolver::OneRealSolutionLinear: {
             if (DEBUG) std::cout << "solve_linear() 1-real" << std::endl;
             QuadraticSolver::Solution ans;
-            ans.re = -c / b;
+            ans.re = Computor::normalize_zero(-c / b);
             solutions.push_back(ans);
             break;
         }
@@ -137,7 +139,7 @@ QuadraticSolver::EquationType Calculator::get_equation_type(double a, double b) 
 }
 
 QuadraticSolver::SolutionType Calculator::get_quadratic_eq_solution_type(double D) noexcept(true) {
-    if (std::isnan(D) || std::isinf(D)) { return QuadraticSolver::NoSolution; }
+    if (std::isnan(D) || std::isinf(D)) { return QuadraticSolver::NoSolutionCalculationError; }
     if (D < 0.0) { return QuadraticSolver::TwoComplexSolutionsQuadratic; }
     if (0.0 < D) { return QuadraticSolver::TwoRealSolutionsQuadratic; }
     return QuadraticSolver::OneRealSolutionQuadratic;
@@ -174,6 +176,9 @@ void Calculator::display_solution_type(QuadraticSolver::SolutionType type) noexc
         case QuadraticSolver::NoSolutionDegreeTooHigh:
             solution = "The polynomial degree is strictly greater than 2, I can't solve.";
             break;
+        case QuadraticSolver::NoSolutionCalculationError:
+            solution = "Calculation error occurred, I can't solve.";
+            break;
         case QuadraticSolver::NoSolution:
             solution = "I can't solve.";
             break;
@@ -188,15 +193,24 @@ void Calculator::display_solutions(
         if (0 < solution.re) {
             std::cout << " ";
         }
-        std::cout << std::fixed << std::setprecision(2) << solution.re;
+        // std::cout << std::fixed << std::setprecision(2) << solution.re;
+        std::cout << solution.re;
         if (type == QuadraticSolver::TwoComplexSolutionsQuadratic) {
             if (0 < solution.im) {
                 std::cout << "+";
             }
-            std::cout << std::fixed << std::setprecision(2) << solution.im << "i";
+            // std::cout << std::fixed << std::setprecision(2) << solution.im << "i";
+            std::cout << solution.im << "i";
         }
         std::cout << std::endl;
     }
+}
+
+int Calculator::solve_result() noexcept(true) {
+    if (0 < this->solutions_.size()) {
+        return EXIT_SUCCESS;
+    }
+    return EXIT_FAILURE;
 }
 
 std::string get_solution_type(QuadraticSolver::SolutionType type) noexcept(true) {
@@ -215,6 +229,8 @@ std::string get_solution_type(QuadraticSolver::SolutionType type) noexcept(true)
             return "NoSolution: degree too low";
         case QuadraticSolver::NoSolutionDegreeTooHigh:
             return "NoSolution: degree too high";
+        case QuadraticSolver::NoSolutionCalculationError:
+            return "NoSolution: inf, nan";
         case QuadraticSolver::NoSolution:
             return "NoSolution";
         default:

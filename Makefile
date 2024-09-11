@@ -17,7 +17,9 @@ DEPS		= $(OBJS:%.o=%.d)
 INCL_DIR 	= srcs \
 			  srcs/Calculator \
 			  srcs/Parser \
+			  srcs/Result \
 			  srcs/Tokenizer
+
 INCLUDES	= $(addprefix -I, $(INCL_DIR))
 
 .PHONY	: all
@@ -52,7 +54,10 @@ utest	:
 	cmake -S . -B build
 	cmake --build build
 	./build/utest
+	#./build/utest --gtest_filter=TestTokenizer.*
+	#./build/utest --gtest_filter=TestParser.TestParseTermOK
 	#./build/utest --gtest_filter=TestParser.TestParseEquation*
 	#./build/utest --gtest_filter=TestParser.TestReducedForm
+	#./build/utest --gtest_filter=*TestComputor.*
 
 -include $(DEPS)

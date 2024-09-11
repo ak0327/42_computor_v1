@@ -1,4 +1,5 @@
 #include "TestParser.hpp"
+#include "Result.hpp"
 #include "gtest/gtest.h"
 
 TEST(TestParser, TestSkipSP) {
@@ -76,10 +77,11 @@ TEST(TestParser, TestParseTermOK) {
     Parser parser;
     std::deque<s_token> tokens;
     std::deque<s_token>::const_iterator itr, end;
+    Result<s_term, Computor::Status> result;
     s_term actual_term, expected_term;
 
     tokens = {
-            {.word="1", .kind=TermCoef},
+            {.word="1", .kind=Integer},
     };
     expected_term = {
             .coefficient = 1,
@@ -88,14 +90,16 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
 
     tokens = {
-            {.word="X", .kind=TermBase},
+            {.word="X", .kind=Char},
     };
     expected_term = {
             .coefficient = 1,
@@ -104,18 +108,20 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
 
     tokens = {
-            {.word="2", .kind=TermCoef},
+            {.word="2", .kind=Integer},
             {.word="*", .kind=OperatorMul},
-            {.word="X", .kind=TermBase},
+            {.word="X", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="0", .kind=TermPower},
+            {.word="0", .kind=Integer},
     };
     expected_term = {
             .coefficient = 2,
@@ -124,7 +130,9 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -132,12 +140,12 @@ TEST(TestParser, TestParseTermOK) {
 
     tokens = {
             {.word="-", .kind=OperatorMinus},
-            {.word="5.2", .kind=TermCoef},
-            {.word="a", .kind=TermBase},
+            {.word="5.2", .kind=Decimal},
+            {.word="a", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="2", .kind=TermPower},
+            {.word="2", .kind=Integer},
             {.word="=", .kind=OperatorEqual},
-            {.word="2", .kind=TermCoef},
+            {.word="2", .kind=Integer},
     };
     expected_term = {
             .coefficient = -5.2,
@@ -146,7 +154,9 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -154,9 +164,9 @@ TEST(TestParser, TestParseTermOK) {
 
     tokens = {
             {.word="+", .kind=OperatorPlus},
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="0", .kind=TermPower},
+            {.word="0", .kind=Integer},
     };
     expected_term = {
             .coefficient = 1,
@@ -165,7 +175,9 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -173,9 +185,9 @@ TEST(TestParser, TestParseTermOK) {
 
     tokens = {
             {.word="+", .kind=OperatorPlus},
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="0", .kind=TermPower},
+            {.word="0", .kind=Integer},
     };
     expected_term = {
             .coefficient = 1,
@@ -184,7 +196,9 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -192,10 +206,10 @@ TEST(TestParser, TestParseTermOK) {
 
     tokens = {
             {.word="-", .kind=OperatorPlus},
-            {.word="0.02500", .kind=TermCoef},
-            {.word="x", .kind=TermBase},
+            {.word="0.02500", .kind=Decimal},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="05", .kind=TermPower},
+            {.word="05", .kind=Integer},
     };
     expected_term = {
             .coefficient = 0.02500,
@@ -204,17 +218,19 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
 
     tokens = {
-            {.word="2147483647", .kind=TermCoef},
-            {.word="a", .kind=TermBase},
+            {.word="2147483647", .kind=Integer},
+            {.word="a", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="2147483647", .kind=TermPower},
+            {.word="2147483647", .kind=Integer},
     };
     expected_term = {
             .coefficient = 2147483647,
@@ -223,16 +239,18 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
 
 
     tokens = {
-            {.word="x", .kind=TermBase},  // ここまで解析
+            {.word="x", .kind=Char},  // ここまで解析
             {.word="*", .kind=OperatorMul},
-            {.word="y", .kind=TermBase},
+            {.word="y", .kind=Char},
     };
     expected_term = {
             .coefficient = 1,
@@ -241,7 +259,9 @@ TEST(TestParser, TestParseTermOK) {
     };
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_ok());
+    actual_term = result.ok_value();
     EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
     EXPECT_EQ(expected_term.variable, actual_term.variable);
     EXPECT_EQ(expected_term.degree, actual_term.degree);
@@ -254,212 +274,180 @@ TEST(TestParser, TestParseTermNG) {
     Parser parser;
     std::deque<s_token> tokens;
     std::deque<s_token>::const_iterator itr, end;
-    s_term actual_term, expected_term;
+    Result<s_term, Computor::Status> result;
 
     tokens = {
-            {.word="1", .kind=TermCoef},
+            {.word="1", .kind=Integer},
             {.word="*", .kind=OperatorMul},
-            {.word="1", .kind=TermCoef},
+            {.word="1", .kind=Integer},
     };
-    expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_err());
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
             {.word="^", .kind=TermPowSymbol},
     };
-    expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_err());
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
     };
-    expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_err());
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="1.2", .kind=TermPower},
+            {.word="1.2", .kind=Decimal},
     };
-    expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_err());
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
             {.word="-", .kind=OperatorMinus},
-            {.word="2", .kind=TermPower},
+            {.word="2", .kind=Integer},
     };
-    expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_err());
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
     };
-    expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_err());
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
             {.word="=", .kind=OperatorEqual},
     };
-    expected_term = {};
     itr = tokens.begin();
     end = tokens.end();
-    actual_term = TestParser::parse_term(&itr, end);
-    EXPECT_EQ(expected_term.coefficient, actual_term.coefficient);
-    EXPECT_EQ(expected_term.variable, actual_term.variable);
-    EXPECT_EQ(expected_term.degree, actual_term.degree);
+    result = TestParser::parse_term(&itr, end);
+    EXPECT_TRUE(result.is_err());
 }
 
 
 TEST(TestParser, TestParseEquationByTokenNG) {
     Parser parser;
     std::deque<s_token> tokens;
-    Computor::Status expected_status, actual_status;
+    Result<Polynomials, ErrMsg> parse_res;
 
     tokens = {};
-    actual_status = parser.parse_equation(tokens);
-    expected_status = Computor::Status::FAILURE;
-    EXPECT_EQ(expected_status, actual_status);
+    parse_res = parser.parse_equation(tokens);
+    EXPECT_TRUE(parse_res.is_err());
 
 
     tokens = {
-            {.word="y", .kind=TermBase},
+            {.word="y", .kind=Char},
     };
-    actual_status = parser.parse_equation(tokens);
-    expected_status = Computor::Status::FAILURE;
-    EXPECT_EQ(expected_status, actual_status);
+    parse_res = parser.parse_equation(tokens);
+    EXPECT_TRUE(parse_res.is_err());
 
 
     tokens = {
-            {.word="1", .kind=TermCoef},
+            {.word="1", .kind=Integer},
     };
-    actual_status = parser.parse_equation(tokens);
-    expected_status = Computor::Status::FAILURE;
-    EXPECT_EQ(expected_status, actual_status);
+    parse_res = parser.parse_equation(tokens);
+    EXPECT_TRUE(parse_res.is_err());
 
 
     tokens = {
             {.word="=", .kind=OperatorEqual},
     };
-    actual_status = parser.parse_equation(tokens);
-    expected_status = Computor::Status::FAILURE;
-    EXPECT_EQ(expected_status, actual_status);
+    parse_res = parser.parse_equation(tokens);
+    EXPECT_TRUE(parse_res.is_err());
 
 
     tokens = {
             {.word="+", .kind=OperatorPlus},
     };
-    actual_status = parser.parse_equation(tokens);
-    expected_status = Computor::Status::FAILURE;
-    EXPECT_EQ(expected_status, actual_status);
+    parse_res = parser.parse_equation(tokens);
+    EXPECT_TRUE(parse_res.is_err());
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="*", .kind=OperatorMul},
-            {.word="y", .kind=TermBase},
+            {.word="y", .kind=Char},
     };
-    actual_status = parser.parse_equation(tokens);
-    expected_status = Computor::Status::FAILURE;
-    EXPECT_EQ(expected_status, actual_status);
+    parse_res = parser.parse_equation(tokens);
+    EXPECT_TRUE(parse_res.is_err());
 
 
     tokens = {
             {.word="+", .kind=OperatorPlus},
             {.word="*", .kind=OperatorMul},
-            {.word="y", .kind=TermBase},
+            {.word="y", .kind=Char},
     };
-    actual_status = parser.parse_equation(tokens);
-    expected_status = Computor::Status::FAILURE;
-    EXPECT_EQ(expected_status, actual_status);
+    parse_res = parser.parse_equation(tokens);
+    EXPECT_TRUE(parse_res.is_err());
 
 
     tokens = {
             {.word="+", .kind=OperatorPlus},
             {.word="-", .kind=OperatorMinus},
-            {.word="y", .kind=TermBase},
+            {.word="y", .kind=Char},
     };
-    actual_status = parser.parse_equation(tokens);
-    expected_status = Computor::Status::FAILURE;
-    EXPECT_EQ(expected_status, actual_status);
+    parse_res = parser.parse_equation(tokens);
+    EXPECT_TRUE(parse_res.is_err());
 
 
     tokens = {
-            {.word="y", .kind=TermBase},
+            {.word="y", .kind=Char},
             {.word="=", .kind=OperatorEqual},
             {.word="=", .kind=OperatorEqual},
     };
-    actual_status = parser.parse_equation(tokens);
-    expected_status = Computor::Status::FAILURE;
-    EXPECT_EQ(expected_status, actual_status);
+    parse_res = parser.parse_equation(tokens);
+    EXPECT_TRUE(parse_res.is_err());
 
 
     tokens = {
-            {.word="y", .kind=TermBase},
+            {.word="y", .kind=Char},
             {.word="=", .kind=OperatorEqual},
-            {.word="1", .kind=TermCoef},
+            {.word="1", .kind=Decimal},
             {.word="=", .kind=OperatorEqual},
-            {.word="1", .kind=TermCoef},
+            {.word="1", .kind=Decimal},
     };
-    actual_status = parser.parse_equation(tokens);
-    expected_status = Computor::Status::FAILURE;
-    EXPECT_EQ(expected_status, actual_status);
+    parse_res = parser.parse_equation(tokens);
+    EXPECT_TRUE(parse_res.is_err());
 
 
     tokens = {
-            {.word="x", .kind=TermBase},
+            {.word="x", .kind=Char},
             {.word="^", .kind=TermPowSymbol},
-            {.word="3", .kind=TermPower},
+            {.word="3", .kind=Integer},
             {.word="=", .kind=OperatorEqual},
-            {.word="1", .kind=TermCoef},
+            {.word="1", .kind=Decimal},
     };
-    actual_status = parser.parse_equation(tokens);
-    expected_status = Computor::Status::FAILURE;
-    EXPECT_EQ(expected_status, actual_status);
+    parse_res = parser.parse_equation(tokens);
+    EXPECT_TRUE(parse_res.is_err());
 
 }
 
@@ -470,7 +458,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     std::string actual_form, expected_form;
     std::deque<s_token> tokens;
     std::map<int, double> actual_poly, expected_poly;
-    Computor::Status tokenizer_res, parser_res;
+    Result<Tokens, ErrMsg> tokenizer_res;
+    Result<Polynomials, ErrMsg> parser_res;
 
     // simple equation
     equation = "X^0 + X^1 + X^2 = 0";
@@ -487,8 +476,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_ok());
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -507,8 +496,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_ok());
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -527,8 +516,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_ok());
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -546,8 +535,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_ok());
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -566,8 +555,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_ok());
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -584,8 +573,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_ok());
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -602,8 +591,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_ok());
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -620,8 +609,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_ok());
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 
@@ -638,8 +627,8 @@ TEST(TestParser, TestParseEquationByStringOK) {
     actual_poly = p->polynomial();
     actual_form = p->reduced_form();
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Computor::Status::SUCCESS, parser_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_ok());
     EXPECT_EQ(expected_poly, actual_poly);
     EXPECT_EQ(expected_form, actual_form);
 }
@@ -650,47 +639,48 @@ TEST(TestParser, TestParseEquationByStringNG) {
     Parser *p;
     std::string equation;
     std::deque<s_token> tokens;
-    Computor::Status tokenizer_res, parser_res;
+    Result<Tokens, ErrMsg> tokenizer_res;
+    Result<Polynomials, ErrMsg> parser_res;
 
     // subject
-    // equation = "8 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 3 * X^0";
-    // tokenizer_res = t.tokenize(equation);
-    // tokens = t.tokens();
-    // p = new Parser();
-    // parser_res = p->parse_equation(tokens);
-    // delete p;
-    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
-    //
-    // // simple test
-    // equation = "X^3 = 0";
-    // tokenizer_res = t.tokenize(equation);
-    // tokens = t.tokens();
-    // p = new Parser();
-    // parser_res = p->parse_equation(tokens);
-    // delete p;
-    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
-    //
-    //
-    // equation = "X^0 == 0";
-    // tokenizer_res = t.tokenize(equation);
-    // tokens = t.tokens();
-    // p = new Parser();
-    // parser_res = p->parse_equation(tokens);
-    // delete p;
-    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
-    //
-    //
-    // equation = "X^0 = 0 = 0";
-    // tokenizer_res = t.tokenize(equation);
-    // tokens = t.tokens();
-    // p = new Parser();
-    // parser_res = p->parse_equation(tokens);
-    // delete p;
-    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
+    equation = "8 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 3 * X^0";
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    delete p;
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_ok());  // parseの段階では成立していれば3次でもOK
+
+    // simple test
+    equation = "X^3 = 0";
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    delete p;
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_ok());  // parseの段階では成立していれば3次でもOK
+
+
+    equation = "X^0 == 0";
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    delete p;
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_err());
+
+
+    equation = "X^0 = 0 = 0";
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    delete p;
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_err());
 
 
     equation = "= X^0";
@@ -699,8 +689,8 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Computor::Status::FAILURE, parser_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_err());
 
 
     equation = "^ X^0";
@@ -709,8 +699,8 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Computor::Status::FAILURE, parser_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_err());
 
 
     equation = "X^0 =";
@@ -719,28 +709,28 @@ TEST(TestParser, TestParseEquationByStringNG) {
     p = new Parser();
     parser_res = p->parse_equation(tokens);
     delete p;
-    EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    EXPECT_EQ(Computor::Status::FAILURE, parser_res);
+    EXPECT_TRUE(tokenizer_res.is_ok());
+    EXPECT_TRUE(parser_res.is_err());
 
 
-    // equation = "X^0 + Y^0";
-    // tokenizer_res = t.tokenize(equation);
-    // tokens = t.tokens();
-    // p = new Parser();
-    // parser_res = p->parse_equation(tokens);
-    // delete p;
-    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
-    //
-    //
-    // equation = "X^1 + Y^2 = 0";
-    // tokenizer_res = t.tokenize(equation);
-    // tokens = t.tokens();
-    // p = new Parser();
-    // parser_res = p->parse_equation(tokens);
-    // delete p;
-    // EXPECT_EQ(Computor::Status::SUCCESS, tokenizer_res);
-    // EXPECT_EQ(Computor::Status::FAILURE, parser_res);
+    equation = "X^0 + Y^0";
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    delete p;
+    EXPECT_TRUE(tokenizer_res.is_err());  // X, Y
+    EXPECT_TRUE(parser_res.is_err());
+
+
+    equation = "X^1 + Y^2 = 0";
+    tokenizer_res = t.tokenize(equation);
+    tokens = t.tokens();
+    p = new Parser();
+    parser_res = p->parse_equation(tokens);
+    delete p;
+    EXPECT_TRUE(tokenizer_res.is_err());  // X, Y
+    EXPECT_TRUE(parser_res.is_err());
 }
 
 

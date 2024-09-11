@@ -11,7 +11,7 @@ class TestParser : public ::testing::Test {
         return Parser::skip_sp(str, start_pos, end_pos);
     }
 
-    static s_term parse_term(
+    static Result<s_term, Computor::Status> parse_term(
             std::deque<s_token>::const_iterator *current,
             std::deque<s_token>::const_iterator &end) noexcept(true) {
         return Parser::parse_term(current, end);

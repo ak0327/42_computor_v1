@@ -1,9 +1,9 @@
 #include "Parser.hpp"
-#include <climits>
+#include <cmath>
+#include <deque>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <deque>
 
 Parser::Parser() : polynomial_(), variable_() {
     // for (int i = 0; i <= this->max_degree_; ++i) {
@@ -15,37 +15,43 @@ Parser::~Parser() {}
 
 // equation:  A0 * X^0 + A1 * X^1 + A2 * X^2 = 0
 // tokens  : [A0][*][X][^][0][+][A1][*][X][^][1][+][A2][*][X][^][2][=][0]
-Computor::Status Parser::parse_equation(
-        const std::deque<s_token> &tokens) noexcept(true) {
+Result<Polynomials, ErrMsg> Parser::parse_equation(
+        const Tokens &tokens) noexcept(true) {
     // token -> term
-    if (tokens.empty()) {
-        return Computor::Status::FAILURE;
-    }
     auto current = tokens.cbegin();
     auto end = tokens.cend();
     auto begin = current;
+
+    if (tokens.empty()) {
+        std::string err_msg = error_message(&current, end);
+        return Result<Polynomials, ErrMsg>::err(err_msg);
+    }
     parse_expression(&current, end, true);
     if (current == begin || Parser::is_at_end(&current, end)) {
-        return Computor::Status::FAILURE;
+        std::string err_msg = error_message(&current, end);
+        return Result<Polynomials, ErrMsg>::err(err_msg);
     }
     if (!Parser::consume(&current, end, OperatorEqual)) {
-        return Computor::Status::FAILURE;
+        std::string err_msg = error_message(&current, end);
+        return Result<Polynomials, ErrMsg>::err(err_msg);
     }
 
     begin = current;
     parse_expression(&current, end, false);
     if (current == begin || !Parser::is_at_end(&current, end)) {
-        return Computor::Status::FAILURE;
+        std::string err_msg = error_message(&current, end);
+        return Result<Polynomials, ErrMsg>::err(err_msg);
     }
 
-    // std::cout << "before: ";
-    // Parser::display_reduced_form();
-    Parser::adjust_equation_sign();
-    // Parser::display_polynomial();
-    // std::cout << "after : ";
-    // Parser::display_reduced_form();
-    // std::cout << std::endl;
-    return Computor::Status::SUCCESS;
+    // valid poly, nan, inf, etc...
+    Result<Computor::Status, ErrMsg> validate_result = Parser::validate();
+    if (validate_result.is_err()) {
+        std::string err_msg = validate_result.err_value();
+        return Result<Polynomials, ErrMsg>::err(err_msg);
+    }
+
+    Parser::reduce();
+    return Result<Polynomials, ErrMsg>::ok(this->polynomial_);
 }
 
 void Parser::display_reduced_form() const noexcept(true) {
@@ -61,7 +67,7 @@ void Parser::display_polynomial_degree() const noexcept(true) {
     std::cout << "Polynomial degree: " << max_degree << std::endl;
 }
 
-const std::map<int, double> &Parser::polynomial() const noexcept(true) {
+const Polynomials &Parser::polynomial() const noexcept(true) {
     return this->polynomial_;
 }
 
@@ -72,9 +78,54 @@ std::string Parser::reduced_form() const noexcept(true) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+Result<Computor::Status, ErrMsg> Parser::validate() noexcept(true) {
+    for (auto &poly : this->polynomial_) {
+        int degree = poly.first;
+        double coef = poly.second;
+        if (std::isnan(coef)) {
+            std::string err_msg = "calculation error: coefficient is NaN at degree ";
+            err_msg.append(std::to_string(degree));
+            return Result<Computor::Status, ErrMsg>::err(err_msg);
+        }
+        if (std::isinf(coef)) {
+            std::string err_msg = "calculation error: coefficient is infinity at degree ";
+            err_msg.append(std::to_string(degree));
+            return Result<Computor::Status, ErrMsg>::err(err_msg);
+        }
+    }
+    return Result<Computor::Status, ErrMsg>::ok(Computor::Status::SUCCESS);
+}
+
+void Parser::reduce() noexcept(true) {
+    // std::cout << "before: ";
+    // Parser::display_reduced_form();
+    Parser::drop_zero_term();
+    Parser::adjust_sign();
+    // Parser::display_polynomial();
+    // std::cout << "after : ";
+    // Parser::display_reduced_form();
+    // std::cout << std::endl;
+}
+
+// delete term; coef == 0.0
+// min poly: {0, 0}
+void Parser::drop_zero_term() noexcept(true) {
+    Polynomials new_poly;
+
+    for (auto poly : this->polynomial_) {
+        int pow = poly.first;
+        double coef = poly.second;
+        if (coef == 0.0) { continue; }
+        new_poly[pow] = coef;
+    }
+    if (new_poly.empty()) {
+        new_poly[0] = 0.0;
+    }
+    this->polynomial_ = new_poly;
+}
 
 // 最大次元の係数を正とするよう符号を調整
-void Parser::adjust_equation_sign() noexcept(true) {
+void Parser::adjust_sign() noexcept(true) {
     auto highest_degree_term = this->polynomial_.crbegin();
     if (highest_degree_term == this->polynomial_.crend()) {
         return;
@@ -92,7 +143,7 @@ void Parser::adjust_equation_sign() noexcept(true) {
     // std::cout << " adjust sign -> *= -1" << std::endl;
     for (auto &itr : this->polynomial_) {
         double coef = itr.second * -1;
-        itr.second = normalize_zero(coef);
+        itr.second = Computor::normalize_zero(coef);
     }
 }
 
@@ -100,12 +151,9 @@ bool Parser::is_valid_degree(int degree) const noexcept(true) {
     return (0 <= degree && degree <= this->max_degree_);
 }
 
-bool Parser::is_valid_coef(int degree) const noexcept(true) {
-    try {
-        int coef = this->polynomial_.at(degree);
-        return (INT_MIN <= coef && coef <= INT_MAX);
-    } catch (const std::out_of_range &e) {}
-    return false;
+bool Parser::is_valid_coef(double coef) const noexcept(true) {
+    std::cout << "coef: " << coef << std::endl;
+    return !std::isnan(coef) && !std::isinf(coef);
 }
 
 bool Parser::is_valid_variable(char var, int degree) const noexcept(true) {
@@ -136,28 +184,26 @@ Computor::Status Parser::set_valid_term(const s_term &term, bool is_lhs) noexcep
     //     return Computor::Status::FAILURE;
     // }
     if (Parser::set_variable(var, degree) == Computor::Status::FAILURE) {
-        std::cout << "[Error]: invalid variable: " << var << std::endl;
         return Computor::Status::FAILURE;
     }
     if (!Parser::is_valid_variable(var, degree)) {
-        std::cout << "[Error]: invalid variable: " << var << std::endl;
         return Computor::Status::FAILURE;
     }
     this->polynomial_[degree] += (is_lhs ? 1 : -1) * coef;
-    if (!Parser::is_valid_coef(degree)) {
-        std::cout << "[Error]: invalid coefficient, too large or too small" << std::endl;
-        return Computor::Status::FAILURE;
-    }
+    // if (!Parser::is_valid_coef(this->polynomial_[degree])) {  // todo: unnecessary?
+    //     // std::cerr << "[Error] invalid coefficient, too large or too small" << std::endl;
+    //     return Computor::Status::FAILURE;
+    // }
     return Computor::Status::SUCCESS;
 }
 
-void Parser::print_invalid_token(
-        std::deque<s_token>::const_iterator *current,
-        const std::deque<s_token>::const_iterator &end) noexcept(true) {
+std::string Parser::error_message(
+        TokenItr *current,
+        const TokenItr &end) noexcept(true) {
     if (Parser::is_at_end(current, end)) {
-        std::cout << "[Error] invalid equation" << std::endl;
+        return "invalid equation";
     } else {
-        std::cout << "[Error] invalid token: " << (*current)->word << std::endl;
+        return "syntax error: unexpected token near: " + (*current)->word;
     }
 }
 
@@ -166,24 +212,25 @@ void Parser::print_invalid_token(
 //  A0 * X^0 + A1 * X^1 + A2 * X^2 = 0
 //           ^先頭以外の項は、parse前に符号評価
 void Parser::parse_expression(
-        std::deque<s_token>::const_iterator *current,
-        const std::deque<s_token>::const_iterator &end,
+        TokenItr *current,
+        const TokenItr &end,
         bool is_lhs) noexcept(true) {
-    if (!Parser::expect(current, end, TermCoef)
-        && !Parser::expect(current, end, TermBase)
+    if (!Parser::expect(current, end, Char)
+        && !Parser::expect(current, end, Integer)
+        && !Parser::expect(current, end, Decimal)
         && !Parser::expect(current, end, OperatorPlus)
         && !Parser::expect(current, end, OperatorMinus)) {
-        print_invalid_token(current, end);
         return;
     }
     while (!Parser::is_at_end(current, end)) {
         // parse term
         auto begin = *current;
-        s_term term = Parser::parse_term(current, end);
-        if (*current == begin) {
-            break;
+        Result<s_term, Computor::Status> result = Parser::parse_term(current, end);
+        if (result.is_err()) {
+            *current = begin;
+            return;
         }
-        // std::cout << "parse_expression(): " << term << std::endl;
+        s_term term = result.ok_value();
 
         // validate term
         if (Parser::set_valid_term(term, is_lhs) == Computor::Status::FAILURE) {
@@ -197,21 +244,17 @@ void Parser::parse_expression(
         }
         break;
     }
-
-    if (!Parser::is_at_end(current, end)) {
-        print_invalid_token(current, end);
-    }
 }
 
 bool Parser::is_at_end(
-        std::deque<s_token>::const_iterator *current,
-        const std::deque<s_token>::const_iterator &end) noexcept(true) {
+        TokenItr *current,
+        const TokenItr &end) noexcept(true) {
     return *current == end;
 }
 
 bool Parser::consume(
-        std::deque<s_token>::const_iterator *current,
-        const std::deque<s_token>::const_iterator &end,
+        TokenItr *current,
+        const TokenItr &end,
         TokenKind expected_kind) noexcept(true) {
     if (expect(current, end, expected_kind)) {
         ++(*current);
@@ -221,8 +264,8 @@ bool Parser::consume(
 }
 
 bool Parser::expect(
-        std::deque<s_token>::const_iterator *current,
-        const std::deque<s_token>::const_iterator &end,
+        TokenItr *current,
+        const TokenItr &end,
         TokenKind expected_kind) noexcept(true) {
     return *current != end && (*current)->kind == expected_kind;
 }
@@ -290,9 +333,9 @@ std::pair<Computor::Status, int> Parser::stoi(const std::string &word) noexcept(
     };
  */
 // term = ( operator ) [ coefficient ("*") ] ALPHA "^" 1*( DIGIT )
-s_term Parser::parse_term(
-        std::deque<s_token>::const_iterator *current,
-        const std::deque<s_token>::const_iterator &end) noexcept(true) {
+Result<s_term, Computor::Status> Parser::parse_term(
+        TokenItr *current,
+        const TokenItr &end) noexcept(true) {
     s_term term = {};
     double coefficient;
     char variable = '\0';
@@ -304,25 +347,33 @@ s_term Parser::parse_term(
     // ^       ^      ^  ^   ^ current
     if (Parser::expect(current, end, OperatorPlus) || Parser::expect(current, end, OperatorMinus)) {
         (*current)->kind == OperatorPlus ? sign = 1 : sign = -1;
-        ++(*current);
+
+        auto next = std::next(*current);
+        if (!Parser::expect(&next, end, Integer)
+        && !Parser::expect(&next, end, Decimal)
+        && !Parser::expect(&next, end, Char)) {
+            return Result<s_term, Computor::Status>::err(Computor::Status::FAILURE);
+        }
+        *current = next;
     }
 
-    // std::cout << " parser_term: 3: " << std::endl;
     // coef
     // a*X^b, aX^b, X^b, aX, X, a
     // ^      ^     ^    ^   ^  ^ current
-    if (Parser::expect(current, end, TermCoef)) {
+    if (Parser::expect(current, end, Integer) || Parser::expect(current, end, Decimal)) {
         // OK: aX^b, a*X^b, a
         // NG: aX^, a*X^, a*, aXX, ...
         std::pair<Computor::Status, double> result = Parser::stod((*current)->word);
         if (result.first == Computor::Status::FAILURE) {
-            return term;
+            return Result<s_term, Computor::Status>::err(Computor::Status::FAILURE);
         }
+
+        auto next = std::next(*current);
+        if (Parser::consume(&next, end, OperatorMul) && !Parser::expect(&next, end, Char)) {
+            return Result<s_term, Computor::Status>::err(Computor::Status::FAILURE);
+        }
+        *current = next;
         coefficient = result.second;
-        ++(*current);
-        if (Parser::consume(current, end, OperatorMul) && !Parser::expect(current, end, TermBase)) {
-            return term;
-        }
     } else {
         // X^b, X
         coefficient = 1.0;
@@ -331,25 +382,22 @@ s_term Parser::parse_term(
     // base
     // a*X^b, aX^b, X^b, aX, X, a
     //   ^     ^    ^     ^  ^   ^ current
-    if (Parser::expect(current, end, TermBase)) {
+    if (Parser::expect(current, end, Char)) {
         // X^b, X
-        if ((*current)->word.length() != 1) {  // ok?
-            return term;
-        }
         variable = (*current)->word[0];
         ++(*current);
 
         if (Parser::consume(current, end, TermPowSymbol)) {
             // X^b
-            if (Parser::expect(current, end, TermPower)) {
+            if (Parser::expect(current, end, Integer)) {
                 std::pair<Computor::Status, int> result = Parser::stoi((*current)->word);
                 if (result.first == Computor::Status::FAILURE) {
-                    return term;
+                    return Result<s_term, Computor::Status>::err(Computor::Status::FAILURE);
                 }
                 degree = result.second;
                 ++(*current);
             } else {
-                return term;
+                return Result<s_term, Computor::Status>::err(Computor::Status::FAILURE);
             }
         } else {
             // X
@@ -364,7 +412,7 @@ s_term Parser::parse_term(
             .variable = variable,
             .degree = degree
     };
-    return term;
+    return Result<s_term, Computor::Status>::ok(term);
 }
 
 
@@ -373,7 +421,7 @@ s_term Parser::parse_term(
 
 // 0 = 0は表示, 0 * X + 1 = 0は非表示
 // ^           ^^^^^
-std::string Parser::reduced_form(const std::map<int, double> &polynomial) const noexcept(true) {
+std::string Parser::reduced_form(const Polynomials &polynomial) const noexcept(true) {
     std::ostringstream reduced_form;
     bool is_first_term = true;
 
@@ -448,8 +496,4 @@ std::ostream &operator<<(std::ostream &out, const s_term &term) {
     << ", var: " << term.variable
     << ", degree: " << term.degree << " ]";
     return out;
-}
-
-double normalize_zero(double value) noexcept(true) {
-    return value == 0.0 ? 0.0 : value;
 }

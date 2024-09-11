@@ -1,15 +1,17 @@
 #pragma once
 
-#include <string>
-#include <deque>
-#include "computor.hpp"
+# include <deque>
+# include <string>
+# include "computor.hpp"
+# include "Result.hpp"
+
 
 enum TokenKind {
     None = 0,
-    TermCoef,       // aX^b a
-    TermBase,       // aX^b X
-    TermPowSymbol,  // aX^b ^
-    TermPower,      // aX^b b
+    Char,
+    Integer,
+    Decimal,
+    TermPowSymbol,  // ^
     OperatorPlus,   // +
     OperatorMinus,  // -
     OperatorMul,    // *
@@ -21,18 +23,22 @@ struct s_token {
     TokenKind kind;
 };
 
+
+typedef std::deque<s_token> Tokens;
+
+
 class Tokenizer {
  public:
     Tokenizer();
     ~Tokenizer();
 
-    Computor::Status tokenize(const std::string &equation) noexcept(true);
-    const std::deque<s_token> &tokens() noexcept(true);
+    Result<Tokens, ErrMsg> tokenize(const std::string &equation) noexcept(true);
+    const Tokens &tokens() noexcept(true);
 
     friend class TestTokenizer;
 
  private:
-    std::deque<s_token> tokens_;
+    Tokens tokens_;
 
     // split
     static std::deque<std::string> split_equation(
@@ -45,29 +51,20 @@ class Tokenizer {
             const std::deque<std::string> &src,
             char delimiter,
             bool keep_delimiter = false) noexcept(true);
-    static std::deque<s_token> split_term_coef_and_base(
-            const std::deque<s_token> &tokens) noexcept(true);
+    static Tokens split_coef_and_base(const Tokens &tokens) noexcept(true);
 
     // tag
-    Computor::Status tagging(const std::deque<std::string> &split) noexcept(true);
-    void init_tokens(const std::deque<std::string> &split) noexcept(true);
-    void tagging_operators() noexcept(true);
-    void tagging_terms() noexcept(true);
+    static Tokens tagging(const std::deque<std::string> &split) noexcept(true);
+    static Tokens init_tokens(const std::deque<std::string> &split) noexcept(true);
+    static void tagging_operators(Tokens *tokens) noexcept(true);
+    static void tagging_terms(Tokens *tokens) noexcept(true);
 
-    static bool is_term_base(const std::string &str) noexcept(true);
-    static bool is_term_coef(
-            const std::string &str,
-            TokenKind prev_kind,
-            TokenKind next_kind) noexcept(true);
-    static bool is_term_pow(
-            const std::string &str,
-            TokenKind prev_kind,
-            TokenKind next_kind) noexcept(true);
-
-    static bool is_num(const std::string &str) noexcept(true);
+    static bool is_char(const std::string &str) noexcept(true);
+    static bool is_integer(const std::string &str) noexcept(true);
+    static bool is_decimal(const std::string &str) noexcept(true);
 
     // validate
-    Computor::Status validate_tokens() const noexcept(true);
+    Result<Tokens, ErrMsg> validate_tokens() const noexcept(true);
 
 
     // copy invalid
