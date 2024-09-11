@@ -6,7 +6,7 @@
 
 bool DEBUG = false;
 
-Calculator::Calculator(const std::map<int, double> &polynomial)
+Calculator::Calculator(const std::map<std::int32_t, double> &polynomial)
     : polynomial_(polynomial) {}
 
 Calculator::~Calculator() {}
@@ -28,8 +28,8 @@ int Calculator::solve_quadratic_equation() noexcept(true) {
 // aX^2 + bX^1 + cX^0 = 0
 //  a == 0 -> 一次
 QuadraticSolver::SolutionType Calculator::solve() noexcept(true) {
-    int polynomial_min_degree = this->polynomial_.begin()->first;
-    int polynomial_max_degree = this->polynomial_.rbegin()->first;
+    std::int32_t polynomial_min_degree = this->polynomial_.begin()->first;
+    std::int32_t polynomial_max_degree = this->polynomial_.rbegin()->first;
 
     if (polynomial_min_degree < this->kMinDegree_) {
         return QuadraticSolver::NoSolutionDegreeTooLow;
