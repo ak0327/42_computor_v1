@@ -353,6 +353,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 ////////////////////////////////////////////////////////////////////////////////
 
+
 INSTANTIATE_TEST_SUITE_P(
         QuadracitEquation2RealSolutions,
         TestComputor,
@@ -365,7 +366,63 @@ INSTANTIATE_TEST_SUITE_P(
                                            "Discriminant is positive, the two solutions are:\n"
                                            " 1\n"
                                            "-2.5\n",
-                        .expected_stderr = ""
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = "0 =2*X^2 + 3X - 5",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 2 * X^2 + 3 * X - 5 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is positive, the two solutions are:\n"
+                                           " 1\n"
+                                           "-2.5\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = " +2 * X ^ 2 + 3X =+5.00000000000  ",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 2 * X^2 + 3 * X - 5 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is positive, the two solutions are:\n"
+                                           " 1\n"
+                                           "-2.5\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = "0.000001 * X^2 + 0.000001 * X - 0.000001 = 0",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 1e-06 * X^2 + 1e-06 * X - 1e-06 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is positive, the two solutions are:\n"
+                                           " 0.618034\n"
+                                           "-1.61803\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = "0.5 * X^2 + 1.5 * X + 1.0 = 0",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 0.5 * X^2 + 1.5 * X + 1 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is positive, the two solutions are:\n"
+                                           "-1\n"
+                                           "-2\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = "1000000 * X^2 + 500000 * X - 250000 = 0",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 1e+06 * X^2 + 500000 * X - 250000 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is positive, the two solutions are:\n"
+                                           " 0.309017\n"
+                                           "-0.809017\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
                 }
         )
 );
@@ -375,6 +432,50 @@ INSTANTIATE_TEST_SUITE_P(
         QuadracitEquation2ComplexSolutions,
         TestComputor,
         ::testing::Values(
+                TestCase{
+                        .equation        = "X^2 + 2X + 5 = 0",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 1 * X^2 + 2 * X + 5 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is negative, the two solutions are:\n"
+                                           "-1+2i\n"
+                                           "-1-2i\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = "3X^2 + 2X + 7 = 0",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 3 * X^2 + 2 * X + 7 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is negative, the two solutions are:\n"
+                                           "-0.333333+1.49071i\n"
+                                           "-0.333333-1.49071i\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = "0.5X^2 + 1.5X + 2 = 0",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 0.5 * X^2 + 1.5 * X + 2 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is negative, the two solutions are:\n"
+                                           "-1.5+1.32288i\n"
+                                           "-1.5-1.32288i\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = "2X^2 + 4X + 8 = 0",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 2 * X^2 + 4 * X + 8 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is negative, the two solutions are:\n"
+                                           "-1+1.73205i\n"
+                                           "-1-1.73205i\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                }
         )
 );
 
@@ -383,6 +484,46 @@ INSTANTIATE_TEST_SUITE_P(
         QuadracitEquation1RealSolution,
         TestComputor,
         ::testing::Values(
+                TestCase{
+                        .equation        = "X^2 - 6X + 9 = 0",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 1 * X^2 - 6 * X + 9 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is zero, the solution is:\n"
+                                           " 3\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = "4X^2 - 4X + 1 = 0",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 4 * X^2 - 4 * X + 1 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is zero, the solution is:\n"
+                                           " 0.5\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = "0.25X^2 - X + 1 = 0",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 0.25 * X^2 - 1 * X + 1 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is zero, the solution is:\n"
+                                           " 2\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = "X^2 - 4X + 4 = 0",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 1 * X^2 - 4 * X + 4 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is zero, the solution is:\n"
+                                           " 2\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                }
         )
 );
 
