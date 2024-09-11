@@ -44,6 +44,12 @@ Result<Polynomials, ErrMsg> Parser::parse_equation(
     }
 
     // valid poly, nan, inf, etc...
+    Result<Computor::Status, ErrMsg> validate_result = Parser::validate();
+    if (validate_result.is_err()) {
+        std::string err_msg = validate_result.err_value();
+        return Result<Polynomials, ErrMsg>::err(err_msg);
+    }
+
     Parser::reduce();
     return Result<Polynomials, ErrMsg>::ok(this->polynomial_);
 }
@@ -71,6 +77,22 @@ std::string Parser::reduced_form() const noexcept(true) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
+Result<Computor::Status, ErrMsg> Parser::validate() noexcept(true) {
+    for (auto &poly : this->polynomial_) {
+        int degree = poly.first;
+        double coef = poly.second;
+        if (std::isnan(coef)) {
+            std::string err_msg = "calculation error: coefficient is NaN at degree " + std::to_string(degree);
+            return Result<Computor::Status, ErrMsg>::err(err_msg);
+        }
+        if (std::isinf(coef)) {
+            std::string err_msg = "calculation error: coefficient is infinity at degree " + std::to_string(degree);
+            return Result<Computor::Status, ErrMsg>::err(err_msg);
+        }
+    }
+    return Result<Computor::Status, ErrMsg>::ok(Computor::Status::SUCCESS);
+}
 
 void Parser::reduce() noexcept(true) {
     // std::cout << "before: ";
@@ -127,12 +149,9 @@ bool Parser::is_valid_degree(int degree) const noexcept(true) {
     return (0 <= degree && degree <= this->max_degree_);
 }
 
-bool Parser::is_valid_coef(int degree) const noexcept(true) {
-    try {
-        int coef = this->polynomial_.at(degree);
-        return (INT_MIN <= coef && coef <= INT_MAX);
-    } catch (const std::out_of_range &e) {}
-    return false;
+bool Parser::is_valid_coef(double coef) const noexcept(true) {
+    std::cout << "coef: " << coef << std::endl;
+    return !std::isnan(coef) && !std::isinf(coef);
 }
 
 bool Parser::is_valid_variable(char var, int degree) const noexcept(true) {
@@ -163,18 +182,16 @@ Computor::Status Parser::set_valid_term(const s_term &term, bool is_lhs) noexcep
     //     return Computor::Status::FAILURE;
     // }
     if (Parser::set_variable(var, degree) == Computor::Status::FAILURE) {
-        std::cerr << "[Error] invalid variable: " << var << std::endl;
         return Computor::Status::FAILURE;
     }
     if (!Parser::is_valid_variable(var, degree)) {
-        std::cerr << "[Error] invalid variable: " << var << std::endl;
         return Computor::Status::FAILURE;
     }
     this->polynomial_[degree] += (is_lhs ? 1 : -1) * coef;
-    if (!Parser::is_valid_coef(degree)) {  // todo: unnecessary?
-        std::cerr << "[Error] invalid coefficient, too large or too small" << std::endl;
-        return Computor::Status::FAILURE;
-    }
+    // if (!Parser::is_valid_coef(this->polynomial_[degree])) {  // todo: unnecessary?
+    //     // std::cerr << "[Error] invalid coefficient, too large or too small" << std::endl;
+    //     return Computor::Status::FAILURE;
+    // }
     return Computor::Status::SUCCESS;
 }
 
@@ -182,7 +199,7 @@ std::string Parser::error_message(
         TokenItr *current,
         const TokenItr &end) noexcept(true) {
     if (Parser::is_at_end(current, end)) {
-        return "empty equation";
+        return "invalid equation";
     } else {
         return "syntax error: unexpected token: " + (*current)->word;
     }

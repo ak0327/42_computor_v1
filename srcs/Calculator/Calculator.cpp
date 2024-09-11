@@ -139,7 +139,7 @@ QuadraticSolver::EquationType Calculator::get_equation_type(double a, double b) 
 }
 
 QuadraticSolver::SolutionType Calculator::get_quadratic_eq_solution_type(double D) noexcept(true) {
-    if (std::isnan(D) || std::isinf(D)) { return QuadraticSolver::NoSolution; }
+    if (std::isnan(D) || std::isinf(D)) { return QuadraticSolver::NoSolutionCalculationError; }
     if (D < 0.0) { return QuadraticSolver::TwoComplexSolutionsQuadratic; }
     if (0.0 < D) { return QuadraticSolver::TwoRealSolutionsQuadratic; }
     return QuadraticSolver::OneRealSolutionQuadratic;
@@ -175,6 +175,9 @@ void Calculator::display_solution_type(QuadraticSolver::SolutionType type) noexc
             break;
         case QuadraticSolver::NoSolutionDegreeTooHigh:
             solution = "The polynomial degree is strictly greater than 2, I can't solve.";
+            break;
+        case QuadraticSolver::NoSolutionCalculationError:
+            solution = "Calculation error occurred, I can't solve.";
             break;
         case QuadraticSolver::NoSolution:
             solution = "I can't solve.";
@@ -226,6 +229,8 @@ std::string get_solution_type(QuadraticSolver::SolutionType type) noexcept(true)
             return "NoSolution: degree too low";
         case QuadraticSolver::NoSolutionDegreeTooHigh:
             return "NoSolution: degree too high";
+        case QuadraticSolver::NoSolutionCalculationError:
+            return "NoSolution: inf, nan";
         case QuadraticSolver::NoSolution:
             return "NoSolution";
         default:

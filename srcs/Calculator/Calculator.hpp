@@ -30,7 +30,8 @@ enum SolutionType {
 
     // エラー
     NoSolutionDegreeTooHigh,        // 次数が高すぎる場合のエラー
-    NoSolutionDegreeTooLow          // 次数が低すぎる場合のエラー
+    NoSolutionDegreeTooLow,          // 次数が低すぎる場合のエラー
+    NoSolutionCalculationError      // inf, nan
 };
 
 struct Solution {

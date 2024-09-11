@@ -47,7 +47,7 @@ class Parser {
     void display_polynomial() const noexcept(true);
 
     bool is_valid_degree(int degree) const noexcept(true);
-    bool is_valid_coef(int degree) const noexcept(true);
+    bool is_valid_coef(double coef) const noexcept(true);
     bool is_valid_variable(char var, int degree) const noexcept(true);
 
     static Result<s_term, Computor::Status> parse_term(
@@ -55,6 +55,7 @@ class Parser {
             const TokenItr &end) noexcept(true);
 
     Computor::Status set_valid_term(const s_term &term, bool is_lhs) noexcept(true);
+    Result<Computor::Status, ErrMsg> validate() noexcept(true);
 
     static std::pair<Computor::Status, double> stod(const std::string &word) noexcept(true);
     static std::pair<Computor::Status, int> stoi(const std::string &word) noexcept(true);
