@@ -203,7 +203,7 @@ std::string Parser::error_message(
     if (Parser::is_at_end(current, end)) {
         return "invalid equation";
     } else {
-        return "syntax error: unexpected token: " + (*current)->word;
+        return "syntax error: unexpected token near: " + (*current)->word;
     }
 }
 
@@ -227,6 +227,7 @@ void Parser::parse_expression(
         auto begin = *current;
         Result<s_term, Computor::Status> result = Parser::parse_term(current, end);
         if (result.is_err()) {
+            *current = begin;
             return;
         }
         s_term term = result.ok_value();

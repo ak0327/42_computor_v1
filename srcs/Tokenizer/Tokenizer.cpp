@@ -245,7 +245,7 @@ Result<Tokens, ErrMsg> Tokenizer::validate_tokens() const noexcept(true) {
     for (auto &token : this->tokens_) {
         if (token.kind == None) {
             std::ostringstream err_oss;
-            err_oss << "syntax error: unexpected token: " << token.word << "";
+            err_oss << "syntax error: unexpected token near: " << token.word << "";
             return Result<Tokens, ErrMsg>::err(err_oss.str());
         }
         if (token.kind == Char) {
@@ -255,7 +255,7 @@ Result<Tokens, ErrMsg> Tokenizer::validate_tokens() const noexcept(true) {
             }
             if (base_char != token.word[0]) {
                 std::ostringstream err_oss;
-                err_oss << "syntax error: unexpected token: " << token.word << "";
+                err_oss << "syntax error: unexpected token near: " << token.word << "";
                 return Result<Tokens, ErrMsg>::err(err_oss.str());
             }
         }
