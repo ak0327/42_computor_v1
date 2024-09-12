@@ -33,20 +33,24 @@ Polynomial degree: 3
 The polynomial degree is strictly greater than 2, I can't solve.
 ```
 
-### 2-3) Syntax
+### 2-3) ABNF Syntax Definition
 ```
- equation    = 1*expression "=" 1*expression
- expression  = 1*[ *(SP) term *(SP) ]
- term        = [ *(SP) operator *(SP) ] [ coefficient ( *(SP) "*" *(SP) ) ] base "^" power
- operator    = "+" / "-"
- coefficient = integer / decimal
- power       = integer
- decimal     = 1*DIGIT "." 1*DIGIT
- integer     = 1*DIGIT
- base        = ALPHA
- ALPHA       = A-Z / a-z
- DIGIT       = 0-9
- SP          = " "
+ equation     =  1*expression "=" 1*expression
+ expression   =  1*( *SP term *SP )
+ term         =  operator [ coefficient ]  base  [ power ]
+
+ operator     =  *SP ("+" / "-") *SP
+ mul          =  *SP "*" *SP
+ coefficient  =  (integer / decimal) [ mul ]
+ base         =  ALPHA
+ power        =  *SP  "^"  *SP  integer  *SP
+ 
+ integer      =  1*DIGIT
+ decimal      =  1*DIGIT "." 1*DIGIT
+ 
+ ALPHA        =  %x41-5A / %x61-7A   ; A-Z / a-z
+ DIGIT        =  %x30-39             ; 0-9
+ SP           =  %x20                ; space character
 ```
 
 ## 3. Confirmed Environments
