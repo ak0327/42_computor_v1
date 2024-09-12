@@ -20,5 +20,9 @@ constexpr char OP_POW   = '^';
 
 int calc_equation(const std::string &equation) noexcept(true);
 double normalize_zero(double value) noexcept(true);
+double abs(double num) noexcept(true);
+double sqrt(double num) noexcept(false);
+bool isnan(double num) noexcept(true);
+bool isinf(double num) noexcept(true);
 
 }  // namespace Computor

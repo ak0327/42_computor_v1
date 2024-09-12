@@ -1,5 +1,4 @@
 #include "Calculator.hpp"
-#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include "computor.hpp"
@@ -71,42 +70,49 @@ std::vector<QuadraticSolver::Solution> Calculator::solve_quadratic(
         QuadraticSolver::SolutionType type) noexcept(true) {
     std::vector<QuadraticSolver::Solution> solutions;
 
-    switch (type) {
-        case QuadraticSolver::TwoComplexSolutionsQuadratic: {
-            if (DEBUG) std::cout << "solve_quadratic() 2-complex" << std::endl;
-            QuadraticSolver::Solution ans1, ans2;
-            ans1 = {
-                    .re = Computor::normalize_zero(-b / 2.0 / a),
-                    .im = Computor::normalize_zero(std::sqrt(-D) / 2.0 / a)
-            };
-            ans2 = {
-                    .re = Computor::normalize_zero(-b / 2.0 / a),
-                    .im = Computor::normalize_zero(-std::sqrt(-D) / 2.0 / a)
-            };
-            solutions.push_back(ans1);
-            solutions.push_back(ans2);
-            break;
+    try {
+        double d = Computor::abs(D);
+
+        switch (type) {
+            case QuadraticSolver::TwoComplexSolutionsQuadratic: {
+                if (DEBUG) std::cout << "solve_quadratic() 2-complex" << std::endl;
+                QuadraticSolver::Solution ans1, ans2;
+                ans1 = {
+                        .re = Computor::normalize_zero(-b / 2.0 / a),
+                        .im = Computor::normalize_zero(Computor::sqrt(d) / 2.0 / a)
+                };
+                ans2 = {
+                        .re = Computor::normalize_zero(-b / 2.0 / a),
+                        .im = Computor::normalize_zero(-Computor::sqrt(d) / 2.0 / a)
+                };
+                solutions.push_back(ans1);
+                solutions.push_back(ans2);
+                break;
+            }
+            case QuadraticSolver::TwoRealSolutionsQuadratic: {
+                if (DEBUG) std::cout << "solve_quadratic() 2-real" << std::endl;
+                QuadraticSolver::Solution ans1, ans2;
+                ans1.re = Computor::normalize_zero((-b + Computor::sqrt(d)) / 2.0 / a);
+                ans2.re = Computor::normalize_zero((-b - Computor::sqrt(d)) / 2.0 / a);
+                solutions.push_back(ans1);
+                solutions.push_back(ans2);
+                break;
+            }
+            case QuadraticSolver::OneRealSolutionQuadratic: {
+                if (DEBUG) std::cout << "solve_quadratic() 1-real" << std::endl;
+                QuadraticSolver::Solution ans;
+                ans.re = Computor::normalize_zero(-b / 2.0 / a);
+                solutions.push_back(ans);
+                break;
+            }
+            default:
+                break;
         }
-        case QuadraticSolver::TwoRealSolutionsQuadratic: {
-            if (DEBUG) std::cout << "solve_quadratic() 2-real" << std::endl;
-            QuadraticSolver::Solution ans1, ans2;
-            ans1.re = Computor::normalize_zero((-b + std::sqrt(D)) / 2.0 / a);
-            ans2.re = Computor::normalize_zero((-b - std::sqrt(D)) / 2.0 / a);
-            solutions.push_back(ans1);
-            solutions.push_back(ans2);
-            break;
-        }
-        case QuadraticSolver::OneRealSolutionQuadratic: {
-            if (DEBUG) std::cout << "solve_quadratic() 1-real" << std::endl;
-            QuadraticSolver::Solution ans;
-            ans.re = Computor::normalize_zero(-b / 2.0 / a);
-            solutions.push_back(ans);
-            break;
-        }
-        default:
-            break;
+        return solutions;
+    } catch (const std::exception &e) {
+        // sqrt(negative)
+        return solutions;
     }
-    return solutions;
 }
 
 std::vector<QuadraticSolver::Solution> Calculator::solve_linear(
@@ -139,7 +145,9 @@ QuadraticSolver::EquationType Calculator::get_equation_type(double a, double b) 
 }
 
 QuadraticSolver::SolutionType Calculator::get_quadratic_eq_solution_type(double D) noexcept(true) {
-    if (std::isnan(D) || std::isinf(D)) { return QuadraticSolver::NoSolutionCalculationError; }
+    if (Computor::isnan(D) || Computor::isinf(D)) {
+        return QuadraticSolver::NoSolutionCalculationError;
+    }
     if (D < 0.0) { return QuadraticSolver::TwoComplexSolutionsQuadratic; }
     if (0.0 < D) { return QuadraticSolver::TwoRealSolutionsQuadratic; }
     return QuadraticSolver::OneRealSolutionQuadratic;

@@ -59,5 +59,6 @@ utest	:
 	#./build/utest --gtest_filter=TestParser.TestParseEquation*
 	#./build/utest --gtest_filter=TestParser.TestReducedForm
 	#./build/utest --gtest_filter=*TestComputor.*
+	#./build/utest --gtest_filter=TestLib.*
 
 -include $(DEPS)

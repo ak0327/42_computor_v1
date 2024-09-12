@@ -1,5 +1,4 @@
 #include "Parser.hpp"
-#include <cmath>
 #include <deque>
 #include <iomanip>
 #include <iostream>
@@ -82,12 +81,12 @@ Result<Computor::Status, ErrMsg> Parser::validate() noexcept(true) {
     for (auto &poly : this->polynomial_) {
         std::int32_t degree = poly.first;
         double coef = poly.second;
-        if (std::isnan(coef)) {
+        if (Computor::isnan(coef)) {
             std::string err_msg = "calculation error: coefficient is NaN at degree ";
             err_msg.append(std::to_string(degree));
             return Result<Computor::Status, ErrMsg>::err(err_msg);
         }
-        if (std::isinf(coef)) {
+        if (Computor::isinf(coef)) {
             std::string err_msg = "calculation error: coefficient is infinity at degree ";
             err_msg.append(std::to_string(degree));
             return Result<Computor::Status, ErrMsg>::err(err_msg);
@@ -153,7 +152,7 @@ bool Parser::is_valid_degree(std::int32_t degree) const noexcept(true) {
 
 bool Parser::is_valid_coef(double coef) const noexcept(true) {
     std::cout << "coef: " << coef << std::endl;
-    return !std::isnan(coef) && !std::isinf(coef);
+    return !Computor::isnan(coef) && !Computor::isinf(coef);
 }
 
 bool Parser::is_valid_variable(char var, std::int32_t degree) const noexcept(true) {
@@ -437,8 +436,7 @@ std::string Parser::reduced_form(const Polynomials &polynomial) const noexcept(t
             sign = "+ ";
         }
 
-        // reduced_form << sign << std::fixed << std::setprecision(2) << std::abs(coef);
-        reduced_form << sign << std::abs(coef);
+        reduced_form << sign << Computor::abs(coef);
         if (pow == 1) {
             reduced_form << " * " << this->variable_;
         } else if (1 < pow) {
