@@ -63,7 +63,7 @@ void Parser::display_polynomial_degree() const noexcept(true) {
     if (itr == this->polynomial_.crend()) {
         return;
     }
-    int max_degree = itr->first;
+    std::int32_t max_degree = itr->first;
     std::cout << "Polynomial degree: " << max_degree << std::endl;
 }
 
@@ -80,7 +80,7 @@ std::string Parser::reduced_form() const noexcept(true) {
 
 Result<Computor::Status, ErrMsg> Parser::validate() noexcept(true) {
     for (auto &poly : this->polynomial_) {
-        int degree = poly.first;
+        std::int32_t degree = poly.first;
         double coef = poly.second;
         if (std::isnan(coef)) {
             std::string err_msg = "calculation error: coefficient is NaN at degree ";
@@ -113,7 +113,7 @@ void Parser::drop_zero_term() noexcept(true) {
     Polynomials new_poly;
 
     for (auto poly : this->polynomial_) {
-        int pow = poly.first;
+        std::int32_t pow = poly.first;
         double coef = poly.second;
         if (coef == 0.0) { continue; }
         new_poly[pow] = coef;
@@ -131,7 +131,7 @@ void Parser::adjust_sign() noexcept(true) {
         return;
     }
     for (auto itr = this->polynomial_.crbegin(); itr != this->polynomial_.crend(); ++itr) {
-        int pow = itr->first;
+        std::int32_t pow = itr->first;
         double coef = itr->second;
 
         if (pow == 0 && coef < 0) { break; }
@@ -147,7 +147,7 @@ void Parser::adjust_sign() noexcept(true) {
     }
 }
 
-bool Parser::is_valid_degree(int degree) const noexcept(true) {
+bool Parser::is_valid_degree(std::int32_t degree) const noexcept(true) {
     return (0 <= degree && degree <= this->max_degree_);
 }
 
@@ -156,14 +156,14 @@ bool Parser::is_valid_coef(double coef) const noexcept(true) {
     return !std::isnan(coef) && !std::isinf(coef);
 }
 
-bool Parser::is_valid_variable(char var, int degree) const noexcept(true) {
+bool Parser::is_valid_variable(char var, std::int32_t degree) const noexcept(true) {
     if (degree == 0) {
         return true;
     }
     return this->variable_ == var;
 }
 
-Computor::Status Parser::set_variable(char var, int degree) {
+Computor::Status Parser::set_variable(char var, std::int32_t degree) {
     if (degree == 0 || this->variable_ != '\0') {
         return Computor::Status::SUCCESS;
     }
@@ -176,7 +176,7 @@ Computor::Status Parser::set_variable(char var, int degree) {
 
 // var
 Computor::Status Parser::set_valid_term(const s_term &term, bool is_lhs) noexcept(true) {
-    int degree = term.degree;
+    std::int32_t degree = term.degree;
     char var = term.variable;
     double coef = term.coefficient;
 
@@ -292,8 +292,8 @@ std::pair<Computor::Status, double> Parser::stod(const std::string &word) noexce
     }
 }
 
-std::pair<Computor::Status, int> Parser::stoi(const std::string &word) noexcept(true) {
-    std::pair<Computor::Status, int> result;
+std::pair<Computor::Status, std::int32_t> Parser::stoi(const std::string &word) noexcept(true) {
+    std::pair<Computor::Status, std::int32_t> result;
     result.first = Computor::FAILURE;
 
     if (word.empty() || !std::isdigit(word[0])) {
@@ -301,7 +301,7 @@ std::pair<Computor::Status, int> Parser::stoi(const std::string &word) noexcept(
     }
     try {
         std::size_t end;
-        int inum = std::stoi(word, &end);
+        std::int32_t inum = std::stoi(word, &end);
         if (end < word.length()) {
             return result;
         }
@@ -339,8 +339,8 @@ Result<s_term, Computor::Status> Parser::parse_term(
     s_term term = {};
     double coefficient;
     char variable = '\0';
-    int degree;
-    int sign = 1;
+    std::int32_t degree;
+    std::int32_t sign = 1;
 
     // operator
     // +a*X^b, -aX^b, X, +a, a
@@ -390,7 +390,7 @@ Result<s_term, Computor::Status> Parser::parse_term(
         if (Parser::consume(current, end, TermPowSymbol)) {
             // X^b
             if (Parser::expect(current, end, Integer)) {
-                std::pair<Computor::Status, int> result = Parser::stoi((*current)->word);
+                std::pair<Computor::Status, std::int32_t> result = Parser::stoi((*current)->word);
                 if (result.first == Computor::Status::FAILURE) {
                     return Result<s_term, Computor::Status>::err(Computor::Status::FAILURE);
                 }
@@ -426,7 +426,7 @@ std::string Parser::reduced_form(const Polynomials &polynomial) const noexcept(t
     bool is_first_term = true;
 
     for (auto itr = polynomial.crbegin(); itr != polynomial.crend(); ++itr) {
-        int pow = itr->first;
+        std::int32_t pow = itr->first;
         double coef = itr->second;
         std::string sign = "";
 
@@ -461,7 +461,7 @@ std::string Parser::reduced_form(const Polynomials &polynomial) const noexcept(t
 
 void Parser::display_polynomial() const noexcept(true) {
     for (auto itr = this->polynomial_.crbegin(); itr != this->polynomial_.crend(); ++itr) {
-        int pow = itr->first;
+        std::int32_t pow = itr->first;
         double coef = itr->second;
 
         std::cout << "[" << pow << "]: " << coef << "" << std::endl;

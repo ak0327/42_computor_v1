@@ -44,15 +44,15 @@ struct Solution {
 
 class Calculator {
  public:
-    explicit Calculator(const std::map<int, double>&polynomial);
+    explicit Calculator(const std::map<std::int32_t, double>&polynomial);
     ~Calculator();
 
     void solve_equation() noexcept(true);
     int solve_quadratic_equation() noexcept(true);
 
  private:
-    const std::map<int, double> polynomial_;
-    int kMinDegree_, kMaxDegree_;
+    const std::map<std::int32_t, double> polynomial_;
+    std::int32_t kMinDegree_, kMaxDegree_;
 
     std::vector<QuadraticSolver::Solution> solutions_;
 

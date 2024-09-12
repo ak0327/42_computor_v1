@@ -1,14 +1,4 @@
-#include "computor.hpp"
-#include "gtest/gtest.h"
-
-
-struct TestCase {
-    std::string equation;
-    int expected_result;
-    std::string expected_stdout;
-    std::string expected_stderr;
-    std::size_t line;
-};
+#include "TestCalcEquation.h"
 
 
 std::ostream &operator<<(std::ostream &os, const TestCase& tc) {
@@ -139,6 +129,15 @@ INSTANTIATE_TEST_SUITE_P(
                 },
                 TestCase{
                         .equation        = "X=X",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "Reduced form     : 0 = 0\n"
+                                           "Polynomial degree: 0\n"
+                                           "The equation is indeterminate, infinite solutions.\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = "X^0=1",
                         .expected_result = EXIT_FAILURE,
                         .expected_stdout = "Reduced form     : 0 = 0\n"
                                            "Polynomial degree: 0\n"
@@ -370,6 +369,17 @@ INSTANTIATE_TEST_SUITE_P(
                         .line = __LINE__
                 },
                 TestCase{
+                        .equation        = "x^2 + 5x - 36-5x = 0",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 1 * x^2 - 36 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is positive, the two solutions are:\n"
+                                           " 6\n"
+                                           "-6\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
                         .equation        = "0 =2*X^2 + 3X - 5",
                         .expected_result = EXIT_SUCCESS,
                         .expected_stdout = "Reduced form     : 2 * X^2 + 3 * X - 5 = 0\n"
@@ -410,6 +420,17 @@ INSTANTIATE_TEST_SUITE_P(
                                            "Discriminant is positive, the two solutions are:\n"
                                            "-1\n"
                                            "-2\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = "1000000 * X^2 + 500000 * X - 250000 = 0",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 1e+06 * X^2 + 500000 * X - 250000 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is positive, the two solutions are:\n"
+                                           " 0.309017\n"
+                                           "-0.809017\n",
                         .expected_stderr = "",
                         .line = __LINE__
                 },
@@ -600,7 +621,9 @@ INSTANTIATE_TEST_SUITE_P(
                 TestCase{"X^-1 = 0",    EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: X\n", __LINE__},
                 TestCase{"X^+1 = 0",    EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: X\n", __LINE__},
                 TestCase{"X^1.0 = 0",   EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: X\n", __LINE__},
-                TestCase{"X^a = 0",     EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: a\n", __LINE__},
+                TestCase{"X^1.0 = 0",   EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: X\n", __LINE__},
+                TestCase{"X^1*2 = 0",   EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: *\n", __LINE__},
+                TestCase{"x^2147483648=0", EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: x\n", __LINE__},
                 TestCase{"X^1a = 0",    EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: a\n", __LINE__},
                 TestCase{"X^1^1 = 0",   EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: ^\n", __LINE__},
                 TestCase{"X^1^a = 0",   EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: a\n", __LINE__},
@@ -642,6 +665,16 @@ INSTANTIATE_TEST_SUITE_P(
                 TestCase{"x = 1*",      EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: 1\n", __LINE__},
                 TestCase{"x *= 1",      EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: *\n", __LINE__},
                 TestCase{"*x =0",       EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: *\n", __LINE__},
+
+                TestCase{"1.x = 0",         EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: 1.x\n", __LINE__},
+                TestCase{"1. x = 0",        EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: 1.\n", __LINE__},
+                TestCase{"1.*x = 0",        EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: 1.\n", __LINE__},
+                TestCase{"1. * x = 0",      EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: 1.\n", __LINE__},
+                TestCase{"1.0. * x = 0",    EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: 1.0.\n", __LINE__},
+                TestCase{"1..2 * x = 0",    EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: 1..2\n", __LINE__},
+                TestCase{"1.2.3 * x = 0",   EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: 1.2.3\n", __LINE__},
+                TestCase{".1*x = 0",        EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: .1\n", __LINE__},
+                TestCase{"1e10*x = 0",      EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: e10\n", __LINE__},
                 // TestCase{"",    EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: \n", __LINE__},
                 // TestCase{"",    EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: \n", __LINE__},
                 // TestCase{"",    EXIT_FAILURE, "", "[Error] syntax error: unexpected token near: \n", __LINE__},
@@ -650,47 +683,273 @@ INSTANTIATE_TEST_SUITE_P(
         )
 );
 
-std::string DMAX = "179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368";
 INSTANTIATE_TEST_SUITE_P(
-        CalculationError,
+        TooLargeOrTooSmall,
         TestComputor,
         ::testing::Values(
                 TestCase{
-                    .equation        = DMAX+"x + " + DMAX + "x = 1",
-                    .expected_result = EXIT_FAILURE,
-                    .expected_stdout = "",
-                    .expected_stderr = "[Error] calculation error: coefficient is infinity at degree 1\n",
-                    .line = __LINE__
+                        .equation        = "x^" + std::string(Ep307) + " + x = 1",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "",
+                        .expected_stderr = "[Error] syntax error: unexpected token near: x\n",
+                        .line = __LINE__
                 },
                 TestCase{
-                    .equation        = "-" + DMAX + "x - " + DMAX + "x = 1",
-                    .expected_result = EXIT_FAILURE,
-                    .expected_stdout = "",
-                    .expected_stderr = "[Error] calculation error: coefficient is infinity at degree 1\n",
-                    .line = __LINE__
+                        .equation        = "x^" + std::string(Em307) + " + x = 1",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "",
+                        .expected_stderr = "[Error] syntax error: unexpected token near: x\n",
+                        .line = __LINE__
+                },
+
+                // 0 degree
+                TestCase{
+                        .equation        = std::string(Ep307) + "=" + std::string(Ep307),
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "Reduced form     : 0 = 0\n"
+                                           "Polynomial degree: 0\n"
+                                           "The equation is indeterminate, infinite solutions.\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
                 },
                 TestCase{
-                    .equation        = "x^" + DMAX + " + x = 1",
-                    .expected_result = EXIT_FAILURE,
-                    .expected_stdout = "",
-                    .expected_stderr = "[Error] syntax error: unexpected token near: x\n",
-                    .line = __LINE__
+                        .equation        = std::string(Ep308) + "=" + std::string(Ep308),
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "Reduced form     : 0 = 0\n"
+                                           "Polynomial degree: 0\n"
+                                           "The equation is indeterminate, infinite solutions.\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
                 },
                 TestCase{
-                    .equation        = DMAX + "x + " + DMAX + "x = 1",
-                    .expected_result = EXIT_FAILURE,
-                    .expected_stdout = "",
-                    .expected_stderr = "[Error] calculation error: coefficient is infinity at degree 1\n",
-                    .line = __LINE__
+                        .equation        = std::string(Ep309) + "=" + std::string(Ep309),
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "",
+                        .expected_stderr = "[Error] syntax error: unexpected token near: " + std::string(Ep309) +"\n",
+                        .line = __LINE__
                 },
                 TestCase{
-                    .equation        = DMAX + "x^2 + " + DMAX + "x + " + DMAX + "= " + DMAX,
-                    .expected_result = EXIT_FAILURE,
-                    .expected_stdout = "Reduced form     : 1.79769e+308 * x^2 + 1.79769e+308 * x = 0\n"
-                                       "Polynomial degree: 2\n"
-                                       "Calculation error occurred, I can't solve.\n",
-                    .expected_stderr = "",
-                    .line = __LINE__
+                        .equation        = std::string(Em307) + "=" + std::string(Em307),
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "Reduced form     : 0 = 0\n"
+                                           "Polynomial degree: 0\n"
+                                           "The equation is indeterminate, infinite solutions.\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Em308) + "=" + std::string(Em308),
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "",
+                        .expected_stderr = "[Error] syntax error: unexpected token near: " + std::string(Em308) +"\n",
+                        .line = __LINE__
+                },
+
+
+                TestCase{
+                        .equation        = std::string(Ep307) + "= 0",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "Reduced form     : 1e+307 = 0\n"
+                                           "Polynomial degree: 0\n"
+                                           "I can't solve.\n",
+                        .expected_stderr = "", .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Ep308) + "= 0",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "Reduced form     : 1e+308 = 0\n"
+                                           "Polynomial degree: 0\n"
+                                           "I can't solve.\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Ep309) + "= 0",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "",
+                        .expected_stderr = "[Error] syntax error: unexpected token near: " + std::string(Ep309) +"\n",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Em307) + "= 0",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "Reduced form     : 1e-307 = 0\n"
+                                           "Polynomial degree: 0\n"
+                                           "I can't solve.\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Em308) + "= 0",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "",
+                        .expected_stderr = "[Error] syntax error: unexpected token near: " + std::string(Em308) +"\n",
+                        .line = __LINE__
+                },
+
+
+                // 1 degree
+                TestCase{
+                        .equation        = std::string(Ep307) + "x = 1",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 1e+307 * x - 1 = 0\n"
+                                           "Polynomial degree: 1\n"
+                                           "The solution is:\n"
+                                           " 1e-307\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Ep308) + "x = 1",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 1e+308 * x - 1 = 0\n"
+                                           "Polynomial degree: 1\n"
+                                           "The solution is:\n"
+                                           " 1e-308\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Ep309) + "x = 1",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "",
+                        .expected_stderr = "[Error] syntax error: unexpected token near: " + std::string(Ep309) +"\n",
+                        .line = __LINE__
+                },
+
+                TestCase{
+                        .equation        = std::string(Em307) + "x = 1",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 1e-307 * x - 1 = 0\n"
+                                           "Polynomial degree: 1\n"
+                                           "The solution is:\n"
+                                           " 1e+307\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Em308) + "x = 1",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "",
+                        .expected_stderr = "[Error] syntax error: unexpected token near: " + std::string(Em308) +"\n",
+                        .line = __LINE__
+                },
+
+                TestCase{
+                        .equation        = std::string(Ep307)+"x + " + std::string(Ep307) + "x = 1",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 2e+307 * x - 1 = 0\n"
+                                           "Polynomial degree: 1\n"
+                                           "The solution is:\n"
+                                           " 5e-308\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Ep308) + "x + " + std::string(Ep308) + "x = 1",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "",
+                        .expected_stderr = "[Error] calculation error: coefficient is infinity at degree 1\n",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Ep309) + "x + " + std::string(Ep309) + "x = 1",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "",
+                        .expected_stderr = "[Error] syntax error: unexpected token near: " + std::string(Ep309) +"\n",
+                        .line = __LINE__
+                },
+
+                // 2 degree
+                TestCase{
+                        .equation        = std::string(Ep307) + "x^2 = 1",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 1e+307 * x^2 - 1 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is positive, the two solutions are:\n"
+                                           " 3.16228e-154\n"
+                                           "-3.16228e-154\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Ep308) + "x^2 = 1",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "Reduced form     : 1e+308 * x^2 - 1 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Calculation error occurred, I can't solve.\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Ep309) + "x^2 = 1",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "",
+                        .expected_stderr = "[Error] syntax error: unexpected token near: " + std::string(Ep309) +"\n",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Em307) + "x^2 = 1",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 1e-307 * x^2 - 1 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is positive, the two solutions are:\n"
+                                           " 3.16228e+153\n"
+                                           "-3.16228e+153\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Em308) + "x^2 = 1",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "",
+                        .expected_stderr = "[Error] syntax error: unexpected token near: " + std::string(Em308) +"\n",
+                        .line = __LINE__
+                },
+
+
+                TestCase{
+                        .equation        = std::string(Ep307) + "x^2 + " + std::string(Ep307) + "x + 1 = 0",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "Reduced form     : 1e+307 * x^2 + 1e+307 * x + 1 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Calculation error occurred, I can't solve.\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Ep308) + "x^2 + " + std::string(Ep308) + "x + 1 = 0",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "Reduced form     : 1e+308 * x^2 + 1e+308 * x + 1 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Calculation error occurred, I can't solve.\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Ep309) + "x^2 + " + std::string(Ep309) + "x + 1 = 0",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "",
+                        .expected_stderr = "[Error] syntax error: unexpected token near: " + std::string(Ep309) +"\n",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Em307) + "x^2 + " + std::string(Em307) + "x + 1 = 0",
+                        .expected_result = EXIT_SUCCESS,
+                        .expected_stdout = "Reduced form     : 1e-307 * x^2 + 1e-307 * x + 1 = 0\n"
+                                           "Polynomial degree: 2\n"
+                                           "Discriminant is negative, the two solutions are:\n"
+                                           "-0.5+3.16228e+153i\n"
+                                           "-0.5-3.16228e+153i\n",
+                        .expected_stderr = "",
+                        .line = __LINE__
+                },
+                TestCase{
+                        .equation        = std::string(Em308) + "x^2 + " + std::string(Em308) + "x + 1 = 0",
+                        .expected_result = EXIT_FAILURE,
+                        .expected_stdout = "",
+                        .expected_stderr = "[Error] syntax error: unexpected token near: " + std::string(Em308) +"\n",
+                        .line = __LINE__
                 }
         )
 );

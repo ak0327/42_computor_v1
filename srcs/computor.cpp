@@ -7,14 +7,6 @@
 
 namespace Computor {
 
-const char SP        = ' ';
-const char OP_PLUS   = '+';
-const char OP_MINUS  = '-';
-const char OP_MUL    = '*';
-const char OP_EQUAL  = '=';
-const char OP_POW    = '^';
-
-
 int calc_equation(const std::string &equation) noexcept(true) {
     Tokenizer tokenizer;
     Result<Tokens, ErrMsg> tokenize_result = tokenizer.tokenize(equation);

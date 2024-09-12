@@ -9,11 +9,13 @@ Tokenizer::~Tokenizer() {}
 /*
  equation    = 1*expression "=" 1*expression
  expression  = 1*[ *(SP) term *(SP) ]
- term        = [ *(SP) operator *(SP) ] [ coefficient ( *(SP) "*" *(SP) ) ] ALPHA "^" 1*( DIGIT )
+ term        = [ *(SP) operator *(SP) ] [ coefficient ( *(SP) "*" *(SP) ) ] base "^" power
  operator    = "+" / "-"
+ power       = integer
  coefficient = integer / decimal
  decimal     = 1*DIGIT "." 1*DIGIT
  integer     = 1*DIGIT
+ base        = ALPHA
  ALPHA       = A-Z / a-z
  DIGIT       = 0-9
  SP          = " "
@@ -229,11 +231,13 @@ bool Tokenizer::is_decimal(const std::string &str) noexcept(true) {
 /*
  equation    = 1*expression "=" 1*expression
  expression  = 1*[ *(SP) term *(SP) ]
- term        = [ *(SP) operator *(SP) ] [ coefficient ( *(SP) "*" *(SP) ) ] ALPHA "^" 1*( DIGIT )
+ term        = [ *(SP) operator *(SP) ] [ coefficient ( *(SP) "*" *(SP) ) ] base "^" power
  operator    = "+" / "-"
  coefficient = integer / decimal
+ power       = integer
  decimal     = 1*DIGIT "." 1*DIGIT
  integer     = 1*DIGIT
+ base        = ALPHA
  ALPHA       = A-Z / a-z
  DIGIT       = 0-9
  SP          = " "

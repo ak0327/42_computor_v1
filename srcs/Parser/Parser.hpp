@@ -10,12 +10,12 @@
 struct s_term {
     double  coefficient;
     char    variable;
-    int     degree;
+    std::int32_t degree;
 };
 
 
-typedef std::map<int, double> Polynomials;
-typedef Tokens::const_iterator TokenItr;
+using Polynomials = std::map<std::int32_t, double>;
+using TokenItr = Tokens::const_iterator;
 
 class Parser {
  public:
@@ -32,7 +32,7 @@ class Parser {
     friend class TestParser;
 
  private:
-    int max_degree_ = 2;
+    std::int32_t max_degree_ = 2;
     Polynomials polynomial_;
     char variable_;
 
@@ -46,9 +46,9 @@ class Parser {
     std::string reduced_form(const Polynomials &polynomial) const noexcept(true);
     void display_polynomial() const noexcept(true);
 
-    bool is_valid_degree(int degree) const noexcept(true);
+    bool is_valid_degree(std::int32_t degree) const noexcept(true);
     bool is_valid_coef(double coef) const noexcept(true);
-    bool is_valid_variable(char var, int degree) const noexcept(true);
+    bool is_valid_variable(char var, std::int32_t degree) const noexcept(true);
 
     static Result<s_term, Computor::Status> parse_term(
             TokenItr *current,
@@ -58,7 +58,7 @@ class Parser {
     Result<Computor::Status, ErrMsg> validate() noexcept(true);
 
     static std::pair<Computor::Status, double> stod(const std::string &word) noexcept(true);
-    static std::pair<Computor::Status, int> stoi(const std::string &word) noexcept(true);
+    static std::pair<Computor::Status, std::int32_t> stoi(const std::string &word) noexcept(true);
 
     static bool is_at_end(
             TokenItr *current,
@@ -87,7 +87,7 @@ class Parser {
     Parser &operator=(const Parser &rhs);
     explicit Parser(const Parser &other);
 
-    Computor::Status set_variable(char var, int degree);
+    Computor::Status set_variable(char var, std::int32_t degree);
 };
 
 std::ostream &operator<<(std::ostream &out, const s_term &term);

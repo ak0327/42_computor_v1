@@ -33,6 +33,22 @@ Polynomial degree: 3
 The polynomial degree is strictly greater than 2, I can't solve.
 ```
 
+### 2-3) Syntax
+```
+ equation    = 1*expression "=" 1*expression
+ expression  = 1*[ *(SP) term *(SP) ]
+ term        = [ *(SP) operator *(SP) ] [ coefficient ( *(SP) "*" *(SP) ) ] base "^" power
+ operator    = "+" / "-"
+ coefficient = integer / decimal
+ power       = integer
+ decimal     = 1*DIGIT "." 1*DIGIT
+ integer     = 1*DIGIT
+ base        = ALPHA
+ ALPHA       = A-Z / a-z
+ DIGIT       = 0-9
+ SP          = " "
+```
+
 ## 3. Confirmed Environments
 * Ubuntu 22.04.2 LTS (ARM64)
 * MacOS OS Ventura 13.5 (ARM64)
