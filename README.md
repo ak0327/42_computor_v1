@@ -2,6 +2,8 @@
 ## 1. Overview
 The program that solves a polynomial second or lower degree equation.
 
+<br>
+
 ## 2. How to use
 ### 2-1) Clone and compile
 ```shell
@@ -53,9 +55,12 @@ The polynomial degree is strictly greater than 2, I can't solve.
  SP           =  %x20                ; space character
 ```
 
+<br>
+
 ## 3. Confirmed Environments
 * Ubuntu 22.04.2 LTS (ARM64)
 * MacOS OS Ventura 13.5 (ARM64)
 
+<br>
 
 ## 4. References
