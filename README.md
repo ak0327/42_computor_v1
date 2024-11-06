@@ -8,7 +8,8 @@ The program that solves a polynomial second or lower degree equation.
 ### 2-1) Clone and compile
 ```shell
 git clone git@github.com:ak0327/42_computor_v1.git
-make -C 42_computor_v1
+cd 42_computor_v1
+make 42_computor_v1
 ```
 
 ### 2-2) Execute
